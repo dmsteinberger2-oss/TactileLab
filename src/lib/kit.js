@@ -42,7 +42,7 @@ function bakedClone(mesh) {
 
 export function exportPartSTL(mesh) {
   const exporter = new STLExporter()
-  return exporter.parse(bakedClone(mesh), { binary: true })
+  return exporter.parse(bakedClone(mesh), { binary: true }).buffer   // DataView -> ArrayBuffer for JSZip
 }
 
 // ---- label tiles ----
@@ -54,7 +54,7 @@ function labelTile(index) {
   notch.translate(-16 + index * 4, 6, 0)
   const merged = mergeGeometries([g, notch])
   const m = new THREE.Mesh(merged); m.name = `label_${index}`
-  return new STLExporter().parse(m, { binary: true })
+  return new STLExporter().parse(m, { binary: true }).buffer
 }
 function mergeGeometries(list) {
   const total = list.reduce((s, g) => s + (g.index ? g.toNonIndexed() : g).attributes.position.count, 0)
