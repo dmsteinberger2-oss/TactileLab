@@ -213,7 +213,7 @@ function GhostNormal({ labId, coronal }) {
 export default function ModelCanvas({ className = '' }) {
   return (
     <div className={`relative h-full w-full ${className}`}>
-      <Canvas shadows dpr={[1, 2]} camera={{ position: [5, 4, 30], fov: 32 }}
+      <Canvas shadows="percentage" dpr={[1, 2]} camera={{ position: [5, 4, 30], fov: 32 }}
         gl={{ antialias: true, preserveDrawingBuffer: true, toneMapping: THREE.ACESFilmicToneMapping, toneMappingExposure: 1.05 }}>
         <Suspense fallback={null}>
           <Scene />
