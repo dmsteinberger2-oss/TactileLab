@@ -32,19 +32,19 @@ export default function Lab() {
   const exploded = useLabStore(s => s.exploded), setExploded = useLabStore(s => s.setExploded)
   const [downloadState, setDownloadState] = useState('idle')
   const [downloadError, setDownloadError] = useState('')
-  if (!lab || lab.comingSoon) return <div className={theme.page}><Header/><main className="mx-auto max-w-2xl px-6 py-20"><h1 className="text-3xl font-bold">Lab unavailable</h1><p className="mt-3 text-[#716b67]">This lab is not available yet.</p><Link to="/" className={`${theme.secondary} mt-6`}>Back to labs</Link></main></div>
-  const stage = lab.stages.find(item => item.id === stageId) || lab.stages[0]
-  // The scene loads asynchronously; poll the report until parts appear, and refresh when the stage changes.
+  // Report comes from the print-ready STLs (or, without them, the scene once it has loaded); refresh on stage/view change.
   const [report, setReport] = useState(null)
   useEffect(() => {
-    let tries = 0, timer
-    const tick = () => {
-      try { const r = getPrintReport(); setReport(r); if (r.parts.length === 0 && tries++ < 40) timer = setTimeout(tick, 250) }
-      catch { if (tries++ < 40) timer = setTimeout(tick, 250) }
+    let tries = 0, timer, alive = true
+    const tick = async () => {
+      try { const r = await getPrintReport(); if (!alive) return; setReport(r); if (r.parts.length === 0 && tries++ < 40) timer = setTimeout(tick, 250) }
+      catch { if (alive && tries++ < 40) timer = setTimeout(tick, 250) }
     }
     tick()
-    return () => clearTimeout(timer)
+    return () => { alive = false; clearTimeout(timer) }
   }, [stageId, cutaway])
+  if (!lab || lab.comingSoon) return <div className={theme.page}><Header/><main className="mx-auto max-w-2xl px-6 py-20"><h1 className="text-3xl font-bold">Lab unavailable</h1><p className="mt-3 text-[#716b67]">This lab is not available yet.</p><Link to="/" className={`${theme.secondary} mt-6`}>Back to labs</Link></main></div>
+  const stage = lab.stages.find(item => item.id === stageId) || lab.stages[0]
   const studentUrl = learnUrl()
   async function handleDownload() {
     if (downloadState === 'pending') return

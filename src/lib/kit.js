@@ -6,7 +6,7 @@ import { useLabStore } from '@/store/labStore'
 import { getLab, getStage, getPart, ajccTable } from '@/data/labs'
 import { getSceneRoot } from '@/lib/sceneRegistry'
 import { learnUrl } from '@/lib/share'
-import { partReport, summarise, PRINT_ASSUMPTIONS } from '@/lib/printReport'
+import { partReport, volumeReport, stlVolumeCm3, summarise, PRINT_ASSUMPTIONS } from '@/lib/printReport'
 import { generateLesson } from '@/ai/gemini'
 
 const CM_TO_MM = 10
@@ -64,9 +64,14 @@ function mergeGeometries(list) {
 }
 
 // ---- report ----
-export function getPrintReport() {
-  const { labId } = useLabStore.getState()
-  const parts = collectParts().map((m) => partReport(m, getPart(labId, m.name)?.name ?? m.name))
+// Prefer the print-ready STLs (what actually goes in the kit: e.g. whole kits print the vessels fused
+// to the kidney body); fall back to the live scene meshes only when there are no print files.
+export async function getPrintReport(ready) {
+  const { labId, stageId, cutaway } = useLabStore.getState()
+  if (ready === undefined) ready = await printReadyParts(labId, stageId, cutaway).catch(() => null)
+  const parts = ready
+    ? ready.map((e) => volumeReport(e.part, getPart(labId, e.part)?.name ?? e.part, stlVolumeCm3(e.data)))
+    : collectParts().map((m) => partReport(m, getPart(labId, m.name)?.name ?? m.name))
   return summarise(parts)
 }
 
@@ -93,7 +98,7 @@ async function kitCardPDF({ lab, stage, cfg, report, lesson, qrDataUrl, listed =
     supported.length ? `Supports touching the build plate: ${supported.join(', ')}. Everything else prints without supports.` : 'No supports needed.',
     cfg.cutaway === 'coronal'
       ? 'Coronal kit: the cortex prints cut-face up; each inlay (pyramids, sinus fat, collecting system, artery, ureter, tumour) prints cut-face down and drops into its pocket.'
-      : 'Removable parts press-fit by hand: the tumour lifts out along its keyed pegs; vessels and pelvis plug into the hilum.',
+      : 'The renal vessels and ureter print fused to the kidney body. Removable parts (the tumour, plus the vein thrombus at T3a) press-fit by hand; the tumour lifts out along its keyed pegs.',
     'Mating clearance is 0.25 mm. Print each part in a different colour for the clearest model. Label tiles: notch count = part number.',
   ]
   for (const line of how) y = wrap(doc, '• ' + line, margin, y, W - 2 * margin) + 1
@@ -130,7 +135,17 @@ function printManifest() {
   if (!manifestPromise) manifestPromise = fetch('/models/print/manifest.json').then((r) => (r.ok ? r.json() : null)).catch(() => null)
   return manifestPromise
 }
-async function printReadyParts(labId, stageId, cutaway) {
+const readyCache = new Map()
+function printReadyParts(labId, stageId, cutaway) {
+  const key = `${labId}_${stageId}_${cutaway}`
+  if (!readyCache.has(key)) {
+    const p = loadPrintReadyParts(labId, stageId, cutaway)
+    p.catch(() => readyCache.delete(key))
+    readyCache.set(key, p)
+  }
+  return readyCache.get(key)
+}
+async function loadPrintReadyParts(labId, stageId, cutaway) {
   const manifest = await printManifest()
   const entries = manifest?.[`${stageId}_${cutaway === 'coronal' ? 'coronal' : 'full'}`]
   if (!entries || labId !== 'kidney') return null
@@ -161,7 +176,7 @@ export async function downloadKit({ includeLesson = true } = {}) {
   listed.forEach((p, i) => stl.file(`${String(i + 1).padStart(2, '0')}_${p.name}.stl`, p.data))
   listed.forEach((p, i) => stl.file(`label_${String(i + 1).padStart(2, '0')}_${p.name}.stl`, labelTile(i)))
 
-  const report = getPrintReport()
+  const report = await getPrintReport(ready)
   let lesson = null
   if (includeLesson) { try { lesson = await generateLesson() } catch (e) { console.warn('Lesson generation skipped:', e) } }
 
@@ -179,7 +194,7 @@ export async function downloadKit({ includeLesson = true } = {}) {
   const blob = await zip.generateAsync({ type: 'blob' })
   const a = document.createElement('a')
   a.href = URL.createObjectURL(blob)
-  a.download = `tactilelab_${lab.id}_${stage.id}.zip`
+  a.download = `tactilelab_${lab.id}_${stage.id}${cfg.cutaway === 'coronal' ? '_coronal' : ''}.zip`
   document.body.appendChild(a); a.click(); a.remove()
   setTimeout(() => URL.revokeObjectURL(a.href), 5000)
 }
