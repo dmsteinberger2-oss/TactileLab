@@ -1,0 +1,18 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Figtree", ui-sans-serif, system-ui, sans-serif;
+  --color-bench: #eef1f3;      /* page ground: clean lab bench */
+  --color-paper: #ffffff;      /* panels */
+  --color-ink: #16212b;        /* text */
+  --color-ink-soft: #5b6a77;   /* secondary text */
+  --color-line: #d7dde2;       /* hairlines */
+  --color-teal: #0f766e;       /* interactive: chips, buttons, selected part */
+  --color-teal-soft: #d8efec;
+  --color-lesion: #b42318;     /* reserved for pathology only */
+  --color-lesion-soft: #f8dcd8;
+}
+
+html, body, #root { height: 100%; }
+body { background: var(--color-bench); color: var(--color-ink); font-family: var(--font-sans); }
+canvas { touch-action: none; }

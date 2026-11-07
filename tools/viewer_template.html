@@ -1,0 +1,331 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>TactileLab kidney models</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  color-scheme: light;
+  --bg: #eef1f3; --panel: #ffffff; --ink: #16212b; --ink-soft: #5b6a77; --line: #d7dde2;
+  --accent: #0f766e; --accent-ink: #ffffff; --accent-soft: #d8efec; --stage: #e6eaed;
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #12181d; --panel: #1b232a; --ink: #e8edf1; --ink-soft: #9aa8b4; --line: #2c3740;
+    --accent: #2bb3a6; --accent-ink: #0b1a18; --accent-soft: #163b38; --stage: #161d23;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #12181d; --panel: #1b232a; --ink: #e8edf1; --ink-soft: #9aa8b4; --line: #2c3740;
+  --accent: #2bb3a6; --accent-ink: #0b1a18; --accent-soft: #163b38; --stage: #161d23;
+}
+*, *::before, *::after { box-sizing: inherit; }
+html, body { height: 100%; margin: 0; }
+body { background: var(--bg); color: var(--ink); font-family: "Figtree", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; }
+.app { display: grid; grid-template-columns: minmax(0, 1fr) 360px; height: 100%; }
+.stage { position: relative; background: var(--stage); min-height: 0; }
+#gl { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; }
+.hint { position: absolute; left: 16px; bottom: 16px; font-size: 13px; color: var(--ink-soft); background: color-mix(in srgb, var(--panel) 85%, transparent); padding: 6px 12px; border-radius: 999px; pointer-events: none; }
+.label { position: absolute; transform: translate(-50%, -130%); background: var(--ink); color: var(--bg); font-size: 12px; font-weight: 600; padding: 4px 9px; border-radius: 6px; white-space: nowrap; pointer-events: none; display: none; }
+.loading { position: absolute; inset: 0; display: grid; place-items: center; color: var(--ink-soft); font-size: 14px; }
+aside { background: var(--panel); border-left: 1px solid var(--line); padding: 24px 22px; overflow-y: auto; display: flex; flex-direction: column; gap: 22px; }
+h1 { font-size: 22px; line-height: 1.15; margin: 0; letter-spacing: -0.02em; }
+.sub { margin: 6px 0 0; color: var(--ink-soft); font-size: 14px; line-height: 1.45; }
+.group-title { font-size: 13px; font-weight: 600; margin: 0 0 8px; color: var(--ink-soft); }
+.seg { display: flex; flex-wrap: wrap; gap: 6px; }
+.seg button, .toggle { font: inherit; font-size: 14px; font-weight: 600; border: 1px solid var(--line); background: var(--panel); color: var(--ink); border-radius: 10px; padding: 9px 12px; cursor: pointer; flex: 1 1 auto; min-height: 42px; }
+.seg button[aria-pressed="true"], .toggle[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.seg button:focus-visible, .toggle:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.row { display: flex; gap: 8px; }
+.card { border: 1px solid var(--line); border-radius: 12px; padding: 14px 15px; font-size: 14px; line-height: 1.5; }
+.card strong { display: block; font-size: 15px; margin-bottom: 4px; }
+.card.part { background: var(--accent-soft); border-color: transparent; }
+.legend { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 10px; font-size: 13px; color: var(--ink-soft); }
+.legend span { display: flex; align-items: center; gap: 7px; }
+.legend i { width: 11px; height: 11px; border-radius: 3px; flex: none; }
+.foot { margin-top: auto; font-size: 12px; color: var(--ink-soft); line-height: 1.5; }
+@media (max-width: 820px) {
+  .app { grid-template-columns: 1fr; grid-template-rows: 58vh auto; height: auto; min-height: 100%; }
+  aside { border-left: 0; border-top: 1px solid var(--line); }
+}
+@media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto; } }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="stage">
+    <canvas id="gl" aria-label="Interactive 3D kidney model"></canvas>
+    <div class="label" id="label"></div>
+    <div class="loading" id="loading">Loading models…</div>
+    <div class="hint" id="hint">Drag to rotate, pinch or scroll to zoom, tap a part</div>
+  </div>
+  <aside>
+    <div>
+      <h1>Kidney tumour kit</h1>
+      <p class="sub">Clear cell renal cell carcinoma at four AJCC T stages, with a normal kidney for comparison. Every part is printable.</p>
+    </div>
+    <div>
+      <p class="group-title">Stage</p>
+      <div class="seg" id="stages" role="group" aria-label="Stage"></div>
+    </div>
+    <div>
+      <p class="group-title">View</p>
+      <div class="seg" id="views" role="group" aria-label="View">
+        <button data-view="full" aria-pressed="true">Whole kidney</button>
+        <button data-view="coronal" aria-pressed="false">Coronal section</button>
+      </div>
+    </div>
+    <div class="row">
+      <button class="toggle" id="explode" aria-pressed="false">Take apart</button>
+      <button class="toggle" id="reset" aria-pressed="false">Reset view</button>
+    </div>
+    <div class="card" id="readout"></div>
+    <div class="card part" id="partcard" hidden></div>
+    <div>
+      <p class="group-title">Parts in this view</p>
+      <div class="legend" id="legend"></div>
+    </div>
+    <p class="foot">TactileLab, HackRPI 2026. Staging per AJCC Cancer Staging Manual, 8th edition. Models generated procedurally; CC BY 4.0.</p>
+  </aside>
+</div>
+
+<script type="application/json" id="tl-meta">__META__</script>
+<script type="application/json" id="tl-manifest">__MANIFEST__</script>
+<script type="application/octet-stream" id="tl-data">__DATA__</script>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.147.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/controls/OrbitControls.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/environments/RoomEnvironment.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/utils/BufferGeometryUtils.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
+<script>
+(async function () {
+  const META = JSON.parse(document.getElementById('tl-meta').textContent)
+  const MAN = JSON.parse(document.getElementById('tl-manifest').textContent)
+  const PARTS = Object.fromEntries(META.parts.map((p) => [p.id, p]))
+  const BASE = new Set(['kidney_body', 'renal_cortex'])
+
+  // ---------- data ----------
+  async function inflate(bytes) {
+    if ('DecompressionStream' in window) {
+      try {
+        const s = new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip'))
+        return new Uint8Array(await new Response(s).arrayBuffer())
+      } catch (e) { /* fall back */ }
+    }
+    return pako.ungzip(bytes)
+  }
+  const b64 = document.getElementById('tl-data').textContent.trim()
+  const bin = Uint8Array.from(atob(b64), (c) => c.charCodeAt(0))
+  const raw = (await inflate(bin)).buffer
+  const lo = MAN.lo, span = MAN.hi.map((h, i) => h - lo[i])
+
+  const geoCache = new Map()
+  function geometry(rec) {
+    if (geoCache.has(rec.id)) return geoCache.get(rec.id)
+    const q = new Uint16Array(raw, rec.pos, rec.vcount * 3)
+    const pos = new Float32Array(rec.vcount * 3)
+    for (let i = 0; i < pos.length; i++) pos[i] = (lo[i % 3] + (q[i] / 65535) * span[i % 3]) * 0.1   // mm -> cm
+    let g = new THREE.BufferGeometry()
+    g.setAttribute('position', new THREE.BufferAttribute(pos, 3))
+    if (rec.col !== undefined) g.setAttribute('color', new THREE.BufferAttribute(new Uint8Array(raw, rec.col, rec.vcount * 3), 3, true))
+    g.setIndex(new THREE.BufferAttribute(rec.i32 ? new Uint32Array(raw, rec.idx, rec.icount) : new Uint16Array(raw, rec.idx, rec.icount), 1))
+    g = THREE.BufferGeometryUtils.toCreasedNormals(g, THREE.MathUtils.degToRad(38))
+    g.computeBoundingBox(); g.computeBoundingSphere()
+    geoCache.set(rec.id, g)
+    return g
+  }
+
+  // ---------- three ----------
+  THREE.ColorManagement.legacyMode = false
+  const canvas = document.getElementById('gl')
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true })
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+  renderer.outputEncoding = THREE.sRGBEncoding
+  renderer.toneMapping = THREE.ACESFilmicToneMapping
+  renderer.toneMappingExposure = 1.05
+  renderer.shadowMap.enabled = true
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap
+  const scene = new THREE.Scene()
+  const pmrem = new THREE.PMREMGenerator(renderer)
+  scene.environment = pmrem.fromScene(new THREE.RoomEnvironment(), 0.04).texture
+  const camera = new THREE.PerspectiveCamera(32, 1, 0.1, 500)
+  camera.position.set(4, 3, 30)
+  const controls = new THREE.OrbitControls(camera, canvas)
+  controls.enableDamping = true; controls.dampingFactor = 0.08; controls.minDistance = 6; controls.maxDistance = 70
+
+  scene.add(new THREE.HemisphereLight(0xffffff, 0xc9bdb4, 0.55))
+  const key = new THREE.DirectionalLight(0xffffff, 1.7); key.position.set(8, 14, 12); key.castShadow = true
+  key.shadow.mapSize.set(2048, 2048); key.shadow.bias = -0.0004
+  Object.assign(key.shadow.camera, { left: -14, right: 14, top: 14, bottom: -14, near: 1, far: 60 })
+  scene.add(key)
+  const rim = new THREE.DirectionalLight(0xdfe8ff, 0.6); rim.position.set(-12, 4, -6); scene.add(rim)
+
+  // soft ground shadow
+  const shadowTex = (() => {
+    const c = document.createElement('canvas'); c.width = c.height = 256
+    const x = c.getContext('2d'); const gr = x.createRadialGradient(128, 128, 0, 128, 128, 128)
+    gr.addColorStop(0, 'rgba(0,0,0,0.32)'); gr.addColorStop(1, 'rgba(0,0,0,0)')
+    x.fillStyle = gr; x.fillRect(0, 0, 256, 256)
+    return new THREE.CanvasTexture(c)
+  })()
+  const ground = new THREE.Mesh(new THREE.PlaneGeometry(26, 26), new THREE.MeshBasicMaterial({ map: shadowTex, transparent: true, depthWrite: false }))
+  ground.rotation.x = -Math.PI / 2; scene.add(ground)
+
+  const root = new THREE.Group(); scene.add(root)
+  let items = []            // { mesh, part, dir, dist, offset, target }
+  let state = { stage: 't1b', view: 'full', exploded: false, selected: null }
+
+  function material(part, hasColor) {
+    const p = PARTS[part]
+    return new THREE.MeshPhysicalMaterial({
+      color: new THREE.Color(p ? p.color : '#999999'), vertexColors: hasColor,
+      roughness: part === 'renal_sinus' ? 0.55 : 0.42, metalness: 0, clearcoat: 0.35, clearcoatRoughness: 0.4,
+      sheen: 0.25, sheenRoughness: 0.6, sheenColor: new THREE.Color('#ffffff'), envMapIntensity: 0.6,
+    })
+  }
+
+  function build() {
+    root.clear(); items = []
+    const key = `${state.stage}_${state.view}`
+    const coronal = state.view === 'coronal'
+    for (const id of MAN.variants[key]) {
+      const rec = MAN.meshes[id]
+      const g = geometry(rec)
+      const m = new THREE.Mesh(g, material(rec.part, rec.col !== undefined))
+      m.castShadow = true; m.receiveShadow = true; m.userData.part = rec.part
+      const c = g.boundingBox.getCenter(new THREE.Vector3())
+      let dir
+      if (BASE.has(rec.part)) dir = new THREE.Vector3()
+      else if (coronal) dir = new THREE.Vector3(c.x * 0.06, c.y * 0.04, 1).normalize()
+      else dir = c.clone().normalize()
+      root.add(m)
+      items.push({ mesh: m, part: rec.part, dir, dist: coronal ? 2.2 : 3, offset: 0, target: state.exploded && !BASE.has(rec.part) ? 1 : 0, center: c })
+    }
+    const box = new THREE.Box3().setFromObject(root)
+    ground.position.y = box.min.y - 0.35
+    if (state.selected && !items.some((i) => i.part === state.selected)) select(null)
+    renderLegend(); renderReadout()
+  }
+
+  function fit(animate) {
+    const box = new THREE.Box3().setFromObject(root)
+    const sphere = box.getBoundingSphere(new THREE.Sphere())
+    const dist = sphere.radius / Math.sin(THREE.MathUtils.degToRad(camera.fov / 2)) * 1.08
+    const dirv = camera.position.clone().sub(controls.target).normalize()
+    const goalPos = sphere.center.clone().add(dirv.multiplyScalar(dist))
+    if (!animate) { controls.target.copy(sphere.center); camera.position.copy(goalPos); return }
+    tween = { t: 0, fromPos: camera.position.clone(), toPos: goalPos, fromTgt: controls.target.clone(), toTgt: sphere.center.clone() }
+  }
+  let tween = null
+
+  // ---------- UI ----------
+  const stagesEl = document.getElementById('stages')
+  for (const s of META.stages) {
+    const b = document.createElement('button'); b.textContent = s.label; b.dataset.stage = s.id
+    b.setAttribute('aria-pressed', String(s.id === state.stage))
+    b.onclick = () => { state.stage = s.id; syncButtons(); build(); fit(true) }
+    stagesEl.appendChild(b)
+  }
+  document.querySelectorAll('#views button').forEach((b) => b.onclick = () => { state.view = b.dataset.view; syncButtons(); build(); fit(true) })
+  const explodeBtn = document.getElementById('explode')
+  explodeBtn.onclick = () => { state.exploded = !state.exploded; items.forEach((i) => { i.target = state.exploded && !BASE.has(i.part) ? 1 : 0 }); syncButtons() }
+  document.getElementById('reset').onclick = () => {
+    state.exploded = false; items.forEach((i) => { i.target = 0 }); select(null)
+    camera.position.set(4, 3, 30).add(controls.target.clone().setZ(0)); fit(true); syncButtons()
+  }
+  function syncButtons() {
+    stagesEl.querySelectorAll('button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.stage === state.stage)))
+    document.querySelectorAll('#views button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.view === state.view)))
+    explodeBtn.setAttribute('aria-pressed', String(state.exploded))
+    explodeBtn.textContent = state.exploded ? 'Put together' : 'Take apart'
+  }
+  function renderReadout() {
+    const s = META.stages.find((x) => x.id === state.stage)
+    document.getElementById('readout').innerHTML = `<strong>${s.label === 'Normal' ? 'Normal kidney' : 'Stage ' + s.label}</strong>${s.readout}`
+  }
+  function renderLegend() {
+    const seen = new Set(); const el = document.getElementById('legend'); el.innerHTML = ''
+    for (const i of items) {
+      if (seen.has(i.part)) continue; seen.add(i.part)
+      const p = PARTS[i.part]; const sp = document.createElement('span')
+      sp.innerHTML = `<i style="background:${p.color}"></i>${p.name}`; el.appendChild(sp)
+    }
+  }
+  const labelEl = document.getElementById('label'), partCard = document.getElementById('partcard')
+  function select(part) {
+    state.selected = part
+    items.forEach((i) => { i.mesh.material.emissive.set(i.part === part ? '#0f766e' : '#000000'); i.mesh.material.emissiveIntensity = i.part === part ? 0.28 : 0 })
+    if (!part) { partCard.hidden = true; labelEl.style.display = 'none'; return }
+    const p = PARTS[part]
+    partCard.hidden = false; partCard.innerHTML = `<strong>${p.name}</strong>${p.tooltip}`
+    labelEl.textContent = p.name; labelEl.style.display = 'block'
+  }
+
+  // tap to select / lift (ignore drags)
+  const ray = new THREE.Raycaster(), ndc = new THREE.Vector2(); let down = null
+  canvas.addEventListener('pointerdown', (e) => { down = [e.clientX, e.clientY] })
+  canvas.addEventListener('pointerup', (e) => {
+    if (!down || Math.hypot(e.clientX - down[0], e.clientY - down[1]) > 6) return
+    const r = canvas.getBoundingClientRect()
+    ndc.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1)
+    ray.setFromCamera(ndc, camera)
+    const hit = ray.intersectObjects(root.children, false)[0]
+    if (!hit) { select(null); return }
+    const part = hit.object.userData.part
+    const it = items.find((i) => i.part === part)
+    if (state.selected === part && PARTS[part].removable) it.target = it.target ? 0 : 1
+    else if (PARTS[part].removable && !state.exploded) it.target = 1
+    select(part)
+  })
+
+  // ---------- loop ----------
+  function resize() {
+    const w = canvas.clientWidth, h = canvas.clientHeight
+    if (canvas.width !== Math.round(w * renderer.getPixelRatio()) || canvas.height !== Math.round(h * renderer.getPixelRatio())) {
+      renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix()
+    }
+  }
+  const v = new THREE.Vector3()
+  function frame() {
+    resize()
+    for (const i of items) {
+      i.offset += (i.target - i.offset) * 0.14
+      i.mesh.position.copy(i.dir).multiplyScalar(i.offset * i.dist)
+    }
+    if (tween) {
+      tween.t = Math.min(1, tween.t + 0.06); const k = 1 - Math.pow(1 - tween.t, 3)
+      camera.position.lerpVectors(tween.fromPos, tween.toPos, k); controls.target.lerpVectors(tween.fromTgt, tween.toTgt, k)
+      if (tween.t >= 1) tween = null
+    }
+    controls.update()
+    if (state.selected) {
+      const it = items.find((i) => i.part === state.selected)
+      if (it) {
+        v.copy(it.center).add(it.mesh.position).project(camera)
+        labelEl.style.left = ((v.x + 1) / 2 * canvas.clientWidth) + 'px'
+        labelEl.style.top = ((1 - v.y) / 2 * canvas.clientHeight) + 'px'
+      }
+    }
+    renderer.render(scene, camera)
+    requestAnimationFrame(frame)
+  }
+
+  build(); resize(); fit(false)
+  document.getElementById('loading').remove()
+  requestAnimationFrame(frame)
+})().catch((e) => {
+  const l = document.getElementById('loading'); if (l) l.textContent = 'Could not load the models: ' + e.message
+  console.error(e)
+})
+</script>
+</body>
+</html>

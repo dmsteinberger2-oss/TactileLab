@@ -1,0 +1,374 @@
+{
+ "normal_full": [
+  {
+   "part": "kidney_body",
+   "file": "kidney_normal_full/01_kidney_body.stl",
+   "supports": true,
+   "watertight": true,
+   "faces": 51114,
+   "volume_cm3": 106.14
+  }
+ ],
+ "normal_coronal": [
+  {
+   "part": "renal_cortex",
+   "file": "kidney_normal_coronal/01_renal_cortex.stl",
+   "supports": true,
+   "watertight": true,
+   "faces": 26574,
+   "volume_cm3": 38.31
+  },
+  {
+   "part": "renal_medulla",
+   "file": "kidney_normal_coronal/02_renal_medulla.stl",
+   "supports": false,
+   "watertight": true,
+   "faces": 12000,
+   "volume_cm3": 7.1
+  },
+  {
+   "part": "renal_sinus",
+   "file": "kidney_normal_coronal/03_renal_sinus.stl",
+   "supports": false,
+   "watertight": true,
+   "faces": 9418,
+   "volume_cm3": 6.0
+  },
+  {
+   "part": "renal_pelvis",
+   "file": "kidney_normal_coronal/04_renal_pelvis.stl",
+   "supports": false,
+   "watertight": true,
+   "faces": 12000,
+   "volume_cm3": 1.58
+  },
+  {
+   "part": "renal_artery",
+   "file": "kidney_normal_coronal/05_renal_artery.stl",
+   "supports": false,
+   "watertight": true,
+   "faces": 4496,
+   "volume_cm3": 0.27
+  },
+  {
+   "part": "ureter",
+   "file": "kidney_normal_coronal/06_ureter.stl",
+   "supports": false,
+   "watertight": true,
+   "faces": 3834,
+   "volume_cm3": 0.59
+  }
+ ],
+ "t1a_full": [
+  {
+   "part": "kidney_body",
+   "file": "kidney_t1a_full/01_kidney_body.stl",
+   "supports": true,
+   "watertight": true,
+   "faces": 50894,
+   "volume_cm3": 103.38
+  },
+  {
+   "part": "tumor",
+   "file": "kidney_t1a_full/02_tumor.stl",
+   "supports": true,
+   "watertight": true,
+   "faces": 11238,
+   "volume_cm3": 12.47
+  }
+ ],
+ "t1a_coronal": [
+  {
+   "part": "renal_cortex",
+   "file": "kidney_t1a_coronal/01_renal_cortex.stl",
+   "supports": true,
+   "watertight": true,
+   "faces": 28168,
+   "volume_cm3": 36.82
+  },
+  {
+   "part": "renal_medulla",
+   "file": "kidney_t1a_coronal/02_renal_medulla.stl",
+   "supports": false,
+   "watertight": true,
+   "faces": 12000,
+   "volume_cm3": 6.93
+  },
+  {
+   "part": "renal_sinus",
+   "file": "kidney_t1a_coronal/03_renal_sinus.stl",
+   "supports": false,
+   "watertight": true,
+   "faces": 9418,
+   "volume_cm3": 6.0
+  },
+  {
+   "part": "renal_pelvis",
+   "file": "kidney_t1a_coronal/04_renal_pelvis.stl",
+   "supports": false,
+   "watertight": true,
+   "faces": 12000,
+   "volume_cm3": 1.58
+  },
+  {
+   "part": "renal_artery",
+   "file": "kidney_t1a_coronal/05_renal_artery.stl",
+   "supports": false,
+   "watertight": true,
+   "faces": 4496,
+   "volume_cm3": 0.27
+  },
+  {
+   "part": "ureter",
+   "file": "kidney_t1a_coronal/06_ureter.stl",
+   "supports": false,
+   "watertight": true,
+   "faces": 3834,
+   "volume_cm3": 0.59
+  },
+  {
+   "part": "tumor",
+   "file": "kidney_t1a_coronal/07_tumor.stl",
+   "supports": false,
+   "watertight": true,
+   "faces": 18756,
+   "volume_cm3": 6.34
+  }
+ ],
+ "t1b_full": [
+  {
+   "part": "kidney_body",
+   "file": "kidney_t1b_full/01_kidney_body.stl",
+   "supports": true,
+   "watertight": true,
+   "faces": 48340,
+   "volume_cm3": 94.24
+  },
+  {
+   "part": "tumor",
+   "file": "kidney_t1b_full/02_tumor.stl",
+   "supports": true,
+   "watertight": true,
+   "faces": 16058,
+   "volume_cm3": 75.9
+  }
+ ],
+ "t1b_coronal": [
+  {
+   "part": "renal_cortex",
+   "file": "kidney_t1b_coronal/01_renal_cortex.stl",
+   "supports": true,
+   "watertight": true,
+   "faces": 24816,
+   "volume_cm3": 32.79
+  },
+  {
+   "part": "renal_medulla",
+   "file": "kidney_t1b_coronal/02_renal_medulla.stl",
+   "supports": false,
+   "watertight": true,
+   "faces": 12000,
+   "volume_cm3": 5.86
+  },
+  {
+   "part": "renal_sinus",
+   "file": "kidney_t1b_coronal/03_renal_sinus.stl",
+   "supports": false,
+   "watertight": true,
+   "faces": 9418,
+   "volume_cm3": 6.0
+  },
+  {
+   "part": "renal_pelvis",
+   "file": "kidney_t1b_coronal/04_renal_pelvis.stl",
+   "supports": false,
+   "watertight": true,
+   "faces": 12000,
+   "volume_cm3": 1.58
+  },
+  {
+   "part": "renal_artery",
+   "file": "kidney_t1b_coronal/05_renal_artery.stl",
+   "supports": false,
+   "watertight": true,
+   "faces": 4496,
+   "volume_cm3": 0.27
+  },
+  {
+   "part": "ureter",
+   "file": "kidney_t1b_coronal/06_ureter.stl",
+   "supports": false,
+   "watertight": true,
+   "faces": 3834,
+   "volume_cm3": 0.59
+  },
+  {
+   "part": "tumor",
+   "file": "kidney_t1b_coronal/07_tumor.stl",
+   "supports": false,
+   "watertight": true,
+   "faces": 13148,
+   "volume_cm3": 38.71
+  }
+ ],
+ "t2a_full": [
+  {
+   "part": "kidney_body",
+   "file": "kidney_t2a_full/01_kidney_body.stl",
+   "supports": true,
+   "watertight": true,
+   "faces": 47342,
+   "volume_cm3": 89.22
+  },
+  {
+   "part": "tumor",
+   "file": "kidney_t2a_full/02_tumor.stl",
+   "supports": true,
+   "watertight": true,
+   "faces": 19852,
+   "volume_cm3": 267.26
+  }
+ ],
+ "t2a_coronal": [
+  {
+   "part": "renal_cortex",
+   "file": "kidney_t2a_coronal/01_renal_cortex.stl",
+   "supports": true,
+   "watertight": true,
+   "faces": 21786,
+   "volume_cm3": 30.11
+  },
+  {
+   "part": "renal_medulla",
+   "file": "kidney_t2a_coronal/02_renal_medulla.stl",
+   "supports": false,
+   "watertight": true,
+   "faces": 11928,
+   "volume_cm3": 5.62
+  },
+  {
+   "part": "renal_sinus",
+   "file": "kidney_t2a_coronal/03_renal_sinus.stl",
+   "supports": false,
+   "watertight": true,
+   "faces": 9284,
+   "volume_cm3": 5.98
+  },
+  {
+   "part": "renal_pelvis",
+   "file": "kidney_t2a_coronal/04_renal_pelvis.stl",
+   "supports": false,
+   "watertight": true,
+   "faces": 12000,
+   "volume_cm3": 1.58
+  },
+  {
+   "part": "renal_artery",
+   "file": "kidney_t2a_coronal/05_renal_artery.stl",
+   "supports": false,
+   "watertight": true,
+   "faces": 4496,
+   "volume_cm3": 0.27
+  },
+  {
+   "part": "ureter",
+   "file": "kidney_t2a_coronal/06_ureter.stl",
+   "supports": false,
+   "watertight": true,
+   "faces": 3834,
+   "volume_cm3": 0.59
+  },
+  {
+   "part": "tumor",
+   "file": "kidney_t2a_coronal/07_tumor.stl",
+   "supports": false,
+   "watertight": true,
+   "faces": 17222,
+   "volume_cm3": 134.1
+  }
+ ],
+ "t3a_full": [
+  {
+   "part": "vein_thrombus",
+   "file": "kidney_t3a_full/01_vein_thrombus.stl",
+   "supports": false,
+   "watertight": true,
+   "faces": 5000,
+   "volume_cm3": 0.47
+  },
+  {
+   "part": "kidney_body",
+   "file": "kidney_t3a_full/02_kidney_body.stl",
+   "supports": true,
+   "watertight": true,
+   "faces": 50836,
+   "volume_cm3": 98.47
+  },
+  {
+   "part": "tumor",
+   "file": "kidney_t3a_full/03_tumor.stl",
+   "supports": true,
+   "watertight": true,
+   "faces": 15926,
+   "volume_cm3": 101.26
+  }
+ ],
+ "t3a_coronal": [
+  {
+   "part": "renal_cortex",
+   "file": "kidney_t3a_coronal/01_renal_cortex.stl",
+   "supports": true,
+   "watertight": true,
+   "faces": 25492,
+   "volume_cm3": 34.79
+  },
+  {
+   "part": "renal_medulla",
+   "file": "kidney_t3a_coronal/02_renal_medulla.stl",
+   "supports": false,
+   "watertight": true,
+   "faces": 12000,
+   "volume_cm3": 6.33
+  },
+  {
+   "part": "renal_sinus",
+   "file": "kidney_t3a_coronal/03_renal_sinus.stl",
+   "supports": false,
+   "watertight": true,
+   "faces": 9242,
+   "volume_cm3": 5.85
+  },
+  {
+   "part": "renal_pelvis",
+   "file": "kidney_t3a_coronal/04_renal_pelvis.stl",
+   "supports": false,
+   "watertight": true,
+   "faces": 12000,
+   "volume_cm3": 1.55
+  },
+  {
+   "part": "renal_artery",
+   "file": "kidney_t3a_coronal/05_renal_artery.stl",
+   "supports": false,
+   "watertight": true,
+   "faces": 4496,
+   "volume_cm3": 0.27
+  },
+  {
+   "part": "ureter",
+   "file": "kidney_t3a_coronal/06_ureter.stl",
+   "supports": false,
+   "watertight": true,
+   "faces": 3834,
+   "volume_cm3": 0.59
+  },
+  {
+   "part": "tumor",
+   "file": "kidney_t3a_coronal/07_tumor.stl",
+   "supports": false,
+   "watertight": true,
+   "faces": 13088,
+   "volume_cm3": 50.64
+  }
+ ]
+}

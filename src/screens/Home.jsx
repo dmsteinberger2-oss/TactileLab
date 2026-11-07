@@ -1,0 +1,18 @@
+import { Link } from 'react-router-dom'
+import { labs } from '@/data/labs'
+import ModelCanvas from '@/scenes/ModelCanvas'
+import { Header, Icon, theme } from '@/components/LabUI'
+
+export default function Home() {
+  const allLabs = Object.values(labs)
+  return <div className={theme.page}><Header/><main className="mx-auto max-w-[1440px] px-5 pb-16 pt-12 sm:px-8 sm:pt-16 lg:px-12">
+    <div className="relative overflow-hidden pb-12 sm:pb-16"><div aria-hidden="true" className="pointer-events-none absolute right-0 top-0 hidden h-48 w-80 rounded-full bg-[#e9eee3] opacity-60 blur-3xl lg:block"/><p className={`${theme.eyebrow} mb-4 text-[#c36756]`}>Anatomy, made tangible</p><h1 className="relative max-w-3xl text-4xl font-semibold leading-[1.05] tracking-[-0.055em] text-[#17243a] sm:text-6xl">Build an anatomy model<br className="hidden sm:block"/> that teaches.</h1><p className="relative mt-5 max-w-2xl text-base leading-relaxed text-[#68656a] sm:text-lg">Customizable, 3D-printable teaching kits for hands-on anatomy education.</p></div>
+    <div className="mb-5 flex items-center gap-5"><h2 className="shrink-0 text-2xl font-bold tracking-[-0.035em]">Choose a lab</h2><span className="h-px flex-1 bg-[#ded7d1]"/></div>
+    <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">{allLabs.map((lab, index) => {
+      const content = <><div className="relative flex h-full min-h-[260px] flex-col items-start p-7 sm:p-8">{lab.id === 'kidney' && !lab.comingSoon && <div aria-hidden="true" className="pointer-events-none absolute inset-y-4 right-0 w-[48%] overflow-hidden opacity-90"><ModelCanvas/></div>}<div className="relative z-10 flex h-full w-[55%] flex-1 flex-col items-start"><div className="mb-7 flex w-full items-start justify-between gap-3"><span className={`rounded-full px-3 py-1 text-xs font-bold ${lab.comingSoon ? 'bg-[#ece9e6] text-[#817d79]' : 'bg-[#f8e0da] text-[#ad4d3f]'}`}>{lab.name}</span><span className={`flex h-11 w-11 items-center justify-center rounded-2xl ${lab.comingSoon ? 'bg-[#f0edeb] text-[#a49c96]' : 'bg-[#f8e7e1] text-[#c86b5a]'}`}><Icon name="cube" className="h-6 w-6"/></span></div><h3 className="text-2xl font-bold tracking-[-0.04em] text-[#1a263a]">{lab.condition || lab.name}</h3>{lab.condition && <p className="mt-2 text-sm text-[#77716d]">{lab.name}</p>}<div className="mt-auto pt-8">{lab.comingSoon ? <span className="inline-flex rounded-lg bg-[#eeebe8] px-4 py-2 text-sm font-semibold text-[#8a8580]">Coming soon</span> : <span className="inline-flex items-center gap-2 text-sm font-bold text-[#b95747]">Open lab <Icon name="arrow" className="h-4 w-4"/></span>}</div></div></div></>
+      const cls = `${theme.card} overflow-hidden transition ${lab.comingSoon ? 'opacity-75' : 'hover:-translate-y-0.5 hover:border-[#de9a8d] hover:shadow-[0_12px_35px_rgba(75,52,45,0.07)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#b85040]'} ${index === 0 && !lab.comingSoon ? 'md:col-span-2 xl:col-span-2' : ''}`
+      return lab.comingSoon ? <article key={lab.id} className={cls} aria-label={`${lab.name}, coming soon`}>{content}</article> : <Link key={lab.id} to={`/lab/${encodeURIComponent(lab.id)}`} className={cls}>{content}</Link>
+    })}</div>
+    <div className="mt-10 flex flex-wrap gap-x-8 gap-y-4 text-sm font-medium text-[#706b68]"><span className="flex items-center gap-2"><Icon name="cube" className="h-5 w-5 text-[#d56d5b]"/>Choose a model</span><span className="flex items-center gap-2"><Icon name="layers" className="h-5 w-5 text-[#81947c]"/>Customize the anatomy</span><span className="flex items-center gap-2"><Icon name="print" className="h-5 w-5 text-[#d56d5b]"/>Print and teach</span></div>
+  </main></div>
+}
