@@ -16,6 +16,7 @@ from manifold3d import Manifold, Mesh as MMesh
 import fast_simplification
 sys.path.insert(0, os.path.dirname(__file__))
 import kidney_sdf as K   # SDF primitives, colours, meshing, orientation helpers
+import beauty as B       # painted section, adrenal, textured GLB
 
 SRC, OUT = sys.argv[1], sys.argv[2]
 STAGES = sys.argv[3].split(',') if len(sys.argv) > 3 else ['normal', 't1a', 't1b', 't2a', 't3a']
@@ -189,12 +190,18 @@ def colour_ctx(parts, z0):
     return {'pyrs': pyrs}
 
 # ---------------------------------------------------------------- build
-def build(stage, form, parts, kidney_m, kmesh, z0, centre):
-    """Returns (display meshes, print meshes, print specs)."""
+def build(stage, form, parts, kidney_m, kmesh, z0, centre, adr0=None, adr_n=None):
+    """Returns (display meshes, print meshes, print specs, section polygons)."""
     T = tumor_spec(stage, kmesh, z0) if stage in TUMORS else None
     tumor = cavity = None
     if T: tumor, cavity = build_tumor(T, kidney_m)
-    show, prn, specs = {}, {}, {}
+    show, prn, specs, polys = {}, {}, {}, {}
+    adr = None
+    if adr0 is not None:
+        adr = adr0
+        if T:   # the adrenal stays in place, indented where the mass presses against it
+            adr = adr0 - lobed(T, grow=0.8)
+            if T['root']: adr = adr - tumor
     if form == 'whole':
         body = kidney_m
         if T:
@@ -207,6 +214,8 @@ def build(stage, form, parts, kidney_m, kmesh, z0, centre):
             vein = vein - lumen
             show['vein_thrombus'] = prn['vein_thrombus'] = to_t(th); specs['vein_thrombus'] = ('as_is', None, False)
         show['kidney_body'] = to_t(body)
+        if adr is not None:
+            show['adrenal_gland'] = prn['adrenal_gland'] = to_t(adr); specs['adrenal_gland'] = ('as_is', None, True)
         show['renal_artery'] = parts['renal_artery']; show['renal_vein'] = to_t(vein); show['ureter'] = parts['ureter']
         # print: vessels branch inside the sinus, so they print fused to the kidney; the tumour lifts out
         fused = body + to_m(parts['renal_artery']) + vein + to_m(parts['ureter'])
@@ -222,23 +231,27 @@ def build(stage, form, parts, kidney_m, kmesh, z0, centre):
                 if len(hit.faces) and hit.volume > 1: print(f'   ! tumour intersects {v} ({hit.volume:.0f} mm3)')
     else:
         keep = halfspace(np.array([0, 0, z0]), [0, 0, 1])       # posterior half: z <= z0
-        for name in INTERNAL + ['renal_artery', 'renal_vein', 'ureter']:
-            m = to_m(parts[name])
+        full = {n: to_m(parts[n]) for n in INTERNAL + ['renal_artery', 'renal_vein', 'ureter']}
+        if adr is not None: full['adrenal_gland'] = adr
+        for name in list(full):
+            m = full[name]
             if cavity is not None and name in INTERNAL: m = m - cavity
+            polys[name] = B.section_polys(to_t(m), z0)
             h = to_t(m ^ keep)
             if len(h.faces) and h.volume > 20:
                 show[name] = prn[name] = h
                 specs[name] = ('as_is', None, True) if name == 'renal_cortex' else ('cut_down', None, False)
         if T:
             show['tumor'] = prn['tumor'] = to_t(tumor ^ keep); specs['tumor'] = ('cut_down', None, False)
-    return show, prn, specs
+            polys['tumor'] = B.section_polys(to_t(tumor), z0)
+    return show, prn, specs, polys
 
 def densify(t, max_edge):
     v, f = trimesh.remesh.subdivide_to_size(t.vertices, t.faces, max_edge=max_edge)[:2]
     t2 = trimesh.Trimesh(v, f, process=True)
     return t2 if t2.is_watertight else t
 
-DENSIFY = {'tumor': 1.5, 'renal_medulla': 1.0}
+DENSIFY = {'tumor': 1.5}
 
 if __name__ == '__main__':
     parts = load_parts()
@@ -248,11 +261,14 @@ if __name__ == '__main__':
     kmesh = to_t(kidney_m); centre = kmesh.bounds.mean(0)
     print('kidney union', len(kmesh.faces), 'faces, watertight', kmesh.is_watertight, 'extents', np.round(kmesh.extents, 1))
     ctx = colour_ctx(parts, z0)
+    adr0, adr_s, adr_n = B.adrenal(kmesh, z0, to_m, to_t, K.Grid, K.mesh_from, K.sd_ellipsoid, K.smin)
+    adr0 = adr0 - kidney_m
+    print('adrenal', round(adr0.volume() / 1000, 2), 'cm3')
     manifest_path = os.path.join(OUT, 'print', 'manifest.json'); os.makedirs(os.path.dirname(manifest_path), exist_ok=True)
     manifest = json.load(open(manifest_path)) if os.path.exists(manifest_path) else {}
     for stage in STAGES:
         for form in FORMS:
-            show, meshes, specs = build(stage, form, parts, kidney_m, kmesh, z0, centre)
+            show, meshes, specs, polys = build(stage, form, parts, kidney_m, kmesh, z0, centre, adr0, adr_n)
             K.Z0 = z0 if form == 'coronal' else 1e6
             key = f'{stage}_{"full" if form == "whole" else "coronal"}'
             # print files first (lighter meshes), then densify colour-carrying parts for the app
@@ -269,7 +285,14 @@ if __name__ == '__main__':
                                     faces=int(len(pm.faces)), volume_cm3=round(float(pm.volume) / 1000, 2)))
             manifest[key] = entries
             app = {n: (densify(decimate(m, 30000), DENSIFY[n]) if n in DENSIFY else decimate(m, {'kidney_body': 60000, 'renal_cortex': 50000}.get(n, 20000))) for n, m in show.items()}
-            K.to_glb(app, os.path.join(OUT, f'kidney_{stage}{"" if form == "whole" else "_coronal"}.glb'), ctx)
+            colour_fn = lambda n, V: K.vertex_colour(n, V, ctx)
+            glb_path = os.path.join(OUT, f'kidney_{stage}{"" if form == "whole" else "_coronal"}.glb')
+            if form == 'coronal':
+                tex, tb = B.paint_section(polys)
+                tex.save(os.path.join(OUT, f'section_{stage}.jpg'), quality=90)
+                B.write_glb(glb_path, B.export_parts(app, colour_fn, z0, tb, tex), tex)
+            else:
+                B.write_glb(glb_path, B.export_parts(app, colour_fn))
             pk = {n: (m.vertices, m.faces, K.vertex_colour(n, np.asarray(m.vertices, np.float32), ctx)) for n, m in app.items()}
             pickle.dump(pk, open(os.path.join(OUT, f'.mesh_{key}.pkl'), 'wb'))
             json.dump(manifest, open(manifest_path, 'w'), indent=1)

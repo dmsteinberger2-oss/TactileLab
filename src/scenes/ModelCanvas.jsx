@@ -15,7 +15,7 @@ import { registerSceneRoot } from '@/lib/sceneRegistry'
 const BASE_PARTS = new Set(['kidney_body', 'renal_cortex'])
 const L = KIDNEY_DIMS_CM.length / 2, W = KIDNEY_DIMS_CM.width / 2, T = KIDNEY_DIMS_CM.thickness / 2
 
-function PartMesh({ partId, geometry, position = [0, 0, 0], rotation, explodeDir = [0, 0, 0], explodeDist = 3, clip }) {
+function PartMesh({ partId, geometry, position = [0, 0, 0], rotation, explodeDir = [0, 0, 0], explodeDist = 3, clip, map = null, baked = false }) {
   const partColors = useLabStore((s) => s.partColors)
   const selectedPartId = useLabStore((s) => s.selectedPartId)
   const selectPart = useLabStore((s) => s.selectPart)
@@ -30,8 +30,17 @@ function PartMesh({ partId, geometry, position = [0, 0, 0], rotation, explodeDir
   const selected = selectedPartId === partId
   const target = lifted ? position.map((p, i) => p + explodeDir[i] * explodeDist) : position
   const { p } = useSpring({ p: target, config: { tension: 170, friction: 24 } })
-  const color = partColors[partId] ?? part?.defaultColor ?? '#999'
+  const chosen = partColors[partId] ?? part?.defaultColor ?? '#999'
+  // Baked GLBs carry their full colour in vertex colours/texture: tint relative to the default so the
+  // default renders exactly as authored and the colour picker still works.
+  const color = useMemo(() => {
+    if (!baked) return new THREE.Color(chosen)
+    const c = new THREE.Color(chosen), d = new THREE.Color(part?.defaultColor ?? chosen)
+    return new THREE.Color(c.r / Math.max(d.r, 1e-3), c.g / Math.max(d.g, 1e-3), c.b / Math.max(d.b, 1e-3))
+  }, [chosen, baked, part?.defaultColor])
+  const useMap = map && geometry.attributes.uv ? map : null
   const hasVertexColors = !!geometry.attributes.color
+  const matte = partId === 'renal_sinus' || partId === 'adrenal_gland'
 
   const labelPos = useMemo(() => {
     geometry.computeBoundingBox()
@@ -52,15 +61,18 @@ function PartMesh({ partId, geometry, position = [0, 0, 0], rotation, explodeDir
         onPointerOut={() => { document.body.style.cursor = 'auto' }}
       >
         <meshPhysicalMaterial
+          key={useMap ? 'mapped' : 'plain'}
           color={color}
+          map={useMap}
           vertexColors={hasVertexColors}
-          roughness={partId === 'renal_sinus' ? 0.55 : 0.42}
+          roughness={matte ? 0.58 : 0.46}
           metalness={0}
-          clearcoat={0.35}
-          clearcoatRoughness={0.4}
-          sheen={0.25}
+          clearcoat={0.55}
+          clearcoatRoughness={0.28}
+          sheen={0.2}
           sheenRoughness={0.6}
-          sheenColor={'#ffffff'}
+          sheenColor={'#fff4ee'}
+          envMapIntensity={0.7}
           emissive={selected ? '#0f766e' : '#000000'}
           emissiveIntensity={selected ? 0.28 : 0}
           clippingPlanes={clip ?? []}
@@ -91,14 +103,16 @@ function GLTFParts({ url, clip, coronal }) {
       if (BASE_PARTS.has(partId)) dir = new THREE.Vector3()
       else if (coronal) dir = new THREE.Vector3(c.x * 0.06, c.y * 0.04, 1).normalize()   // inlays lift out of the cut face
       else dir = c.lengthSq() > 1e-6 ? c.clone().normalize() : new THREE.Vector3(0, 1, 0)
-      return { partId, geometry: m.geometry, dir: dir.toArray() }
+      const map = m.material?.map ?? null
+      if (map) { map.colorSpace = THREE.SRGBColorSpace; map.anisotropy = 8; map.needsUpdate = true }
+      return { partId, geometry: m.geometry, dir: dir.toArray(), map }
     })
   }, [scene, coronal])
   return (
     <group>
-      {meshes.map(({ partId, geometry, dir }) => (
+      {meshes.map(({ partId, geometry, dir, map }) => (
         <PartMesh key={partId} partId={partId} geometry={geometry} explodeDir={dir} explodeDist={coronal ? 2.2 : 3}
-          clip={BASE_PARTS.has(partId) ? clip : undefined} />
+          clip={BASE_PARTS.has(partId) ? clip : undefined} map={map} baked />
       ))}
     </group>
   )
@@ -214,7 +228,7 @@ export default function ModelCanvas({ className = '' }) {
   return (
     <div className={`relative h-full w-full ${className}`}>
       <Canvas shadows="percentage" dpr={[1, 2]} camera={{ position: [5, 4, 30], fov: 32 }}
-        gl={{ antialias: true, preserveDrawingBuffer: true, toneMapping: THREE.ACESFilmicToneMapping, toneMappingExposure: 1.05 }}>
+        gl={{ antialias: true, preserveDrawingBuffer: true, toneMapping: THREE.NeutralToneMapping, toneMappingExposure: 1.0 }}>
         <Suspense fallback={null}>
           <Scene />
         </Suspense>

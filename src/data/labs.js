@@ -15,6 +15,8 @@ const kidneyParts = [
     tooltip: 'The fat-filled space around the pelvis, calyces and vessels inside the kidney. Tumour invasion of this fat makes a tumour T3a.' },
   { id: 'renal_pelvis', name: 'Renal pelvis and calyces', removable: true, defaultColor: '#ece7da',
     tooltip: 'The collecting system: minor calyces cup each papilla, join into major calyces, then the funnel-shaped renal pelvis, which narrows into the ureter. Posterior-most structure at the hilum.' },
+  { id: 'adrenal_gland', name: 'Adrenal (suprarenal) gland', removable: true, defaultColor: '#d9a53c',
+    tooltip: 'An endocrine gland on the superomedial pole of each kidney: yellow cortex (steroids) around a darker medulla (adrenaline). It sits inside Gerota’s fascia but in its own compartment; direct tumour invasion of it is T4.' },
   { id: 'renal_artery', name: 'Renal artery', removable: true, defaultColor: '#c0392b',
     tooltip: 'A branch of the abdominal aorta at about L1–L2 carrying roughly 20–25% of cardiac output. It divides into segmental end-arteries inside the sinus. Middle structure at the hilum.' },
   { id: 'renal_vein', name: 'Renal vein', removable: true, defaultColor: '#2e5c9e',
