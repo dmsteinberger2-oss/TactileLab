@@ -111,6 +111,17 @@
    "bodies": 1,
    "faces": 8868,
    "volume_cm3": 1.12
+  },
+  {
+   "part": "anterior_half",
+   "file": "kidney_normal_coronal/08_anterior_half.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 35042,
+   "volume_cm3": 55.52
   }
  ],
  "t1a_full": [
@@ -247,6 +258,17 @@
    "bodies": 1,
    "faces": 18628,
    "volume_cm3": 6.28
+  },
+  {
+   "part": "anterior_half",
+   "file": "kidney_t1a_coronal/09_anterior_half.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 36010,
+   "volume_cm3": 60.64
   }
  ],
  "t1b_full": [
@@ -383,6 +405,17 @@
    "bodies": 1,
    "faces": 12272,
    "volume_cm3": 37.28
+  },
+  {
+   "part": "anterior_half",
+   "file": "kidney_t1b_coronal/09_anterior_half.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 35044,
+   "volume_cm3": 87.7
   }
  ],
  "t2a_full": [
@@ -519,6 +552,17 @@
    "bodies": 1,
    "faces": 17388,
    "volume_cm3": 126.92
+  },
+  {
+   "part": "anterior_half",
+   "file": "kidney_t2a_coronal/09_anterior_half.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 39096,
+   "volume_cm3": 183.7
   }
  ],
  "t3a_full": [
@@ -666,6 +710,17 @@
    "bodies": 1,
    "faces": 12466,
    "volume_cm3": 50.8
+  },
+  {
+   "part": "anterior_half",
+   "file": "kidney_t3a_coronal/09_anterior_half.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 37302,
+   "volume_cm3": 102.74
   }
  ],
  "preop_full": [

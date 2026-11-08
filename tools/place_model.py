@@ -275,8 +275,10 @@ def build(stage, form, parts, kidney_m, kmesh, z0, centre, adr0=None, adr_n=None
                 if len(hit.faces) and hit.volume > 1: print(f'   ! tumour intersects {v} ({hit.volume:.0f} mm3)')
     else:
         keep = halfspace(np.array([0, 0, z0]), [0, 0, 1])       # posterior half: z <= z0
+        front = halfspace(np.array([0, 0, z0]), [0, 0, -1])     # anterior half: z >= z0 (the lid that opens)
         full = {n: to_m(parts[n]) for n in INTERNAL + ['renal_artery', 'renal_vein', 'ureter']}
         if adr is not None: full['adrenal_gland'] = adr
+        anterior, lid = {}, Manifold()
         for name in list(full):
             m = full[name]
             if cavity is not None and name in INTERNAL: m = m - cavity
@@ -285,9 +287,22 @@ def build(stage, form, parts, kidney_m, kmesh, z0, centre, adr0=None, adr_n=None
             if len(h.faces) and h.volume > 20:
                 show[name] = prn[name] = h
                 specs[name] = ('as_is', None, True) if name == 'renal_cortex' else ('cut_down', None, False)
+            if name == 'ureter': continue        # its front sliver lies below the kidney, detached from the lid
+            a = m ^ front
+            if a.volume() > 20:
+                anterior[name] = to_t(a); lid += a
+                # the adrenal sits 0.6 mm off the capsule; its hull bridges that gap so the lid prints as one solid
+                if name == 'adrenal_gland': lid += to_m(to_t(a).convex_hull) ^ front
         if T:
             show['tumor'] = prn['tumor'] = to_t(tumor ^ keep); specs['tumor'] = ('cut_down', None, False)
             polys['tumor'] = B.section_polys(to_t(tumor), z0)
+            a = tumor ^ front
+            if a.volume() > 20: anterior['tumor'] = to_t(a); lid += a
+            lid += cavity ^ front          # the lid prints as one solid: fill the tumour's clearance gap
+        # front half: one display part made of the anterior pieces (each keeps its own colour and painted cut face),
+        # and one print part, the union, lying on its cut face (z = z0, facing -Z)
+        show['__anterior__'] = anterior
+        prn['anterior_half'] = to_t(lid); specs['anterior_half'] = ('flat_down', None, False)
     return show, prn, specs, polys
 
 def densify(t, max_edge):
@@ -320,7 +335,7 @@ if __name__ == '__main__':
             entries, failures = [], []
             for i, (name, m) in enumerate(meshes.items(), 1):
                 kind, axis, sup = specs[name]
-                pm = decimate(m, {'kidney_body': 40000, 'renal_cortex': 40000, 'tumor': 24000}.get(name, 12000))
+                pm = decimate(m, {'kidney_body': 40000, 'renal_cortex': 40000, 'anterior_half': 40000, 'tumor': 24000}.get(name, 12000))
                 pm, dropped = clean_for_print(name, pm)
                 big = [d for d in dropped if d[0] >= 0.01]
                 if dropped: print(f'   {key}/{name}: dropped {len(dropped)} stray bodies' + (f', incl. {big} (cm3, centroid mm)' if big else ' (all < 0.01 cm3)'))
@@ -339,13 +354,19 @@ if __name__ == '__main__':
             if failures:
                 json.dump(manifest, open(manifest_path, 'w'), indent=1)
                 sys.exit('Print check failed (STL not watertight or has non-manifold edges):\n  ' + '\n  '.join(failures))
-            app = {n: (densify(decimate(m, 30000), DENSIFY[n]) if n in DENSIFY else decimate(m, {'kidney_body': 60000, 'renal_cortex': 50000}.get(n, 20000))) for n, m in show.items()}
+            lighten = lambda n, m: densify(decimate(m, 30000), DENSIFY[n]) if n in DENSIFY else decimate(m, {'kidney_body': 60000, 'renal_cortex': 50000}.get(n, 20000))
+            anterior = show.pop('__anterior__', None)
+            app = {n: lighten(n, m) for n, m in show.items()}
             colour_fn = lambda n, V: K.vertex_colour(n, V, ctx)
             glb_path = os.path.join(OUT, f'kidney_{stage}{"" if form == "whole" else "_coronal"}.glb')
             if form == 'coronal':
                 tex, tb = B.paint_section(polys)
                 tex.save(os.path.join(OUT, f'section_{stage}.jpg'), quality=90)
-                B.write_glb(glb_path, B.export_parts(app, colour_fn, z0, tb, tex), tex)
+                glb_parts = B.export_parts(app, colour_fn, z0, tb, tex)
+                if anterior:   # cut face of the front pieces is at z0 facing -Z
+                    front = B.export_parts({n: lighten(n, m) for n, m in anterior.items()}, colour_fn, z0, tb, tex, cut_sign=-1)
+                    glb_parts.append(B.combine(front, 'anterior_half'))
+                B.write_glb(glb_path, glb_parts, tex)
             else:
                 B.write_glb(glb_path, B.export_parts(app, colour_fn))
             pk = {n: (m.vertices, m.faces, K.vertex_colour(n, np.asarray(m.vertices, np.float32), ctx)) for n, m in app.items()}
