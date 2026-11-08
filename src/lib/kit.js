@@ -1,5 +1,5 @@
 import * as THREE from 'three'
-import { STLExporter, GLTFLoader } from 'three-stdlib'
+import { STLExporter, GLTFLoader, MeshoptDecoder } from 'three-stdlib'
 import JSZip from 'jszip'
 import { jsPDF } from 'jspdf'
 import { createElement } from 'react'
@@ -198,7 +198,7 @@ const glbCache = new Map()
 function assembledParts(labId, stageId, cutaway) {
   const url = `/models/${labId}_${stageId}${cutaway === 'full' ? '' : `_${cutaway}`}.glb`
   if (!glbCache.has(url)) {
-    const p = new GLTFLoader().loadAsync(url).then((gltf) => {
+    const p = new GLTFLoader().setMeshoptDecoder(typeof MeshoptDecoder === 'function' ? MeshoptDecoder() : MeshoptDecoder).loadAsync(url).then((gltf) => {
       const out = new Map()
       gltf.scene.updateMatrixWorld(true)
       gltf.scene.traverse((o) => {
