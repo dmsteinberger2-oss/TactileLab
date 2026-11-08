@@ -20,7 +20,7 @@ const KINDS = {
 const PART_KIND = {
   kidney_body: 'capsule', renal_cortex: 'capsule', anterior_half: 'frontHalf',
   tumor: 'tumor', vein_thrombus: 'tumor', ivc_thrombus: 'tumor',
-  renal_sinus: 'lobular', adrenal_gland: 'lobular', aml: 'lobular',
+  renal_sinus: 'lobular', adrenal_gland: 'lobular', aml: 'lobular', calculus: 'bone',
   ivc: 'vessel', cyst: 'vessel',
   renal_artery: 'vessel', renal_vein: 'vessel', ureter: 'vessel', thecal_sac: 'vessel', nerve_roots: 'vessel', l5_nerve_root_left: 'vessel',
   renal_medulla: 'inner', renal_pelvis: 'inner', annulus_fibrosus: 'inner', nucleus_pulposus: 'inner', disc_herniation: 'inner',

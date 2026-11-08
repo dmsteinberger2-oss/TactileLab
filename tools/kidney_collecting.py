@@ -14,7 +14,7 @@ import kidney_sdf as K
 
 F = np.float32
 H = 0.5      # grid spacing, mm
-WALL = 1.2   # wall of the dilated collecting system, mm
+WALL = 1.6   # wall of the dilated collecting system, mm
 
 # grade: (pelvis growth, calyx growth, calyx-tip clubbing, parenchymal rim kept), mm
 HYDRO = {'hydro_1': (3.0, 0.0, 0.0, 7.0), 'hydro_2': (5.5, 1.0, 0.0, 6.0),
@@ -75,9 +75,10 @@ def apply(parts, stage, to_m, to_t, clr=0.25):
     out = dict(parts)
     if stage in HYDRO:
         fl, f_pel = hydro(g, p, L, kd, stage)
-        wall = to_m(K.mesh_from(g, f_wall_of(fl).ravel(), target=30000, min_vol=5))
-        lum = to_m(K.mesh_from(g, fl.ravel(), target=30000, min_vol=5))
-        out['renal_pelvis'] = to_t((to_m(parts['renal_pelvis']) + wall) - lum)   # source wall kept at the hilum and UPJ
+        # one field, one marching-cubes pass: new wall around the dilated lumen, plus the source wall only where
+        # the pelvis leaves the kidney (hilum, pelviureteric junction). Avoids coplanar mesh booleans.
+        stub = np.maximum(np.maximum(p, -(kd + 2.0)), -fl)
+        out['renal_pelvis'] = K.mesh_from(g, np.minimum(f_wall_of(fl), stub).ravel(), target=40000, min_vol=5)
         cut = to_m(K.mesh_from(g, (fl - WALL - clr).ravel(), target=30000, min_vol=5))
         for k in ('renal_medulla', 'renal_sinus', 'renal_cortex'):
             out[k] = to_t(to_m(parts[k]) - cut)
