@@ -322,15 +322,43 @@ function GhostNormal({ labId, coronal }) {
   )
 }
 
+// three r163+ renders with WebGL2 only.
+function hasWebGL2() {
+  try { return !!window.WebGL2RenderingContext && !!document.createElement('canvas').getContext('webgl2') } catch { return false }
+}
+
+function ViewerUnavailable() {
+  return (
+    <div role="status" className="flex h-full w-full items-center justify-center p-6 text-center text-sm font-medium text-[#5c7164]">
+      3D view unavailable on this device
+    </div>
+  )
+}
+
+// Anything thrown inside the R3F tree (WebGL context creation, a model that fails to load, a
+// render error) surfaces here, so only the viewer area is replaced and the rest of the page,
+// including Download kit, keeps working.
+class ViewerBoundary extends Component {
+  state = { failed: false }
+  static getDerivedStateFromError() { return { failed: true } }
+  componentDidCatch(err) { console.error('[ModelCanvas] 3D view failed:', err) }
+  render() { return this.state.failed ? <ViewerUnavailable /> : this.props.children }
+}
+
 export default function ModelCanvas({ className = '' }) {
+  const [webgl] = useState(hasWebGL2)
   return (
     <div className={`relative h-full w-full ${className}`}>
-      <Canvas shadows="percentage" dpr={[1, 2]} camera={{ position: [5, 4, 30], fov: 32 }}
-        gl={{ antialias: true, preserveDrawingBuffer: true, toneMapping: THREE.NeutralToneMapping, toneMappingExposure: 1.0 }}>
-        <Suspense fallback={null}>
-          <Scene />
-        </Suspense>
-      </Canvas>
+      {webgl ? (
+        <ViewerBoundary>
+          <Canvas shadows="percentage" dpr={[1, 2]} camera={{ position: [5, 4, 30], fov: 32 }}
+            gl={{ antialias: true, preserveDrawingBuffer: true, toneMapping: THREE.NeutralToneMapping, toneMappingExposure: 1.0 }}>
+            <Suspense fallback={null}>
+              <Scene />
+            </Suspense>
+          </Canvas>
+        </ViewerBoundary>
+      ) : <ViewerUnavailable />}
     </div>
   )
 }
