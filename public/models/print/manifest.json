@@ -8535,5 +8535,117 @@
    "faces": 9686,
    "volume_cm3": 1.47
   }
+ ],
+ "artery_aaa_iliac_full": [
+  {
+   "part": "aorta",
+   "file": "artery_aaa_iliac_full/01_aorta.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 40512,
+   "volume_cm3": 43.53
+  },
+  {
+   "part": "celiac_trunk",
+   "file": "artery_aaa_iliac_full/02_celiac_trunk.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 8264,
+   "volume_cm3": 2.34
+  },
+  {
+   "part": "superior_mesenteric",
+   "file": "artery_aaa_iliac_full/03_superior_mesenteric.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 8584,
+   "volume_cm3": 2.79
+  },
+  {
+   "part": "renal_arteries",
+   "file": "artery_aaa_iliac_full/04_renal_arteries.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 2,
+   "faces": 7480,
+   "volume_cm3": 1.92
+  },
+  {
+   "part": "inferior_mesenteric",
+   "file": "artery_aaa_iliac_full/05_inferior_mesenteric.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 2280,
+   "volume_cm3": 0.3
+  },
+  {
+   "part": "common_iliacs",
+   "file": "artery_aaa_iliac_full/06_common_iliacs.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 2,
+   "faces": 24000,
+   "volume_cm3": 16.25
+  },
+  {
+   "part": "external_iliacs",
+   "file": "artery_aaa_iliac_full/07_external_iliacs.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 2,
+   "faces": 24000,
+   "volume_cm3": 10.46
+  },
+  {
+   "part": "internal_iliacs",
+   "file": "artery_aaa_iliac_full/08_internal_iliacs.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 2,
+   "faces": 8632,
+   "volume_cm3": 2.67
+  },
+  {
+   "part": "aneurysm_sac",
+   "file": "artery_aaa_iliac_full/09_aneurysm_sac.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 50000,
+   "volume_cm3": 93.16
+  },
+  {
+   "part": "kidneys",
+   "file": "artery_aaa_iliac_full/10_kidneys.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 2,
+   "faces": 29998,
+   "volume_cm3": 130.35
+  }
  ]
 }
