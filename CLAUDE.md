@@ -1,6 +1,6 @@
 # TactileLab: notes for Claude Code
 
-HackRPI 2026 (theme "In The Clouds"; tracks entered: Hardware, Healthcare, AI, MLH Gemini, GoDaddy domain).
+HackRPI 2026 (theme "In The Clouds"; tracks entered: Hardware, Healthcare, GoDaddy domain).
 Hacking ends 11:00 Sunday Nov 8. Devpost due 9:00. Judging is a science-fair table demo.
 
 ## What it is
@@ -20,7 +20,7 @@ Prototype: one kidney-tumour kit (renal cell carcinoma, Normal / T1a / T1b / T2a
 ## Rules
 - Don't add dependencies. Don't restyle. Don't change part ids (they link labs.js, GLBs, STLs, colours).
 - Keep the R3F canvas separate from UI components.
-- After changing models: rerun place_model.py and copy outputs to public/models (README has the commands).
+- After changing models: rerun place_model.py and copy outputs to public/models (README has the commands). Then run `node tools/compress_glb.mjs public/models/*.glb` (lossless meshopt; already-compressed files are skipped).
 - Everything must be created during the hacking window; don't import pre-hackathon files or assets.
 - Commit after each working change; the history is our provenance.
 
