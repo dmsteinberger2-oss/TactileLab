@@ -1,24 +1,25 @@
 """Collecting-system conditions for place_model.py: hydronephrosis (SFU grades 1-4) and staghorn calculus.
 Geometry is schematic and unreviewed; clinical wording lives in src/data/labs.js.
 
-Both work on a signed distance field of the source renal pelvis (pelvis + calyces), sampled on a grid:
-  hydronephrosis: the pelvis (grade 1), then calyces (2-3), then the parenchyma (4) are displaced by a
-                  dilated collecting system; medulla, sinus fat and cortex are cut back around it.
-  staghorn:       a branched stone casting the pelvis and calyces, inside a thin-walled collecting system.
+The source renal pelvis is a thin wall (~1.3 mm) around an empty lumen that opens at the hilum. The lumen is
+recovered on a grid as the gap the wall encloses (morphological closing of the kidney union), then:
+  hydronephrosis: the lumen is dilated (pelvis first, then calyces, then into the parenchyma), a new wall is
+                  grown around it, and medulla, sinus fat and cortex are cut back around the wall.
+  staghorn:       a branched stone fills the lumen (with print clearance), inside the unchanged wall.
 Units mm, kidney centred at the origin, long axis +Y, hilum -X.
 """
 import numpy as np
-import trimesh
 from scipy import ndimage
 import kidney_sdf as K
 
 F = np.float32
-H = 0.5   # grid spacing, mm
+H = 0.5      # grid spacing, mm
+WALL = 1.2   # wall of the dilated collecting system, mm
 
-# grade: (pelvis growth mm, calyx growth mm, parenchyma rim kept mm)
-HYDRO = {'hydro_1': (3.5, 0.0, 6.0), 'hydro_2': (6.0, 1.2, 5.0), 'hydro_3': (8.0, 3.0, 4.0), 'hydro_4': (10.0, 6.5, 2.0)}
-STONE = {'staghorn': dict(wall=0.9)}
-STAGES = set(HYDRO) | set(STONE)
+# grade: (pelvis growth, calyx growth, calyx-tip clubbing, parenchymal rim kept), mm
+HYDRO = {'hydro_1': (3.0, 0.0, 0.0, 7.0), 'hydro_2': (5.5, 1.0, 0.0, 6.0),
+         'hydro_3': (7.0, 2.5, 3.0, 4.5), 'hydro_4': (8.5, 4.0, 7.0, 2.2)}
+STAGES = set(HYDRO) | {'staghorn'}
 
 def inside_mask(mesh, g):
     """Grid points inside a closed mesh, by ray parity along +Y (one ray per (x, z) column)."""
@@ -38,56 +39,51 @@ def inside_mask(mesh, g):
             ins[i, (ys > a) & (ys < b), k] = True
     return ins
 
-def sdf(mask, h=H):
+def sdf(mask, h=H, blur=0.9):
     d = (ndimage.distance_transform_edt(~mask) - ndimage.distance_transform_edt(mask)) * h
-    return ndimage.gaussian_filter(d, 0.9).astype(F)      # soften the voxel staircase
+    return ndimage.gaussian_filter(d, blur).astype(F) if blur else d.astype(F)   # soften the voxel staircase
 
-def field_grid(parts):
-    lo = parts['renal_cortex'].bounds[0] - 14; hi = parts['renal_cortex'].bounds[1] + 14
-    return K.Grid(lo, hi, h=H)
-
-def pelvis_fields(parts):
-    g = field_grid(parts)
+def fields(parts):
+    """Grid, pelvis-wall SDF, lumen SDF, closed-kidney SDF."""
+    lo = parts['renal_cortex'].bounds[0] - 10; hi = parts['renal_cortex'].bounds[1] + 10
+    g = K.Grid(lo, hi, h=H)
     pel = inside_mask(parts['renal_pelvis'], g)
-    kid = np.zeros_like(pel)
-    for k in ('renal_cortex', 'renal_medulla', 'renal_sinus', 'renal_pelvis'): kid |= inside_mask(parts[k], g)
-    kid = ndimage.binary_closing(kid, iterations=2)
-    return g, sdf(pel), sdf(kid)
+    raw = pel.copy()
+    for k in ('renal_cortex', 'renal_medulla', 'renal_sinus'): raw |= inside_mask(parts[k], g)
+    solid = ndimage.binary_fill_holes(ndimage.binary_closing(raw, iterations=8, border_value=0))
+    gap = solid & ~raw
+    lab, n = ndimage.label(gap)
+    lumen = lab == (np.argmax(np.bincount(lab.ravel())[1:]) + 1)
+    return g, sdf(pel, blur=0), sdf(lumen), sdf(solid)
 
-def hydro_pelvis(g, p, kd, grade):
-    """Dilated collecting system SDF. Growth is largest in the thick pelvis and tapers into the calyces."""
-    A, B, rim = HYDRO[grade]
-    core = p < -2.6                                         # the thick pelvis (calyces and infundibula are thinner)
+def hydro(g, p, L, kd, stage):
+    A, B, C, rim = HYDRO[stage]
+    core = L < -1.6                                        # the wide pelvis; infundibula and calyces are narrower
     dcore = ndimage.distance_transform_edt(~core) * H
-    w = np.exp(-(dcore / 9.0) ** 2)                         # 1 in the pelvis, falling off along the infundibula
-    grow = A * w + B * (1 - w)
-    f = p - grow
-    f = K.smin(f.ravel(), p.ravel(), 1.0).reshape(f.shape)   # never thinner than the source
-    # stay inside the kidney with a parenchymal rim, except where the pelvis leaves through the hilum
-    f = np.maximum(f, -(kd + rim))
-    f = np.minimum(f, p)                                    # keep the source pelvis (incl. its extrarenal part)
-    return f
+    w = np.exp(-(dcore / 8.0) ** 2)                        # 1 in the pelvis, falling off along the infundibula
+    tip = np.clip((dcore - 8.0) / 10.0, 0, 1)              # calyx ends: clubbing at higher grades
+    fl = L - (A * w + B * (1 - w) + C * tip)
+    fl = np.maximum(fl, -(kd + rim + WALL))                # keep a parenchymal rim
+    fl = np.minimum(fl, L)                                 # never smaller than the source lumen
+    return fl, f_wall_of(fl)
+
+def f_wall_of(fl): return np.maximum(fl - WALL, -fl)
 
 def apply(parts, stage, to_m, to_t, clr=0.25):
-    """Returns a copy of parts with the collecting-system change applied (plus 'calculus' for staghorn)."""
-    g, p, kd = pelvis_fields(parts)
+    """Copy of parts with the collecting-system change applied (plus 'calculus' for staghorn)."""
+    g, p, L, kd = fields(parts)
     out = dict(parts)
     if stage in HYDRO:
-        f = hydro_pelvis(g, p, kd, stage)
-        pel = K.mesh_from(g, f.ravel(), target=24000)
-        pm = to_m(pel)
-        cut = to_m(K.mesh_from(g, f.ravel() - clr, target=24000))
+        fl, f_pel = hydro(g, p, L, kd, stage)
+        wall = to_m(K.mesh_from(g, f_wall_of(fl).ravel(), target=30000, min_vol=5))
+        lum = to_m(K.mesh_from(g, fl.ravel(), target=30000, min_vol=5))
+        out['renal_pelvis'] = to_t((to_m(parts['renal_pelvis']) + wall) - lum)   # source wall kept at the hilum and UPJ
+        cut = to_m(K.mesh_from(g, (fl - WALL - clr).ravel(), target=30000, min_vol=5))
         for k in ('renal_medulla', 'renal_sinus', 'renal_cortex'):
             out[k] = to_t(to_m(parts[k]) - cut)
-        out['renal_pelvis'] = to_t(pm)
     else:
-        wall = STONE[stage]['wall']
-        # the stone fills the collecting system to within `wall` of its surface, slightly knobbly
         P = g.P
-        fs = p.ravel() + wall + 0.35 * (K.fbm(P, 0.9) - 0.5)
-        fs = np.maximum(fs, kd.ravel() + 1.0)                # only the intrarenal part (not down the ureter)
-        stone = K.mesh_from(g, fs, target=16000, min_vol=40)
-        st = to_m(stone)
-        out['renal_pelvis'] = to_t(to_m(parts['renal_pelvis']) - to_m(K.mesh_from(g, fs - clr, target=16000, min_vol=40)))
-        out['calculus'] = to_t(st)
+        fs = L.ravel() + clr + 0.3 * (K.fbm(P, 0.8) - 0.5)
+        fs = np.maximum(fs, kd.ravel() + 1.0)              # intrarenal only: stops at the hilar mouth
+        out['calculus'] = K.mesh_from(g, fs, target=16000, min_vol=40)
     return out

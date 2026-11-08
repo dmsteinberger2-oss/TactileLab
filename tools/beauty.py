@@ -23,6 +23,7 @@ C = dict(
     pelvis=(240, 234, 222), pelvis_lo=(210, 200, 186),
     tumor=(226, 172, 58), tumor_lo=(196, 138, 40), tumor_hi=(244, 206, 110), hem=(140, 40, 32), necro=(214, 206, 188), septa=(236, 214, 170),
     adr_cortex=(232, 182, 72), adr_medulla=(150, 78, 50),
+    stone=(226, 208, 164), stone_lo=(196, 172, 122), stone_dk=(156, 126, 84),
     cyst_wall=(232, 226, 212), cyst_wall_lo=(208, 198, 182), cyst_fluid=(176, 186, 170), nodule=(214, 150, 104), nodule_lo=(184, 112, 76),
     aml_fat=(246, 222, 120), aml_fat_lo=(226, 192, 84), aml_septa=(250, 238, 196), aml_muscle=(214, 150, 132), aml_vessel=(150, 44, 40),
 )
@@ -182,11 +183,11 @@ def paint_section(polys, ppm=16.0, max_px=2600):
     cv = Canvas((x0, y0, x1, y1), ppm)
     get = lambda k: polys.get(k, sg.MultiPolygon())
     cortex, med, fat, pel, art, tum, adr, ure = (get(k) for k in ('renal_cortex', 'renal_medulla', 'renal_sinus', 'renal_pelvis', 'renal_artery', 'tumor', 'adrenal_gland', 'ureter'))
-    cyst, cfl, cnod, aml = (get(k) for k in ('cyst', 'cyst_fluid', 'cyst_nodule', 'aml'))
+    cyst, cfl, cnod, aml, calc = (get(k) for k in ('cyst', 'cyst_fluid', 'cyst_nodule', 'aml', 'calculus'))
     kidney = so.unary_union([g for g in (cortex, med, fat, pel) if not g.is_empty])
     M = {k: cv.mask(g) for k, g in dict(cortex=cortex, med=med, fat=fat, pel=pel, art=art, tum=tum, adr=adr, ure=ure, kid=kidney,
-                                        cyst=cyst, cfl=cfl, cnod=cnod, aml=aml).items()}
-    M['les'] = np.clip(M['tum'] + M['cyst'] + M['aml'], 0, 1)          # any lesion: vessels are not drawn over it
+                                        cyst=cyst, cfl=cfl, cnod=cnod, aml=aml, calc=calc).items()}
+    M['les'] = np.clip(M['tum'] + M['cyst'] + M['aml'] + M['calc'], 0, 1)          # any lesion: vessels are not drawn over it
     tissue = np.clip(M['cortex'] + M['med'], 0, 1)
 
     # 1 cortex: granular parenchyma with glomeruli
@@ -306,6 +307,17 @@ def paint_section(polys, ppm=16.0, max_px=2600):
         rim = M['tum'] * (1 - cv.mask(tum.buffer(-0.9)))
         cv.paint(rim * 0.9, (176, 120, 60))
 
+    # 8a staghorn calculus: laminated yellow-brown stone with darker growth rings and a pitted rim
+    if not calc.is_empty:
+        dist = np.asarray(Image.fromarray((M['calc'] * 255).astype(np.uint8)).filter(ImageFilter.GaussianBlur(cv.mm(1.5))), np.float32) / 255
+        ring = 0.5 + 0.5 * np.sin(dist * 22 + cv.noise(1.0, 61) * 3)
+        base = np.array(C['stone'])[None, None] * (0.9 + 0.1 * cv.noise(0.6, 62))[..., None]
+        cv.img = cv.img * (1 - M['calc'][..., None]) + base * M['calc'][..., None]
+        cv.paint(ring * 0.35 * M['calc'], C['stone_lo'], M['calc'])
+        cv.paint(np.clip((cv.noise(0.35, 63) - 0.70) / 0.06, 0, 1) * M['calc'] * 0.45, C['stone_dk'], M['calc'])
+        rim = M['calc'] * (1 - cv.mask(calc.buffer(-0.5)))
+        cv.paint(rim * 0.8, C['stone_dk'])
+
     # 8b cyst: pale fibrous wall and septa around the fluid locules (recessed in the model), nodules
     if not cyst.is_empty:
         w = (0.92 + 0.1 * cv.noise(1.2, 41))[..., None]
@@ -339,7 +351,7 @@ def paint_section(polys, ppm=16.0, max_px=2600):
         if not core.is_empty: cv.paint(cv.mask(core) * 0.9, C['adr_medulla'])
 
     # 10 depth: soft darkening along every boundary, capsule line
-    lab = (M['cortex'] * 1 + M['med'] * 2 + M['fat'] * 3 + M['pel'] * 4 + M['tum'] * 5 + M['art'] * 6 + M['adr'] * 7 + M['cyst'] * 8 + M['cfl'] * 9 + M['aml'] * 10)
+    lab = (M['cortex'] * 1 + M['med'] * 2 + M['fat'] * 3 + M['pel'] * 4 + M['tum'] * 5 + M['art'] * 6 + M['adr'] * 7 + M['cyst'] * 8 + M['cfl'] * 9 + M['aml'] * 10 + M['calc'] * 11)
     edge = (np.abs(np.diff(lab, axis=0, prepend=lab[:1])) + np.abs(np.diff(lab, axis=1, prepend=lab[:, :1]))) > 0.5
     ao = np.asarray(Image.fromarray((edge * 255).astype(np.uint8)).filter(ImageFilter.GaussianBlur(cv.mm(0.5))), np.float32) / 255
     cv.img *= (1 - 0.35 * np.clip(ao * 3, 0, 1))[..., None]

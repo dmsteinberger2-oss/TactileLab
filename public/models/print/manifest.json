@@ -1136,7 +1136,7 @@
    "non_manifold_edges": 0,
    "open_edges": 0,
    "bodies": 1,
-   "faces": 7006,
+   "faces": 7044,
    "volume_cm3": 8.01
   },
   {
@@ -1283,7 +1283,7 @@
    "non_manifold_edges": 0,
    "open_edges": 0,
    "bodies": 1,
-   "faces": 9720,
+   "faces": 9738,
    "volume_cm3": 8.1
   },
   {
@@ -1430,7 +1430,7 @@
    "non_manifold_edges": 0,
    "open_edges": 0,
    "bodies": 1,
-   "faces": 10514,
+   "faces": 10526,
    "volume_cm3": 8.33
   },
   {

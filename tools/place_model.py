@@ -18,6 +18,7 @@ sys.path.insert(0, os.path.dirname(__file__))
 import kidney_sdf as K   # SDF primitives, colours, meshing, orientation helpers
 import beauty as B       # painted section, adrenal, textured GLB
 import kidney_conditions as KC   # T3b, T4, Bosniak cysts, angiomyolipoma
+import kidney_collecting as KL   # hydronephrosis grades, staghorn calculus
 
 SRC, OUT = sys.argv[1], sys.argv[2]
 STAGES = sys.argv[3].split(',') if len(sys.argv) > 3 else ['normal', 't1a', 't1b', 't2a', 't3a']
@@ -55,7 +56,7 @@ def decimate(t, cap):
     return t
 
 # Print parts that are legitimately several separate bodies; everything else must be one solid.
-MULTI_BODY = {'renal_medulla', 'renal_sinus', 'renal_pelvis'}
+MULTI_BODY = {'renal_medulla', 'renal_sinus', 'renal_pelvis', 'calculus'}
 ZERO_MM3 = 1.0          # shells below this are degenerate leftovers of booleans/decimation
 MIN_BODY_MM3 = 50.0     # 0.05 cm3: smallest separate body kept in a multi-body part
 
@@ -301,6 +302,7 @@ def build(stage, form, parts, kidney_m, kmesh, z0, centre, adr0=None, adr_n=None
         front = halfspace(np.array([0, 0, z0]), [0, 0, -1])     # anterior half: z >= z0 (the lid that opens)
         full = {n: to_m(parts[n]) for n in INTERNAL + ['renal_artery', 'renal_vein', 'ureter']}
         if adr is not None: full['adrenal_gland'] = adr
+        if 'calculus' in parts: full['calculus'] = to_m(parts['calculus'])   # staghorn: stone inlay in the lumen
         anterior, lid = {}, Manifold()
         for name in list(full):
             m = full[name]
@@ -348,7 +350,7 @@ def densify(t, max_edge):
 DENSIFY = {'tumor': 1.5, 'cyst': 1.2, 'aml': 1.5, 'ivc_thrombus': 1.5}
 
 # colours for the extra lesions (vertex multipliers on beauty.DEFAULTS)
-B.DEFAULTS.update(KC.DEFAULTS)
+B.DEFAULTS.update(KC.DEFAULTS); B.DEFAULTS['calculus'] = '#d6b268'
 K.COLOURS.update({'ivc_thrombus': K.col_tumor, 'aml': KC.col_aml,
                   'cyst': lambda V, ctx: KC.col_cyst(V, CURRENT['T'], K.Z0)})
 
@@ -365,7 +367,12 @@ if __name__ == '__main__':
     print('adrenal', round(adr0.volume() / 1000, 2), 'cm3')
     manifest_path = os.path.join(OUT, 'print', 'manifest.json'); os.makedirs(os.path.dirname(manifest_path), exist_ok=True)
     manifest = json.load(open(manifest_path)) if os.path.exists(manifest_path) else {}
+    base_parts, base_kidney = parts, kidney_m
     for stage in STAGES:
+        parts, kidney_m = base_parts, base_kidney
+        if stage in KL.STAGES:     # collecting-system change: modified parts, same outer kidney
+            parts = KL.apply(base_parts, stage, to_m, to_t)
+            kidney_m = to_m(parts['renal_cortex']) + to_m(parts['renal_medulla']) + to_m(parts['renal_sinus']) + to_m(parts['renal_pelvis'])
         for form in FORMS:
             show, meshes, specs, polys = build(stage, form, parts, kidney_m, kmesh, z0, centre, adr0, adr_n)
             K.Z0 = z0 if form == 'coronal' else 1e6
@@ -381,6 +388,7 @@ if __name__ == '__main__':
                 if dropped: print(f'   {key}/{name}: dropped {len(dropped)} stray bodies' + (f', incl. {big} (cm3, centroid mm)' if big else ' (all < 0.01 cm3)'))
                 pm, moved = separate_contacts(pm)
                 if moved: print(f'   {key}/{name}: separated {moved} self-touching vertices by {CONTACT_EPS_MM * 1000:.0f} um')
+                if pm is None or len(pm.faces) == 0: print(f'   ! {key}/{name}: EMPTY mesh'); failures.append(f'{key}/{name}: empty'); continue
                 if pm is None or len(pm.faces) == 0: print(f'   ! {key}/{name}: EMPTY mesh'); failures.append(f'{key}/{name}: empty'); continue
                 if pm is None or len(pm.faces) == 0: print(f'   ! {key}/{name}: EMPTY mesh'); failures.append(f'{key}/{name}: empty'); continue
                 if pm is None or len(pm.faces) == 0: print(f'   ! {key}/{name}: EMPTY mesh'); failures.append(f'{key}/{name}: empty'); continue
