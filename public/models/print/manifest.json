@@ -7183,5 +7183,1072 @@
    "faces": 29998,
    "volume_cm3": 130.35
   }
+ ],
+ "willis_normal_full": [
+  {
+   "part": "internal_carotids",
+   "file": "willis_normal_full/01_internal_carotids.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 2,
+   "faces": 16616,
+   "volume_cm3": 6.89
+  },
+  {
+   "part": "anterior_cerebrals",
+   "file": "willis_normal_full/02_anterior_cerebrals.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 2,
+   "faces": 10632,
+   "volume_cm3": 1.94
+  },
+  {
+   "part": "anterior_communicating",
+   "file": "willis_normal_full/03_anterior_communicating.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 240,
+   "volume_cm3": 0.02
+  },
+  {
+   "part": "middle_cerebrals",
+   "file": "willis_normal_full/04_middle_cerebrals.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 2,
+   "faces": 14024,
+   "volume_cm3": 3.13
+  },
+  {
+   "part": "posterior_communicatings",
+   "file": "willis_normal_full/05_posterior_communicatings.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 2,
+   "faces": 1896,
+   "volume_cm3": 0.15
+  },
+  {
+   "part": "posterior_cerebrals",
+   "file": "willis_normal_full/06_posterior_cerebrals.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 2,
+   "faces": 9408,
+   "volume_cm3": 1.66
+  },
+  {
+   "part": "basilar_artery",
+   "file": "willis_normal_full/07_basilar_artery.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 5596,
+   "volume_cm3": 1.85
+  },
+  {
+   "part": "vertebral_arteries",
+   "file": "willis_normal_full/08_vertebral_arteries.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 7940,
+   "volume_cm3": 2.24
+  }
+ ],
+ "willis_pcom_hypoplasia_full": [
+  {
+   "part": "internal_carotids",
+   "file": "willis_pcom_hypoplasia_full/01_internal_carotids.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 2,
+   "faces": 16612,
+   "volume_cm3": 6.89
+  },
+  {
+   "part": "anterior_cerebrals",
+   "file": "willis_pcom_hypoplasia_full/02_anterior_cerebrals.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 2,
+   "faces": 10632,
+   "volume_cm3": 1.94
+  },
+  {
+   "part": "anterior_communicating",
+   "file": "willis_pcom_hypoplasia_full/03_anterior_communicating.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 240,
+   "volume_cm3": 0.02
+  },
+  {
+   "part": "middle_cerebrals",
+   "file": "willis_pcom_hypoplasia_full/04_middle_cerebrals.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 2,
+   "faces": 14024,
+   "volume_cm3": 3.13
+  },
+  {
+   "part": "posterior_communicatings",
+   "file": "willis_pcom_hypoplasia_full/05_posterior_communicatings.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 2,
+   "faces": 1532,
+   "volume_cm3": 0.09
+  },
+  {
+   "part": "posterior_cerebrals",
+   "file": "willis_pcom_hypoplasia_full/06_posterior_cerebrals.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 2,
+   "faces": 9412,
+   "volume_cm3": 1.66
+  },
+  {
+   "part": "basilar_artery",
+   "file": "willis_pcom_hypoplasia_full/07_basilar_artery.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 5596,
+   "volume_cm3": 1.85
+  },
+  {
+   "part": "vertebral_arteries",
+   "file": "willis_pcom_hypoplasia_full/08_vertebral_arteries.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 7940,
+   "volume_cm3": 2.24
+  }
+ ],
+ "willis_fetal_pca_full": [
+  {
+   "part": "internal_carotids",
+   "file": "willis_fetal_pca_full/01_internal_carotids.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 2,
+   "faces": 16656,
+   "volume_cm3": 6.89
+  },
+  {
+   "part": "anterior_cerebrals",
+   "file": "willis_fetal_pca_full/02_anterior_cerebrals.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 2,
+   "faces": 10632,
+   "volume_cm3": 1.94
+  },
+  {
+   "part": "anterior_communicating",
+   "file": "willis_fetal_pca_full/03_anterior_communicating.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 240,
+   "volume_cm3": 0.02
+  },
+  {
+   "part": "middle_cerebrals",
+   "file": "willis_fetal_pca_full/04_middle_cerebrals.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 2,
+   "faces": 14024,
+   "volume_cm3": 3.13
+  },
+  {
+   "part": "posterior_communicatings",
+   "file": "willis_fetal_pca_full/05_posterior_communicatings.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 2,
+   "faces": 2992,
+   "volume_cm3": 0.47
+  },
+  {
+   "part": "posterior_cerebrals",
+   "file": "willis_fetal_pca_full/06_posterior_cerebrals.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 3,
+   "faces": 8816,
+   "volume_cm3": 1.45
+  },
+  {
+   "part": "basilar_artery",
+   "file": "willis_fetal_pca_full/07_basilar_artery.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 5596,
+   "volume_cm3": 1.86
+  },
+  {
+   "part": "vertebral_arteries",
+   "file": "willis_fetal_pca_full/08_vertebral_arteries.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 7940,
+   "volume_cm3": 2.24
+  }
+ ],
+ "willis_a1_hypoplasia_full": [
+  {
+   "part": "internal_carotids",
+   "file": "willis_a1_hypoplasia_full/01_internal_carotids.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 2,
+   "faces": 16604,
+   "volume_cm3": 6.9
+  },
+  {
+   "part": "anterior_cerebrals",
+   "file": "willis_a1_hypoplasia_full/02_anterior_cerebrals.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 2,
+   "faces": 9668,
+   "volume_cm3": 1.75
+  },
+  {
+   "part": "anterior_communicating",
+   "file": "willis_a1_hypoplasia_full/03_anterior_communicating.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 388,
+   "volume_cm3": 0.04
+  },
+  {
+   "part": "middle_cerebrals",
+   "file": "willis_a1_hypoplasia_full/04_middle_cerebrals.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 2,
+   "faces": 14016,
+   "volume_cm3": 3.12
+  },
+  {
+   "part": "posterior_communicatings",
+   "file": "willis_a1_hypoplasia_full/05_posterior_communicatings.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 2,
+   "faces": 1896,
+   "volume_cm3": 0.15
+  },
+  {
+   "part": "posterior_cerebrals",
+   "file": "willis_a1_hypoplasia_full/06_posterior_cerebrals.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 2,
+   "faces": 9408,
+   "volume_cm3": 1.66
+  },
+  {
+   "part": "basilar_artery",
+   "file": "willis_a1_hypoplasia_full/07_basilar_artery.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 5596,
+   "volume_cm3": 1.85
+  },
+  {
+   "part": "vertebral_arteries",
+   "file": "willis_a1_hypoplasia_full/08_vertebral_arteries.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 7940,
+   "volume_cm3": 2.24
+  }
+ ],
+ "willis_azygos_aca_full": [
+  {
+   "part": "internal_carotids",
+   "file": "willis_azygos_aca_full/01_internal_carotids.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 2,
+   "faces": 16616,
+   "volume_cm3": 6.89
+  },
+  {
+   "part": "anterior_cerebrals",
+   "file": "willis_azygos_aca_full/02_anterior_cerebrals.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 8716,
+   "volume_cm3": 1.81
+  },
+  {
+   "part": "middle_cerebrals",
+   "file": "willis_azygos_aca_full/03_middle_cerebrals.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 2,
+   "faces": 14024,
+   "volume_cm3": 3.13
+  },
+  {
+   "part": "posterior_communicatings",
+   "file": "willis_azygos_aca_full/04_posterior_communicatings.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 2,
+   "faces": 1896,
+   "volume_cm3": 0.15
+  },
+  {
+   "part": "posterior_cerebrals",
+   "file": "willis_azygos_aca_full/05_posterior_cerebrals.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 2,
+   "faces": 9408,
+   "volume_cm3": 1.66
+  },
+  {
+   "part": "basilar_artery",
+   "file": "willis_azygos_aca_full/06_basilar_artery.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 5596,
+   "volume_cm3": 1.85
+  },
+  {
+   "part": "vertebral_arteries",
+   "file": "willis_azygos_aca_full/07_vertebral_arteries.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 7940,
+   "volume_cm3": 2.24
+  }
+ ],
+ "willis_acom_aneurysm_full": [
+  {
+   "part": "internal_carotids",
+   "file": "willis_acom_aneurysm_full/01_internal_carotids.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 2,
+   "faces": 16616,
+   "volume_cm3": 6.89
+  },
+  {
+   "part": "anterior_cerebrals",
+   "file": "willis_acom_aneurysm_full/02_anterior_cerebrals.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 2,
+   "faces": 10412,
+   "volume_cm3": 1.86
+  },
+  {
+   "part": "anterior_communicating",
+   "file": "willis_acom_aneurysm_full/03_anterior_communicating.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 204,
+   "volume_cm3": 0.01
+  },
+  {
+   "part": "middle_cerebrals",
+   "file": "willis_acom_aneurysm_full/04_middle_cerebrals.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 2,
+   "faces": 14024,
+   "volume_cm3": 3.13
+  },
+  {
+   "part": "posterior_communicatings",
+   "file": "willis_acom_aneurysm_full/05_posterior_communicatings.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 2,
+   "faces": 1896,
+   "volume_cm3": 0.15
+  },
+  {
+   "part": "posterior_cerebrals",
+   "file": "willis_acom_aneurysm_full/06_posterior_cerebrals.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 2,
+   "faces": 9408,
+   "volume_cm3": 1.66
+  },
+  {
+   "part": "basilar_artery",
+   "file": "willis_acom_aneurysm_full/07_basilar_artery.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 5596,
+   "volume_cm3": 1.85
+  },
+  {
+   "part": "vertebral_arteries",
+   "file": "willis_acom_aneurysm_full/08_vertebral_arteries.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 7940,
+   "volume_cm3": 2.24
+  },
+  {
+   "part": "aneurysm",
+   "file": "willis_acom_aneurysm_full/09_aneurysm.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 3312,
+   "volume_cm3": 1.47
+  }
+ ],
+ "willis_pcom_aneurysm_full": [
+  {
+   "part": "internal_carotids",
+   "file": "willis_pcom_aneurysm_full/01_internal_carotids.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 2,
+   "faces": 16708,
+   "volume_cm3": 6.87
+  },
+  {
+   "part": "anterior_cerebrals",
+   "file": "willis_pcom_aneurysm_full/02_anterior_cerebrals.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 2,
+   "faces": 10632,
+   "volume_cm3": 1.94
+  },
+  {
+   "part": "anterior_communicating",
+   "file": "willis_pcom_aneurysm_full/03_anterior_communicating.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 240,
+   "volume_cm3": 0.02
+  },
+  {
+   "part": "middle_cerebrals",
+   "file": "willis_pcom_aneurysm_full/04_middle_cerebrals.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 2,
+   "faces": 14032,
+   "volume_cm3": 3.13
+  },
+  {
+   "part": "posterior_communicatings",
+   "file": "willis_pcom_aneurysm_full/05_posterior_communicatings.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 2,
+   "faces": 1880,
+   "volume_cm3": 0.15
+  },
+  {
+   "part": "posterior_cerebrals",
+   "file": "willis_pcom_aneurysm_full/06_posterior_cerebrals.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 2,
+   "faces": 9408,
+   "volume_cm3": 1.66
+  },
+  {
+   "part": "basilar_artery",
+   "file": "willis_pcom_aneurysm_full/07_basilar_artery.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 5596,
+   "volume_cm3": 1.85
+  },
+  {
+   "part": "vertebral_arteries",
+   "file": "willis_pcom_aneurysm_full/08_vertebral_arteries.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 7940,
+   "volume_cm3": 2.24
+  },
+  {
+   "part": "aneurysm",
+   "file": "willis_pcom_aneurysm_full/09_aneurysm.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 2696,
+   "volume_cm3": 1.03
+  }
+ ],
+ "willis_mca_aneurysm_full": [
+  {
+   "part": "internal_carotids",
+   "file": "willis_mca_aneurysm_full/01_internal_carotids.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 2,
+   "faces": 16616,
+   "volume_cm3": 6.89
+  },
+  {
+   "part": "anterior_cerebrals",
+   "file": "willis_mca_aneurysm_full/02_anterior_cerebrals.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 2,
+   "faces": 10632,
+   "volume_cm3": 1.94
+  },
+  {
+   "part": "anterior_communicating",
+   "file": "willis_mca_aneurysm_full/03_anterior_communicating.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 240,
+   "volume_cm3": 0.02
+  },
+  {
+   "part": "middle_cerebrals",
+   "file": "willis_mca_aneurysm_full/04_middle_cerebrals.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 2,
+   "faces": 14084,
+   "volume_cm3": 3.12
+  },
+  {
+   "part": "posterior_communicatings",
+   "file": "willis_mca_aneurysm_full/05_posterior_communicatings.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 2,
+   "faces": 1896,
+   "volume_cm3": 0.15
+  },
+  {
+   "part": "posterior_cerebrals",
+   "file": "willis_mca_aneurysm_full/06_posterior_cerebrals.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 2,
+   "faces": 9408,
+   "volume_cm3": 1.66
+  },
+  {
+   "part": "basilar_artery",
+   "file": "willis_mca_aneurysm_full/07_basilar_artery.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 5596,
+   "volume_cm3": 1.85
+  },
+  {
+   "part": "vertebral_arteries",
+   "file": "willis_mca_aneurysm_full/08_vertebral_arteries.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 7940,
+   "volume_cm3": 2.24
+  },
+  {
+   "part": "aneurysm",
+   "file": "willis_mca_aneurysm_full/09_aneurysm.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 2556,
+   "volume_cm3": 1.02
+  }
+ ],
+ "willis_basilar_aneurysm_full": [
+  {
+   "part": "internal_carotids",
+   "file": "willis_basilar_aneurysm_full/01_internal_carotids.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 2,
+   "faces": 16616,
+   "volume_cm3": 6.89
+  },
+  {
+   "part": "anterior_cerebrals",
+   "file": "willis_basilar_aneurysm_full/02_anterior_cerebrals.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 2,
+   "faces": 10632,
+   "volume_cm3": 1.94
+  },
+  {
+   "part": "anterior_communicating",
+   "file": "willis_basilar_aneurysm_full/03_anterior_communicating.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 240,
+   "volume_cm3": 0.02
+  },
+  {
+   "part": "middle_cerebrals",
+   "file": "willis_basilar_aneurysm_full/04_middle_cerebrals.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 2,
+   "faces": 14024,
+   "volume_cm3": 3.13
+  },
+  {
+   "part": "posterior_communicatings",
+   "file": "willis_basilar_aneurysm_full/05_posterior_communicatings.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 2,
+   "faces": 1896,
+   "volume_cm3": 0.15
+  },
+  {
+   "part": "posterior_cerebrals",
+   "file": "willis_basilar_aneurysm_full/06_posterior_cerebrals.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 2,
+   "faces": 9472,
+   "volume_cm3": 1.66
+  },
+  {
+   "part": "basilar_artery",
+   "file": "willis_basilar_aneurysm_full/07_basilar_artery.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 5468,
+   "volume_cm3": 1.82
+  },
+  {
+   "part": "vertebral_arteries",
+   "file": "willis_basilar_aneurysm_full/08_vertebral_arteries.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 7940,
+   "volume_cm3": 2.24
+  },
+  {
+   "part": "aneurysm",
+   "file": "willis_basilar_aneurysm_full/09_aneurysm.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 3208,
+   "volume_cm3": 1.51
+  }
+ ],
+ "willis_acom_clipped_full": [
+  {
+   "part": "internal_carotids",
+   "file": "willis_acom_clipped_full/01_internal_carotids.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 2,
+   "faces": 16616,
+   "volume_cm3": 6.89
+  },
+  {
+   "part": "anterior_cerebrals",
+   "file": "willis_acom_clipped_full/02_anterior_cerebrals.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 2,
+   "faces": 10488,
+   "volume_cm3": 1.89
+  },
+  {
+   "part": "anterior_communicating",
+   "file": "willis_acom_clipped_full/03_anterior_communicating.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 216,
+   "volume_cm3": 0.01
+  },
+  {
+   "part": "middle_cerebrals",
+   "file": "willis_acom_clipped_full/04_middle_cerebrals.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 2,
+   "faces": 14024,
+   "volume_cm3": 3.13
+  },
+  {
+   "part": "posterior_communicatings",
+   "file": "willis_acom_clipped_full/05_posterior_communicatings.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 2,
+   "faces": 1896,
+   "volume_cm3": 0.15
+  },
+  {
+   "part": "posterior_cerebrals",
+   "file": "willis_acom_clipped_full/06_posterior_cerebrals.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 2,
+   "faces": 9408,
+   "volume_cm3": 1.66
+  },
+  {
+   "part": "basilar_artery",
+   "file": "willis_acom_clipped_full/07_basilar_artery.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 5596,
+   "volume_cm3": 1.85
+  },
+  {
+   "part": "vertebral_arteries",
+   "file": "willis_acom_clipped_full/08_vertebral_arteries.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 7940,
+   "volume_cm3": 2.24
+  },
+  {
+   "part": "aneurysm",
+   "file": "willis_acom_clipped_full/09_aneurysm.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 3160,
+   "volume_cm3": 1.36
+  },
+  {
+   "part": "aneurysm_clip",
+   "file": "willis_acom_clipped_full/10_aneurysm_clip.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 352,
+   "volume_cm3": 0.01
+  }
+ ],
+ "willis_acom_coiled_full": [
+  {
+   "part": "internal_carotids",
+   "file": "willis_acom_coiled_full/01_internal_carotids.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 2,
+   "faces": 16616,
+   "volume_cm3": 6.89
+  },
+  {
+   "part": "anterior_cerebrals",
+   "file": "willis_acom_coiled_full/02_anterior_cerebrals.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 2,
+   "faces": 10412,
+   "volume_cm3": 1.86
+  },
+  {
+   "part": "anterior_communicating",
+   "file": "willis_acom_coiled_full/03_anterior_communicating.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 204,
+   "volume_cm3": 0.01
+  },
+  {
+   "part": "middle_cerebrals",
+   "file": "willis_acom_coiled_full/04_middle_cerebrals.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 2,
+   "faces": 14024,
+   "volume_cm3": 3.13
+  },
+  {
+   "part": "posterior_communicatings",
+   "file": "willis_acom_coiled_full/05_posterior_communicatings.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 2,
+   "faces": 1896,
+   "volume_cm3": 0.15
+  },
+  {
+   "part": "posterior_cerebrals",
+   "file": "willis_acom_coiled_full/06_posterior_cerebrals.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 2,
+   "faces": 9408,
+   "volume_cm3": 1.66
+  },
+  {
+   "part": "basilar_artery",
+   "file": "willis_acom_coiled_full/07_basilar_artery.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 5596,
+   "volume_cm3": 1.85
+  },
+  {
+   "part": "vertebral_arteries",
+   "file": "willis_acom_coiled_full/08_vertebral_arteries.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 7940,
+   "volume_cm3": 2.24
+  },
+  {
+   "part": "aneurysm",
+   "file": "willis_acom_coiled_full/09_aneurysm.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 2,
+   "faces": 5656,
+   "volume_cm3": 2.27
+  },
+  {
+   "part": "coil_mass",
+   "file": "willis_acom_coiled_full/10_coil_mass.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 2024,
+   "volume_cm3": 0.66
+  }
  ]
 }
