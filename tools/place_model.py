@@ -52,6 +52,24 @@ def decimate(t, cap):
         if r.is_watertight and len(r.faces) < len(t.faces): return r
     except Exception: pass
     return t
+
+# Print parts that are legitimately several separate bodies; everything else must be one solid.
+MULTI_BODY = {'renal_medulla', 'renal_sinus', 'renal_pelvis'}
+ZERO_MM3 = 1.0          # shells below this are degenerate leftovers of booleans/decimation
+MIN_BODY_MM3 = 50.0     # 0.05 cm3: smallest separate body kept in a multi-body part
+
+def clean_for_print(name, t):
+    """Drop zero-volume shells; keep the largest body (single-body parts) or every body of at
+    least MIN_BODY_MM3 (multi-body parts). Returns (mesh, [(volume_cm3, centroid_mm), ...] dropped)."""
+    comps = t.split(only_watertight=False)
+    if len(comps) <= 1: return t, []
+    vols = [abs(float(c.volume)) for c in comps]
+    keep = [i for i, v in enumerate(vols) if v >= ZERO_MM3]
+    if name in MULTI_BODY: keep = [i for i in keep if vols[i] >= MIN_BODY_MM3]
+    else: keep = [max(range(len(comps)), key=lambda i: vols[i])]
+    dropped = [(round(vols[i] / 1000, 3), np.round(comps[i].centroid, 1).tolist()) for i in range(len(comps)) if i not in keep]
+    return trimesh.util.concatenate([comps[i] for i in keep]), dropped
+
 def halfspace(point, normal, size=400.0):
     """Manifold box filling the side of the plane the normal points AWAY from."""
     n = K.unit(normal); box = trimesh.creation.box(extents=[size, size, size])
@@ -281,6 +299,9 @@ if __name__ == '__main__':
             for i, (name, m) in enumerate(meshes.items(), 1):
                 kind, axis, sup = specs[name]
                 pm = decimate(m, {'kidney_body': 40000, 'renal_cortex': 40000, 'tumor': 24000}.get(name, 12000))
+                pm, dropped = clean_for_print(name, pm)
+                big = [d for d in dropped if d[0] >= 0.01]
+                if dropped: print(f'   {key}/{name}: dropped {len(dropped)} stray bodies' + (f', incl. {big} (cm3, centroid mm)' if big else ' (all < 0.01 cm3)'))
                 om = pm.copy()
                 if kind != 'as_is': om = K.orient(pm, kind, axis)
                 else: om.apply_translation([-om.bounds[:, 0].mean(), -om.bounds[:, 1].mean(), -om.bounds[0, 2]])
