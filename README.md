@@ -33,7 +33,7 @@ during the hackathon.
 
 Rebuild after changing the source or tumour placement:
 ```
-pip install trimesh manifold3d scikit-image fast-simplification scipy shapely
+pip install trimesh manifold3d scikit-image fast-simplification scipy shapely rtree pillow
 python3 tools/place_model.py tools/source_kidney.glb generated_v2
 rm -f public/models/*.glb && rm -rf public/models/print
 cp generated_v2/kidney_*.glb public/models/ && cp -r generated_v2/print public/models/print
