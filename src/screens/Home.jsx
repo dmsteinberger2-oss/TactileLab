@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { useProgress } from '@react-three/drei'
 import { useLabStore } from '@/store/labStore'
 import { labs } from '@/data/labs'
 import ModelCanvas from '@/scenes/ModelCanvas'
@@ -10,27 +11,40 @@ const STEPS = [
   ['03', 'Share', 'A QR on the card opens the same model on any phone.'],
 ]
 
+// Presentation-only loading state; the existing scene owns all model loading.
+function HeroLoading({ lab }) {
+  const { active, total } = useProgress()
+  if (!active && total > 0) return null
+  return <div className="hero-loading">
+    <span className="hero-loading-ring"><Icon name="layers"/></span>
+    <div>
+      <p className="hero-loading-label">Preparing {lab.name.toLowerCase()} model</p>
+      <p className="hero-loading-detail mt-2">Anatomy you can explore, then hold.</p>
+    </div>
+  </div>
+}
+
 function LabCard({ lab, index }) {
   const n = String(index + 1).padStart(2, '0')
   if (lab.comingSoon) {
-    return <article aria-label={`${lab.name}, in development`} className="flex flex-col rounded-2xl border border-dashed border-line bg-bench p-5">
+    return <article aria-label={`${lab.name}, in development`} className="lab-card flex flex-col border border-dashed border-line bg-bench">
       <div className="flex items-center justify-between"><span className={`${theme.tag} text-ink-soft`}>{n}</span><Chip><Icon name="lock" className="h-3 w-3"/>In development</Chip></div>
       <h3 className="mt-8 text-xl font-bold tracking-[-0.02em] text-ink-soft">{lab.name}</h3>
       {lab.condition && <p className="mt-1 text-sm text-ink-soft">{lab.condition}</p>}
     </article>
   }
-  return <Link to={`/lab/${encodeURIComponent(lab.id)}`} className={`${theme.panel} group flex flex-col p-5 transition hover:-translate-y-0.5 hover:border-teal hover:shadow-[0_10px_30px_-12px_rgba(15,118,110,0.35)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-teal`}>
+  return <Link to={`/lab/${encodeURIComponent(lab.id)}`} className={`${theme.panel} lab-card group flex flex-col transition hover:border-teal/50 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-teal`}>
     <div className="flex items-center justify-between"><span className={`${theme.tag} text-teal`}>{n}</span><Chip tone="teal">Available</Chip></div>
-    <h3 className="mt-8 text-3xl font-bold tracking-[-0.03em]">{lab.name}</h3>
-    {lab.condition && <p className="mt-1 flex items-center gap-2 text-sm font-medium text-ink"><LesionDot/>{lab.condition}</p>}
-    {lab.description && <p className="mt-4 text-sm leading-relaxed text-ink-soft">{lab.description}</p>}
-    {lab.stages && <ul aria-label="Stages" className="mt-5 flex flex-wrap gap-1.5">{stageChips(lab.stages).map((c) => <li key={c.key}><Chip className={c.dim ? 'opacity-80' : ''}>{c.label}</Chip></li>)}</ul>}
-    <dl className="mt-auto grid grid-cols-3 gap-3 border-t border-line pt-4 text-xs">
+    <h3 className="lab-card-title mt-7 font-semibold">{lab.name}</h3>
+    {lab.condition && <p className="mt-2 flex items-start gap-2 text-sm font-medium leading-relaxed text-ink"><LesionDot className="mt-2"/>{lab.condition}</p>}
+    {lab.description && <p className="lab-card-description mt-4 text-sm text-ink-soft">{lab.description}</p>}
+    {lab.stages && <ul aria-label="Stages" className="lab-card-stages mt-5 flex flex-wrap gap-1.5">{stageChips(lab.stages).map((c) => <li key={c.key}><Chip className={c.dim ? 'opacity-80' : ''}>{c.label}</Chip></li>)}</ul>}
+    <dl className="lab-card-stats mt-auto grid grid-cols-3 gap-3 pt-2 text-xs">
       <div><dt className="text-ink-soft">Stages</dt><dd className="mt-0.5 font-mono text-sm font-semibold">{lab.stages?.length ?? 0}</dd></div>
       <div><dt className="text-ink-soft">Views</dt><dd className="mt-0.5 font-mono text-sm font-semibold">{lab.cutaways?.length ?? 1}</dd></div>
       <div><dt className="text-ink-soft">Parts</dt><dd className="mt-0.5 font-mono text-sm font-semibold">{lab.parts?.length ?? 0}</dd></div>
     </dl>
-    <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-teal">Open lab<Icon name="arrow" className="h-4 w-4 transition group-hover:translate-x-0.5"/></span>
+    <span className="lab-card-action inline-flex items-center gap-1.5 text-sm font-semibold text-teal">Open lab<Icon name="arrow" className="h-4 w-4 transition group-hover:translate-x-0.5"/></span>
   </Link>
 }
 
@@ -55,33 +69,35 @@ export default function Home() {
   const shown = labs[shownId] && !labs[shownId].comingSoon ? labs[shownId] : featured
   return <div className={theme.page}><Header/>
     <main>
-      <section className={`${theme.wrap} grid items-center gap-8 pb-10 pt-8 sm:pt-14 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] lg:gap-14 lg:pb-16`}>
+      <section className={`${theme.wrap} hero-section grid items-center gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] lg:gap-14`}>
         <div>
           <p className={`${theme.tag} text-teal`}>Anatomy teaching models · print-ready</p>
-          <h1 className="mt-4 text-[44px] font-bold leading-[0.95] tracking-[-0.045em] sm:text-7xl">TactileLab</h1>
-          <p className="mt-5 max-w-xl text-lg leading-relaxed text-ink-soft sm:text-xl">Build the anatomical teaching model your session needs in 3D, then print it as a kit your students can hold.</p>
+          <h1 className="hero-title mt-5 font-semibold">TactileLab</h1>
+          <p className="hero-copy mt-6 text-lg leading-[1.65] text-ink-soft">Build the anatomical teaching model your session needs in 3D, then print it as a kit your students can hold.</p>
           <div className="mt-7 flex flex-wrap gap-3">
             {featured && <Link to={`/lab/${featured.id}`} className={theme.primary}>Open the {featured.name.toLowerCase()} lab<Icon name="arrow" className="h-4 w-4"/></Link>}
             <a href="#labs" className={`${theme.secondary} min-h-12 px-5`}>All labs</a>
           </div>
-          <ol className="mt-10 grid gap-4 border-t border-line pt-6 sm:grid-cols-3">
+          <ol className="hero-steps mt-10 grid border-t border-line pt-6 sm:grid-cols-3">
             {STEPS.map(([n, t, d]) => <li key={n}><span className={`${theme.tag} text-teal`}>{n}</span><p className="mt-1 text-sm font-bold">{t}</p><p className="mt-1 text-[13px] leading-snug text-ink-soft">{d}</p></li>)}
           </ol>
         </div>
-        {featured && <div className="pointer-events-none" aria-hidden="true">
-          <ViewerFrame className="h-[320px] sm:h-[440px] lg:h-[540px]"
-            topRight={<Chip>Live model</Chip>}
+        {featured && <div className="hero-preview pointer-events-none rounded-[20px]" aria-hidden="true">
+          <ViewerFrame className="h-[340px] sm:h-[440px] lg:h-[500px]"
+            topLeft={<span className="rounded-md bg-[#14232c]/70 px-2.5 py-1.5 text-xs font-medium tracking-wide text-[#e2eceb] backdrop-blur">Anatomical preview</span>}
+            topRight={<span className="inline-flex items-center gap-1.5 rounded-md border border-white/15 bg-[#14232c]/70 px-2.5 py-1.5 text-xs font-medium text-[#e2eceb] backdrop-blur"><span className="h-1.5 w-1.5 rounded-full bg-[#9ac1b7]"/>Live model</span>}
             bottom={<><Chip><LesionDot/>{shown.name} · {shown.condition}</Chip></>}>
             <ModelCanvas/>
+            <HeroLoading lab={shown}/>
           </ViewerFrame>
         </div>}
       </section>
 
-      <section id="labs" aria-labelledby="labs-title" className="border-t border-line bg-paper/60 py-10 sm:py-14">
+      <section id="labs" aria-labelledby="labs-title" className="collection-section border-t border-line py-10 sm:py-14">
         <div className={theme.wrap}>
-          <div className="mb-6 flex items-end justify-between gap-4">
-            <div><p className={`${theme.tag} text-teal`}>Collection</p><h2 id="labs-title" className="mt-1 text-2xl font-bold tracking-[-0.02em]">Labs</h2></div>
-            <p className="font-mono text-xs text-ink-soft">{all.filter((l) => !l.comingSoon).length} available · {all.filter((l) => l.comingSoon).length} in development</p>
+          <div className="collection-heading mb-7 flex items-end justify-between gap-4">
+            <div><p className={`${theme.tag} text-teal`}>Collection</p><h2 id="labs-title" className="mt-2 text-[28px] font-semibold tracking-[-0.035em]">Labs</h2></div>
+            <p className="text-sm text-ink-soft">{all.filter((l) => !l.comingSoon).length} available · {all.filter((l) => l.comingSoon).length} in development</p>
           </div>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{all.map((lab, i) => <LabCard key={lab.id} lab={lab} index={i}/>)}</div>
         </div>

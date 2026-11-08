@@ -32,14 +32,14 @@ export default function View() {
         <div className="mb-4 flex flex-wrap items-end justify-between gap-x-4 gap-y-2">
           <div className="min-w-0">
             <p className={`${theme.tag} text-teal`}>Shared model</p>
-            <h1 className="mt-1 text-[28px] font-bold leading-tight tracking-[-0.03em] sm:text-4xl">{lab.name}</h1>
+            <h1 className="lab-page-title mt-2 font-semibold tracking-[-0.04em]">{lab.name}</h1>
             {lab.condition && <p className="mt-0.5 flex items-center gap-2 text-sm text-ink-soft"><LesionDot/>{lab.condition}</p>}
           </div>
           <div className="flex gap-1.5"><Chip tone={isLesion(stage) ? 'lesion' : 'plain'}>{isLesion(stage) && <LesionDot/>}{stage?.ajcc ?? stage?.label}</Chip>{view && <Chip>{view.label}</Chip>}</div>
         </div>
 
-        <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,1fr)_380px] lg:gap-5">
-          <section aria-label="Interactive 3D model" className="lg:sticky lg:top-20">
+        <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,1fr)_400px] xl:grid-cols-[minmax(0,1fr)_440px] lg:gap-6">
+          <section aria-label="Interactive 3D model" className="workspace-viewer min-w-0">
             <ViewerFrame className="h-[56vh] max-h-[620px] min-h-[320px] lg:h-[calc(100vh-170px)] lg:max-h-none"
               topLeft={<Toggle label="Explode" icon="layers" checked={exploded} onChange={setExploded}/>}
               bottom={<Hint>Drag to rotate · tap a part</Hint>}>
@@ -47,7 +47,7 @@ export default function View() {
             </ViewerFrame>
           </section>
 
-          <div className="space-y-4">
+          <div className="workspace-sidebar space-y-4">
             <section aria-label="Structure" aria-live="polite" className={`${theme.panel} p-5`}>
               {part ? <>
                 <div className="flex items-start justify-between gap-3">

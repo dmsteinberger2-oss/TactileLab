@@ -7,13 +7,13 @@ import { Link } from 'react-router-dom'
 
 export const theme = {
   page: 'min-h-screen bg-bench text-ink antialiased selection:bg-teal-soft',
-  wrap: 'mx-auto w-full max-w-[1440px] px-4 sm:px-6 lg:px-8',
-  panel: 'rounded-2xl border border-line bg-paper',
-  primary: 'inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-teal px-5 text-sm font-semibold text-white shadow-[0_1px_0_rgba(255,255,255,0.15)_inset,0_1px_2px_rgba(15,118,110,0.35)] transition hover:bg-[#0b5f58] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal disabled:cursor-progress disabled:opacity-80',
+  wrap: 'mx-auto w-full max-w-[1440px] px-5 sm:px-8 lg:px-10',
+  panel: 'app-panel rounded-2xl border border-line bg-paper',
+  primary: 'inline-flex min-h-12 items-center justify-center gap-2 rounded-[10px] bg-teal px-5 text-sm font-semibold text-white shadow-[0_1px_2px_rgba(15,118,110,0.15)] transition hover:bg-[#0b5f58] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal disabled:cursor-progress disabled:opacity-80',
   secondary: 'inline-flex min-h-10 items-center justify-center gap-2 rounded-lg border border-line bg-paper px-3.5 text-sm font-semibold text-ink transition hover:border-teal hover:text-teal focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal',
   link: 'inline-flex items-center gap-1 font-semibold text-teal underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal rounded',
-  tag: 'font-mono text-[11px] uppercase tracking-[0.12em]',
-  prose: 'text-[15px] leading-relaxed text-ink',
+  tag: 'text-xs font-medium uppercase tracking-[0.09em]',
+  prose: 'text-[15px] leading-[1.75] text-ink',
 }
 
 export function Icon({ name, className = 'h-5 w-5' }) {
@@ -51,11 +51,11 @@ export function Wordmark() {
 
 // Every page: wordmark links home; `badge` names the page's role (e.g. "Shared model").
 export function Header({ badge }) {
-  return <header className="sticky top-0 z-30 border-b border-line bg-bench/85 backdrop-blur supports-[backdrop-filter]:bg-bench/75">
-    <div className={`${theme.wrap} flex h-16 items-center justify-between gap-4`}>
+  return <header className="sticky top-0 z-30 border-b border-line bg-paper/95 backdrop-blur supports-[backdrop-filter]:bg-paper/85">
+    <div className={`${theme.wrap} flex h-[72px] items-center justify-between gap-4`}>
       <div className="flex min-w-0 items-center gap-3">
         <Link to="/" aria-label="TactileLab home" className="rounded-lg focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-teal"><Wordmark/></Link>
-        {badge && <span className={`${theme.tag} hidden truncate rounded-md border border-line bg-paper px-2 py-1 text-ink-soft sm:inline`}>{badge}</span>}
+        {badge && <span className="hidden border-l border-line pl-4 text-sm text-ink-soft sm:inline">{badge}</span>}
       </div>
       <nav aria-label="Primary"><Link to="/" className={theme.secondary}><Icon name="cube" className="h-4 w-4"/>Labs</Link></nav>
     </div>
@@ -66,9 +66,9 @@ export function Header({ badge }) {
 export function Panel({ step, title, aside, children, className = '', id }) {
   const headingId = id ? `${id}-title` : undefined
   return <section id={id} aria-labelledby={headingId} className={`${theme.panel} p-5 sm:p-6 ${className}`}>
-    <div className="mb-4 flex items-baseline justify-between gap-3">
-      <h2 id={headingId} className="flex items-baseline gap-2.5 text-[15px] font-bold tracking-[-0.01em]">
-        {step && <span className={`${theme.tag} text-teal`}>{step}</span>}{title}
+    <div className="panel-heading mb-5 flex flex-wrap items-center justify-between gap-3">
+      <h2 id={headingId} className="flex shrink-0 items-baseline gap-2.5 text-[15px] font-semibold tracking-[-0.01em]">
+        {step && <span className="panel-step text-xs font-medium text-ink-soft">{step}</span>}{title}
       </h2>
       {aside}
     </div>
@@ -78,18 +78,17 @@ export function Panel({ step, title, aside, children, className = '', id }) {
 
 // Single-choice segmented control. Options: { id, label, sub?, marker? }.
 export function Segmented({ label, options = [], value, onChange, columns }) {
-  const cols = columns ?? Math.min(options.length, 5)
-  // Long labels (e.g. "Microdiscectomy") don't fit side by side on a phone: stack them below sm.
-  const stack = options.length > 1 && options.some((o) => String(o.label).length > 12)
-  return <fieldset className="min-w-0">
-    <legend className="mb-2 text-xs font-semibold uppercase tracking-[0.08em] text-ink-soft">{label}</legend>
-    <div role="radiogroup" aria-label={label} className={`grid grid-cols-[repeat(var(--cols),minmax(0,1fr))] gap-1.5 rounded-xl bg-bench p-1.5 ${stack ? 'max-sm:grid-cols-1' : ''}`} style={{ '--cols': cols }}>
+  const longLabels = options.some((o) => String(o.label).length > 11 || String(o.sub ?? '').length > 14)
+  const cols = Math.max(1, Math.min(columns ?? options.length, longLabels ? 2 : 3))
+  return <fieldset className="segmented-field min-w-0">
+    <legend className="segmented-legend mb-2 text-xs font-semibold uppercase leading-relaxed tracking-[0.06em] text-ink-soft">{label}</legend>
+    <div role="radiogroup" aria-label={label} className="segmented-grid" data-long-labels={longLabels} style={{ '--cols': cols }}>
       {options.map((o) => {
         const on = value === o.id
         return <button key={o.id} type="button" role="radio" aria-checked={on} onClick={() => onChange(o.id)}
-          className={`relative flex min-h-11 min-w-0 flex-col items-center justify-center rounded-lg px-1.5 py-1.5 text-center transition focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-teal ${on ? 'bg-paper text-ink shadow-[0_1px_3px_rgba(22,33,43,0.12),0_0_0_1px_rgba(15,118,110,0.55)]' : 'text-ink-soft hover:bg-paper/60 hover:text-ink'}`}>
-          <span className="flex items-center gap-1.5 text-sm font-semibold leading-tight">{o.marker}{o.label}</span>
-          {o.sub && <span className={`mt-0.5 whitespace-nowrap font-mono text-[10.5px] leading-none tracking-tight ${on ? 'text-teal' : 'text-ink-soft/80'}`}>{o.sub}</span>}
+          className={`segment-option relative focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-teal ${on ? 'text-ink' : 'text-ink-soft'}`}>
+          <span className="segment-label">{o.marker && <span className="segment-marker">{o.marker}</span>}{o.label}</span>
+          {o.sub && <span className="segment-sub">{o.sub}</span>}
         </button>
       })}
     </div>
@@ -106,29 +105,29 @@ export function Toggle({ label, checked, onChange, icon }) {
 
 // Frame around the 3D viewport: specimen-plate background, overlay slots. The canvas is `children`.
 export function ViewerFrame({ children, topLeft, topRight, bottom, className = '' }) {
-  return <div className={`relative overflow-hidden rounded-2xl border border-line bg-[#f6f8f9] ${className}`}>
+  return <div className={`viewer-frame relative overflow-hidden rounded-2xl border border-line bg-[#17252d] ${className}`}>
     <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_50%_42%,#ffffff_0%,#f3f6f7_45%,#e6ebee_100%)]"/>
     <div aria-hidden="true" className="pointer-events-none absolute inset-0 opacity-[0.55] [background-image:linear-gradient(#dfe5e9_1px,transparent_1px),linear-gradient(90deg,#dfe5e9_1px,transparent_1px)] [background-size:32px_32px] [mask-image:radial-gradient(ellipse_at_center,black_20%,transparent_75%)]"/>
     <div className="absolute inset-0">{children}</div>
-    {topLeft && <div className="absolute left-3 top-3 z-10 flex flex-wrap gap-2 sm:left-4 sm:top-4">{topLeft}</div>}
+    {topLeft && <div className="viewer-top-left absolute left-3 top-3 z-10 flex flex-wrap gap-2 sm:left-4 sm:top-4">{topLeft}</div>}
     {topRight && <div className="pointer-events-none absolute right-3 top-3 z-10 sm:right-4 sm:top-4">{topRight}</div>}
-    {bottom && <div className="pointer-events-none absolute inset-x-3 bottom-3 z-10 flex justify-between gap-2 sm:inset-x-4 sm:bottom-4">{bottom}</div>}
+    {bottom && <div className="viewer-bottom pointer-events-none absolute inset-x-3 bottom-3 z-10 flex justify-between gap-2 sm:inset-x-4 sm:bottom-4">{bottom}</div>}
   </div>
 }
 
 // Small mono chip used for configuration and status labels.
 export function Chip({ children, tone = 'plain', className = '' }) {
   const tones = { plain: 'border-line bg-paper/90 text-ink-soft', teal: 'border-teal/30 bg-teal-soft text-teal', lesion: 'border-lesion/25 bg-lesion-soft text-lesion' }
-  return <span className={`${theme.tag} inline-flex items-center gap-1.5 rounded-md border px-2 py-1 ${tones[tone]} ${className}`}>{children}</span>
+  return <span className={`ui-chip ${theme.tag} inline-flex items-center gap-1.5 rounded-md border px-2 py-1 ${tones[tone]} ${className}`}>{children}</span>
 }
 
 // Pathology marker: lesion red is used for nothing else.
 export function LesionDot({ className = '' }) {
-  return <span aria-hidden="true" className={`inline-block h-1.5 w-1.5 rounded-full bg-lesion ${className}`}/>
+  return <span aria-hidden="true" className={`inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-lesion ${className}`}/>
 }
 
 export function Hint({ children }) {
-  return <span className="inline-flex items-center gap-1.5 rounded-full bg-paper/90 px-3 py-1.5 text-xs font-medium text-ink-soft shadow-sm"><Icon name="rotate" className="h-3.5 w-3.5"/>{children}</span>
+  return <span className="viewer-hint inline-flex items-center gap-2 rounded-lg border border-white/15 bg-[#192931]/85 px-3 py-2 text-xs font-medium text-[#e1e9e9] shadow-sm backdrop-blur"><Icon name="rotate" className="h-3.5 w-3.5 shrink-0"/>{children}</span>
 }
 
 // Stage options carry the tumour size, so the selector doubles as a size scale.
@@ -156,6 +155,6 @@ export function StagePicker({ stages, value, onChange }) {
     g.stages.push(s)
   }
   const row = (label, list) => <Segmented key={label} label={label} options={stageOptions(list)} value={value} onChange={onChange} columns={list.length > 3 ? undefined : list.length}/>
-  if (groups.length < 2) return row(hasSizes(stages) ? 'Tumour stage' : 'Stage', stages)
-  return <div className="space-y-4">{groups.map((g) => row(g.name || 'Stage', g.stages))}</div>
+  if (groups.length < 2) return <div className="stage-picker">{row(hasSizes(stages) ? 'Tumour stage' : 'Stage', stages)}</div>
+  return <div className="stage-picker">{groups.map((g) => row(g.name || 'Stage', g.stages))}</div>
 }

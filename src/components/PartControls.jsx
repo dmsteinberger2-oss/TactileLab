@@ -18,7 +18,7 @@ function Choice({ label, options, value, onChange, disabled }) {
     {options.map((o) => {
       const on = value === o.id, off = disabled || o.disabled
       return <button key={o.id} type="button" role="radio" aria-checked={on} disabled={off} title={o.title} onClick={() => onChange(o.id)}
-        className={`min-h-9 min-w-0 truncate rounded-md px-1 text-[13px] font-semibold transition focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-teal disabled:cursor-not-allowed ${on ? 'bg-paper text-ink shadow-[0_1px_3px_rgba(22,33,43,0.12),0_0_0_1px_rgba(15,118,110,0.55)]' : 'text-ink-soft hover:bg-paper/60 hover:text-ink disabled:hover:bg-transparent disabled:hover:text-ink-soft'} ${off && !on ? 'opacity-45' : ''}`}>
+        className={`part-choice min-w-0 break-words rounded-md px-1 py-1.5 text-xs font-semibold leading-snug transition focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-teal disabled:cursor-not-allowed ${on ? 'bg-paper text-teal shadow-[0_1px_3px_rgba(22,33,43,0.08),0_0_0_1px_rgba(15,118,110,0.35)]' : 'text-ink-soft hover:bg-paper/60 hover:text-ink disabled:hover:bg-transparent disabled:hover:text-ink-soft'} ${off && !on ? 'opacity-45' : ''}`}>
         {o.label}
       </button>
     })}
@@ -70,7 +70,7 @@ export default function PartControls({ step, title = 'Parts', id = 'parts', clas
             : mode === 'fixed' && separate.has(p.id) ? `Doesn’t touch the ${baseName.toLowerCase()}, so it still prints separately.`
             : !p.canFix ? 'Always prints separately so the section stays visible.'
             : null
-          return <li key={p.id} className="py-3">
+          return <li key={p.id} className="part-row">
             <div className="mb-2 flex items-center justify-between gap-2">
               <span className={`min-w-0 text-sm font-medium leading-tight ${hidden ? 'text-ink-soft line-through decoration-ink-soft/50' : ''}`}>{p.name}</span>
               {p.isBase && <Chip tone="teal">Base</Chip>}

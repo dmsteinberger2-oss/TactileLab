@@ -111,16 +111,16 @@ export default function Lab() {
   const coloursChanged = colourParts.some((p) => partColors?.[p.id] && partColors[p.id].toLowerCase() !== p.defaultColor.toLowerCase())
 
   return <div className={theme.page}><Header badge="Model builder"/>
-    <main className={`${theme.wrap} pb-16 pt-5`}>
-      <nav aria-label="Breadcrumb" className="mb-3 text-sm"><ol className="flex items-center gap-2 text-ink-soft"><li><Link to="/" className={theme.link}>Labs</Link></li><li aria-hidden="true">/</li><li aria-current="page" className="font-medium text-ink">{lab.name}</li></ol></nav>
-      <div className="mb-5 flex flex-wrap items-end justify-between gap-x-6 gap-y-2">
-        <div><h1 className="text-3xl font-bold tracking-[-0.035em] sm:text-4xl">{lab.name}</h1>{lab.condition && <p className="mt-1 flex items-center gap-2 text-sm font-medium text-ink-soft"><LesionDot/>{lab.condition}</p>}</div>
-        {lab.description && <p className="max-w-md text-sm leading-relaxed text-ink-soft">{lab.description}</p>}
+    <main className={`${theme.wrap} pb-16 pt-6`}>
+      <nav aria-label="Breadcrumb" className="mb-5 text-xs"><ol className="flex items-center gap-2 text-ink-soft"><li><Link to="/" className={theme.link}>Labs</Link></li><li aria-hidden="true">/</li><li aria-current="page" className="font-medium text-ink">{lab.name}</li></ol></nav>
+      <div className="mb-7 flex flex-wrap items-end justify-between gap-x-8 gap-y-4">
+        <div className="min-w-0"><h1 className="lab-page-title font-semibold tracking-[-0.04em]">{lab.name}</h1>{lab.condition && <p className="mt-2 flex items-start gap-2 text-sm leading-relaxed text-ink-soft"><LesionDot className="mt-2"/>{lab.condition}</p>}</div>
+        {lab.description && <p className="max-w-[30rem] text-sm leading-[1.7] text-ink-soft">{lab.description}</p>}
       </div>
 
-      <div className="grid items-start gap-5 lg:grid-cols-[minmax(0,1fr)_400px] xl:grid-cols-[minmax(0,1fr)_420px]">
-        <section aria-label="Interactive 3D model" className="lg:sticky lg:top-20">
-          <ViewerFrame className="h-[60vh] max-h-[560px] min-h-[340px] lg:h-[calc(100vh-150px)] lg:max-h-none"
+      <div className="grid items-start gap-5 lg:grid-cols-[minmax(0,1fr)_400px] xl:grid-cols-[minmax(0,1fr)_440px] xl:gap-6">
+        <section aria-label="Interactive 3D model" className="workspace-viewer min-w-0">
+          <ViewerFrame className="h-[58vh] max-h-[560px] min-h-[340px] lg:h-[calc(100vh-120px)] lg:max-h-[820px]"
             topLeft={<><Toggle label="Labels" icon="tag" checked={labelsOn} onChange={setLabelsOn}/><Toggle label="Explode" icon="layers" checked={exploded} onChange={setExploded}/></>}
             topRight={<div className="hidden flex-col items-end gap-1.5 sm:flex"><Chip tone={isLesion(stage) ? 'lesion' : 'plain'}>{isLesion(stage) && <LesionDot/>}{stage.ajcc ?? stage.label}</Chip><Chip>{view?.label}</Chip></div>}
             bottom={<Hint>Drag to rotate · tap a part to lift it</Hint>}>
@@ -128,7 +128,7 @@ export default function Lab() {
           </ViewerFrame>
         </section>
 
-        <div className="space-y-4">
+        <div className="workspace-sidebar space-y-4">
           <Panel step="01" title="Configure" id="configure">
             <div className="space-y-5">
               <StagePicker stages={lab.stages} value={stage.id} onChange={setStage}/>
@@ -139,7 +139,7 @@ export default function Lab() {
           <Panel step="02" title="Readout" id="readout" aside={<Chip tone={isLesion(stage) ? 'lesion' : 'plain'}>{stage.ajcc ? `AJCC ${stage.ajcc}` : stage.label}</Chip>}>
             <div aria-live="polite">
               {stage.readout && <p className={theme.prose}>{stage.readout}</p>}
-              {stage.teaching && <div className="mt-4 border-l-2 border-teal pl-3.5"><p className="text-xs font-semibold uppercase tracking-[0.08em] text-teal">Teaching note</p><p className="mt-1 text-sm leading-relaxed text-ink-soft">{stage.teaching}</p></div>}
+              {stage.teaching && <div className="teaching-note mt-5"><p className="text-xs font-semibold uppercase tracking-[0.06em] text-teal">Teaching note</p><p className="mt-2 text-sm leading-[1.7] text-ink-soft">{stage.teaching}</p></div>}
             </div>
           </Panel>
 
