@@ -58,6 +58,14 @@ def stage_vessels(st):
     if st in ('aaa_small', 'aaa_large', 'evar'):
         extra['sac'] = sac(21.0 if st == 'aaa_small' else 29.0)
         V['aorta'] = [lumen(dilate=3.0)]
+    if st == 'aaa_iliac':
+        # AAA continuing into both common iliac arteries (fusiform), stopping above the iliac bifurcation
+        a = sac(26.0); a[-1] = (0, 12, 4, 13.0)
+        extra['sac'] = a
+        extra['sac_more'] = [[(0, 14, 4, 12.5), (-6 * s, -2, 3, 12.0), (-13 * s, -18, 2, 12.5), (-19 * s, -32, 1.5, 10.5), (-24 * s, -44, 1, 6.3)]
+                             for s in (1, -1)]
+        V['aorta'] = [lumen(dilate=3.0)]
+        V['common_iliacs'] = [[(-2 * s, 4, 2, 6.6), (-16 * s, -24, 2, 7.2), (-28 * s, -52, 0, 5.4)] for s in (1, -1)]
     if st == 'evar':
         # bifurcated stent-graft: main body sealed in the infrarenal neck, limbs landing in both common iliacs
         V['aorta'] = [lumen()[:4]]
@@ -95,7 +103,7 @@ def build(st):
         m = K.mesh_from(fld.g, np.maximum(tree, g).ravel(), min_vol=8, target=60000 if k in ('aorta', 'stent_graft') else 24000)
         if m is not None: meshes[k] = m
     if 'sac' in extra:
-        S = np.maximum(fld.tube([extra['sac']]), -(tree - GAP))     # shell around the lumen (or graft) and any branch crossing it
+        S = np.maximum(fld.tube([extra['sac']] + extra.get('sac_more', [])), -(tree - GAP))     # shell around the lumen (or graft) and any branch crossing it
         m = K.mesh_from(fld.g, S.ravel(), min_vol=8, target=50000)
         if m is not None: meshes['aneurysm_sac'] = m
     if 'renal_stent' in extra:
@@ -130,7 +138,7 @@ def colour(name, V):
     return (0.9 + 0.1 * K.fbm(V, 0.18))[:, None] * np.ones((len(V), 3))
 
 DISPLAY = trimesh.geometry.align_vectors(np.array([0.34, 0.0, 0.94]), [0, 0, 1])[:3, :3]
-STAGES_ALL = ['normal', 'aaa_small', 'aaa_large', 'evar', 'open_repair', 'ras', 'renal_stent']
+STAGES_ALL = ['normal', 'aaa_small', 'aaa_large', 'aaa_iliac', 'evar', 'open_repair', 'ras', 'renal_stent']
 
 if __name__ == '__main__':
     OUT = sys.argv[1]
