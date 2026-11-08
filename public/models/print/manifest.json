@@ -2348,5 +2348,505 @@
    "faces": 39506,
    "volume_cm3": 56.04
   }
+ ],
+ "hydro_1_full": [
+  {
+   "part": "adrenal_gland",
+   "file": "kidney_hydro_1_full/01_adrenal_gland.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 12000,
+   "volume_cm3": 2.37
+  },
+  {
+   "part": "kidney_body",
+   "file": "kidney_hydro_1_full/02_kidney_body.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 22584,
+   "volume_cm3": 88.07
+  },
+  {
+   "part": "ureter",
+   "file": "kidney_hydro_1_full/03_ureter.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 3998,
+   "volume_cm3": 0.65
+  }
+ ],
+ "hydro_1_coronal": [
+  {
+   "part": "renal_cortex",
+   "file": "kidney_hydro_1_coronal/01_renal_cortex.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 29370,
+   "volume_cm3": 38.21
+  },
+  {
+   "part": "renal_medulla",
+   "file": "kidney_hydro_1_coronal/02_renal_medulla.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 10,
+   "faces": 11070,
+   "volume_cm3": 6.68
+  },
+  {
+   "part": "renal_sinus",
+   "file": "kidney_hydro_1_coronal/03_renal_sinus.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 9564,
+   "volume_cm3": 4.7
+  },
+  {
+   "part": "renal_pelvis",
+   "file": "kidney_hydro_1_coronal/04_renal_pelvis.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 3,
+   "faces": 7982,
+   "volume_cm3": 6.66
+  },
+  {
+   "part": "renal_artery",
+   "file": "kidney_hydro_1_coronal/05_renal_artery.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 4496,
+   "volume_cm3": 0.27
+  },
+  {
+   "part": "ureter",
+   "file": "kidney_hydro_1_coronal/06_ureter.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 3834,
+   "volume_cm3": 0.59
+  },
+  {
+   "part": "adrenal_gland",
+   "file": "kidney_hydro_1_coronal/07_adrenal_gland.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 8868,
+   "volume_cm3": 1.12
+  },
+  {
+   "part": "anterior_half",
+   "file": "kidney_hydro_1_coronal/08_anterior_half.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 19426,
+   "volume_cm3": 50.08
+  }
+ ],
+ "hydro_2_full": [
+  {
+   "part": "adrenal_gland",
+   "file": "kidney_hydro_2_full/01_adrenal_gland.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 12000,
+   "volume_cm3": 2.37
+  },
+  {
+   "part": "kidney_body",
+   "file": "kidney_hydro_2_full/02_kidney_body.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 25422,
+   "volume_cm3": 85.56
+  },
+  {
+   "part": "ureter",
+   "file": "kidney_hydro_2_full/03_ureter.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 3998,
+   "volume_cm3": 0.65
+  }
+ ],
+ "hydro_2_coronal": [
+  {
+   "part": "renal_cortex",
+   "file": "kidney_hydro_2_coronal/01_renal_cortex.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 37846,
+   "volume_cm3": 37.53
+  },
+  {
+   "part": "renal_medulla",
+   "file": "kidney_hydro_2_coronal/02_renal_medulla.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 10,
+   "faces": 16564,
+   "volume_cm3": 6.43
+  },
+  {
+   "part": "renal_sinus",
+   "file": "kidney_hydro_2_coronal/03_renal_sinus.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 11756,
+   "volume_cm3": 2.64
+  },
+  {
+   "part": "renal_pelvis",
+   "file": "kidney_hydro_2_coronal/04_renal_pelvis.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 8652,
+   "volume_cm3": 14.56
+  },
+  {
+   "part": "renal_artery",
+   "file": "kidney_hydro_2_coronal/05_renal_artery.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 4496,
+   "volume_cm3": 0.27
+  },
+  {
+   "part": "ureter",
+   "file": "kidney_hydro_2_coronal/06_ureter.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 3834,
+   "volume_cm3": 0.59
+  },
+  {
+   "part": "adrenal_gland",
+   "file": "kidney_hydro_2_coronal/07_adrenal_gland.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 8868,
+   "volume_cm3": 1.12
+  },
+  {
+   "part": "anterior_half",
+   "file": "kidney_hydro_2_coronal/08_anterior_half.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 34532,
+   "volume_cm3": 61.98
+  }
+ ],
+ "hydro_3_full": [
+  {
+   "part": "adrenal_gland",
+   "file": "kidney_hydro_3_full/01_adrenal_gland.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 12000,
+   "volume_cm3": 2.37
+  },
+  {
+   "part": "kidney_body",
+   "file": "kidney_hydro_3_full/02_kidney_body.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 28622,
+   "volume_cm3": 80.07
+  },
+  {
+   "part": "ureter",
+   "file": "kidney_hydro_3_full/03_ureter.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 3998,
+   "volume_cm3": 0.65
+  }
+ ],
+ "hydro_3_coronal": [
+  {
+   "part": "renal_cortex",
+   "file": "kidney_hydro_3_coronal/01_renal_cortex.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 38512,
+   "volume_cm3": 34.85
+  },
+  {
+   "part": "renal_medulla",
+   "file": "kidney_hydro_3_coronal/02_renal_medulla.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 10,
+   "faces": 7506,
+   "volume_cm3": 6.02
+  },
+  {
+   "part": "renal_sinus",
+   "file": "kidney_hydro_3_coronal/03_renal_sinus.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 16800,
+   "volume_cm3": 2.69
+  },
+  {
+   "part": "renal_pelvis",
+   "file": "kidney_hydro_3_coronal/04_renal_pelvis.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 2,
+   "faces": 10068,
+   "volume_cm3": 21.7
+  },
+  {
+   "part": "renal_artery",
+   "file": "kidney_hydro_3_coronal/05_renal_artery.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 4496,
+   "volume_cm3": 0.27
+  },
+  {
+   "part": "ureter",
+   "file": "kidney_hydro_3_coronal/06_ureter.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 3834,
+   "volume_cm3": 0.59
+  },
+  {
+   "part": "adrenal_gland",
+   "file": "kidney_hydro_3_coronal/07_adrenal_gland.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 8868,
+   "volume_cm3": 1.12
+  },
+  {
+   "part": "anterior_half",
+   "file": "kidney_hydro_3_coronal/08_anterior_half.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 35844,
+   "volume_cm3": 65.13
+  }
+ ],
+ "hydro_4_full": [
+  {
+   "part": "adrenal_gland",
+   "file": "kidney_hydro_4_full/01_adrenal_gland.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 12000,
+   "volume_cm3": 2.37
+  },
+  {
+   "part": "kidney_body",
+   "file": "kidney_hydro_4_full/02_kidney_body.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 22486,
+   "volume_cm3": 64.18
+  },
+  {
+   "part": "ureter",
+   "file": "kidney_hydro_4_full/03_ureter.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 3998,
+   "volume_cm3": 0.65
+  }
+ ],
+ "hydro_4_coronal": [
+  {
+   "part": "renal_cortex",
+   "file": "kidney_hydro_4_coronal/01_renal_cortex.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 29656,
+   "volume_cm3": 26.71
+  },
+  {
+   "part": "renal_medulla",
+   "file": "kidney_hydro_4_coronal/02_renal_medulla.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 10,
+   "faces": 9606,
+   "volume_cm3": 6.27
+  },
+  {
+   "part": "renal_sinus",
+   "file": "kidney_hydro_4_coronal/03_renal_sinus.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 8870,
+   "volume_cm3": 3.22
+  },
+  {
+   "part": "renal_pelvis",
+   "file": "kidney_hydro_4_coronal/04_renal_pelvis.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 10702,
+   "volume_cm3": 15.06
+  },
+  {
+   "part": "renal_artery",
+   "file": "kidney_hydro_4_coronal/05_renal_artery.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 4496,
+   "volume_cm3": 0.27
+  },
+  {
+   "part": "ureter",
+   "file": "kidney_hydro_4_coronal/06_ureter.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 3834,
+   "volume_cm3": 0.59
+  },
+  {
+   "part": "adrenal_gland",
+   "file": "kidney_hydro_4_coronal/07_adrenal_gland.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 8868,
+   "volume_cm3": 1.12
+  },
+  {
+   "part": "anterior_half",
+   "file": "kidney_hydro_4_coronal/08_anterior_half.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 33098,
+   "volume_cm3": 55.54
+  }
  ]
 }
