@@ -70,6 +70,13 @@ def clean_for_print(name, t):
     dropped = [(round(vols[i] / 1000, 3), np.round(comps[i].centroid, 1).tolist()) for i in range(len(comps)) if i not in keep]
     return trimesh.util.concatenate([comps[i] for i in keep]), dropped
 
+def check_stl(path):
+    """Reload a written STL the way a slicer sees it (float32, vertices merged by position)."""
+    m = trimesh.load(path, force='mesh')
+    _, counts = np.unique(m.edges_sorted, axis=0, return_counts=True)
+    nm, open_ = int((counts > 2).sum()), int((counts == 1).sum())
+    return dict(watertight=bool(m.is_watertight) and nm == 0 and open_ == 0, non_manifold_edges=nm, open_edges=open_, bodies=int(m.body_count))
+
 def halfspace(point, normal, size=400.0):
     """Manifold box filling the side of the plane the normal points AWAY from."""
     n = K.unit(normal); box = trimesh.creation.box(extents=[size, size, size])
@@ -295,7 +302,7 @@ if __name__ == '__main__':
             key = f'{stage}_{"full" if form == "whole" else "coronal"}'
             # print files first (lighter meshes), then densify colour-carrying parts for the app
             pdir = os.path.join(OUT, 'print', f'kidney_{key}'); os.makedirs(pdir, exist_ok=True)
-            entries = []
+            entries, failures = [], []
             for i, (name, m) in enumerate(meshes.items(), 1):
                 kind, axis, sup = specs[name]
                 pm = decimate(m, {'kidney_body': 40000, 'renal_cortex': 40000, 'tumor': 24000}.get(name, 12000))
@@ -306,9 +313,15 @@ if __name__ == '__main__':
                 if kind != 'as_is': om = K.orient(pm, kind, axis)
                 else: om.apply_translation([-om.bounds[:, 0].mean(), -om.bounds[:, 1].mean(), -om.bounds[0, 2]])
                 fn = f'{i:02d}_{name}.stl'; om.export(os.path.join(pdir, fn))
-                entries.append(dict(part=name, file=f'kidney_{key}/{fn}', supports=sup, watertight=bool(pm.is_watertight),
+                chk = check_stl(os.path.join(pdir, fn))     # what was written, not the in-memory mesh
+                if not chk['watertight']: failures.append(f"{key}/{fn}: {chk}")
+                entries.append(dict(part=name, file=f'kidney_{key}/{fn}', supports=sup, watertight=chk['watertight'],
+                                    non_manifold_edges=chk['non_manifold_edges'], open_edges=chk['open_edges'], bodies=chk['bodies'],
                                     faces=int(len(pm.faces)), volume_cm3=round(float(pm.volume) / 1000, 2)))
             manifest[key] = entries
+            if failures:
+                json.dump(manifest, open(manifest_path, 'w'), indent=1)
+                sys.exit('Print check failed (STL not watertight or has non-manifold edges):\n  ' + '\n  '.join(failures))
             app = {n: (densify(decimate(m, 30000), DENSIFY[n]) if n in DENSIFY else decimate(m, {'kidney_body': 60000, 'renal_cortex': 50000}.get(n, 20000))) for n, m in show.items()}
             colour_fn = lambda n, V: K.vertex_colour(n, V, ctx)
             glb_path = os.path.join(OUT, f'kidney_{stage}{"" if form == "whole" else "_coronal"}.glb')
