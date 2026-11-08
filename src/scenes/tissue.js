@@ -22,9 +22,9 @@ const PART_KIND = {
   tumor: 'tumor', vein_thrombus: 'tumor', ivc_thrombus: 'tumor',
   renal_sinus: 'lobular', adrenal_gland: 'lobular', aml: 'lobular', calculus: 'bone',
   ivc: 'vessel', cyst: 'vessel',
-  renal_artery: 'vessel', accessory_renal_artery: 'vessel', renal_vein: 'vessel', ureter: 'vessel', thecal_sac: 'vessel', nerve_roots: 'vessel', l5_nerve_root_left: 'vessel', l4_nerve_root_left: 'vessel',
+  renal_artery: 'vessel', accessory_renal_artery: 'vessel', renal_vein: 'vessel', ureter: 'vessel', thecal_sac: 'vessel', nerve_roots: 'vessel', l5_nerve_root_left: 'vessel', l4_nerve_root_left: 'vessel', l4_nerve_root_left: 'vessel',
   renal_medulla: 'inner', renal_pelvis: 'inner', annulus_fibrosus: 'inner', nucleus_pulposus: 'inner', disc_herniation: 'inner',
-  l4_vertebra: 'bone', l5_vertebra: 'bone', l4_posterior_arch: 'bone', bone_cement: 'bone',
+  l4_vertebra: 'bone', l5_vertebra: 'bone', l4_posterior_arch: 'bone', l4_posterior_arch: 'bone', bone_cement: 'bone',
   bone_graft: 'graft',
 }
 const NONE = { id: 0, wrap: 0 }

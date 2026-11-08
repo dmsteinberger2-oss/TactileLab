@@ -22,7 +22,7 @@ CLR = 0.25
 
 COLOURS = {'l4_vertebra': '#e6d9bf', 'l5_vertebra': '#e2d4b8', 'annulus_fibrosus': '#cfd8dc', 'nucleus_pulposus': '#9fb8c8',
            'disc_herniation': '#7f9fbc', 'thecal_sac': '#e9d27a', 'nerve_roots': '#f0d060', 'l5_nerve_root_left': '#f5c040',
-           'l4_nerve_root_left': '#f5c040', 'l4_posterior_arch': '#e6d9bf', 'bone_cement': '#f4f4f0', 'pedicle_screws': '#b8bec6', 'rods': '#c5cbd2', 'interbody_cage': '#cdbfa4', 'bone_graft': '#e8d7b0'}
+           'l4_nerve_root_left': '#f5c040', 'l4_posterior_arch': '#e6d9bf', 'bone_cement': '#f4f4f0', 'ligamentum_flavum': '#e8c8a0', 'pedicle_screws': '#b8bec6', 'rods': '#c5cbd2', 'interbody_cage': '#cdbfa4', 'bone_graft': '#e8d7b0'}
 B.DEFAULTS.update(COLOURS)
 
 def load():
@@ -198,7 +198,7 @@ def build(stage, P):
 
 # ---------------------------------------------------------------- VARIANTS_V1: pathology library (schematic)
 LISTHESIS = {'listhesis_1': 0.15, 'listhesis_2': 0.37, 'listhesis_3': 0.62, 'listhesis_4': 0.87}
-VARIANTS = ['far_lateral', 'central_herniation', 'spondylolysis', 'degen_listhesis'] + list(LISTHESIS) + ['compression_fracture', 'kyphoplasty', 'recurrent_herniation']  # VARIANTS_V2
+VARIANTS = ['far_lateral', 'central_herniation', 'spondylolysis', 'degen_listhesis'] + list(LISTHESIS) + ['compression_fracture', 'kyphoplasty', 'recurrent_herniation', 'stenosis', 'laminectomy']  # VARIANTS_V2 VARIANTS_V3
 
 def blob(spheres, k=3.0, grow=0.0, noise=0.35):
     """Soft disc fragment from a chain of spheres; grow>0 returns the dilated copy used to indent soft tissue."""
@@ -267,6 +267,22 @@ def build_variant(stage, P):
         show['disc_herniation'] = to_t(frag)
     elif stage == 'spondylolysis':
         l4 = l4 - pars_cut(P)
+    elif stage in ('stenosis', 'laminectomy'):
+        # degenerative central stenosis: thickened ligamentum flavum behind, broad disc bulge in front
+        lf_sph = [((sg_ * 5.0, 1.0, -33.0), 5.0) for sg_ in (1, -1)] + [((sg_ * 10.5, 2.0, -31.0), 3.8) for sg_ in (1, -1)] + [((0.0, 0.0, -36.0), 3.0)]
+        bul_sph = [((x_, 0.0, -16.0), 4.6) for x_ in (-11.0, -5.5, 0.0, 5.5, 11.0)]
+        bulge = to_m(blob(bul_sph, k=4.0, noise=0.2)) - bones
+        ann = (ann + bulge) - nuc
+        sac = sac - to_m(blob(bul_sph, k=4.0, noise=0.2, grow=CLR))
+        if stage == 'stenosis':
+            lf = to_m(blob(lf_sph, k=3.0, noise=0.3)) - bones - ann
+            big = to_m(blob(lf_sph, k=3.0, noise=0.3, grow=CLR))
+            sac = sac - big; others = others - big; l5l = l5l - big; r4l = r4l - big
+            show['ligamentum_flavum'] = to_t(lf)
+        else:
+            # central laminectomy: lower L4 lamina and spinous process, upper L5 lamina, ligamentum flavum removed
+            box = trimesh.creation.box(extents=[19, 34, 50]); box.apply_translation([0, 2.0, -55.0])
+            l4 = l4 - to_m(box); l5 = l5 - to_m(box)
     elif stage in ('compression_fracture', 'kyphoplasty'):
         frac = 0.40 if stage == 'compression_fracture' else 0.15
         l4 = to_m(wedge(P['l4_vertebra'], frac))
