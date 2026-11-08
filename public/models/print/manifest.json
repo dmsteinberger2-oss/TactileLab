@@ -6230,5 +6230,196 @@
    "faces": 2192,
    "volume_cm3": 0.38
   }
+ ],
+ "stenosis_full": [
+  {
+   "part": "ligamentum_flavum",
+   "file": "spine_stenosis_full/01_ligamentum_flavum.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 18730,
+   "volume_cm3": 1.34
+  },
+  {
+   "part": "nucleus_pulposus",
+   "file": "spine_stenosis_full/02_nucleus_pulposus.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 5822,
+   "volume_cm3": 1.79
+  },
+  {
+   "part": "l4_vertebra",
+   "file": "spine_stenosis_full/03_l4_vertebra.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 30000,
+   "volume_cm3": 47.18
+  },
+  {
+   "part": "l5_vertebra",
+   "file": "spine_stenosis_full/04_l5_vertebra.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 30000,
+   "volume_cm3": 47.35
+  },
+  {
+   "part": "annulus_fibrosus",
+   "file": "spine_stenosis_full/05_annulus_fibrosus.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 23324,
+   "volume_cm3": 17.56
+  },
+  {
+   "part": "thecal_sac",
+   "file": "spine_stenosis_full/06_thecal_sac.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 30000,
+   "volume_cm3": 12.15
+  },
+  {
+   "part": "nerve_roots",
+   "file": "spine_stenosis_full/07_nerve_roots.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 2,
+   "faces": 9496,
+   "volume_cm3": 0.98
+  },
+  {
+   "part": "l4_nerve_root_left",
+   "file": "spine_stenosis_full/08_l4_nerve_root_left.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 4370,
+   "volume_cm3": 0.44
+  },
+  {
+   "part": "l5_nerve_root_left",
+   "file": "spine_stenosis_full/09_l5_nerve_root_left.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 5080,
+   "volume_cm3": 0.49
+  }
+ ],
+ "laminectomy_full": [
+  {
+   "part": "nucleus_pulposus",
+   "file": "spine_laminectomy_full/01_nucleus_pulposus.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 5822,
+   "volume_cm3": 1.79
+  },
+  {
+   "part": "l4_vertebra",
+   "file": "spine_laminectomy_full/02_l4_vertebra.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 30000,
+   "volume_cm3": 43.0
+  },
+  {
+   "part": "l5_vertebra",
+   "file": "spine_laminectomy_full/03_l5_vertebra.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 30000,
+   "volume_cm3": 47.33
+  },
+  {
+   "part": "annulus_fibrosus",
+   "file": "spine_laminectomy_full/04_annulus_fibrosus.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 23324,
+   "volume_cm3": 17.56
+  },
+  {
+   "part": "thecal_sac",
+   "file": "spine_laminectomy_full/05_thecal_sac.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 27636,
+   "volume_cm3": 12.55
+  },
+  {
+   "part": "nerve_roots",
+   "file": "spine_laminectomy_full/06_nerve_roots.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 2,
+   "faces": 9496,
+   "volume_cm3": 0.98
+  },
+  {
+   "part": "l4_nerve_root_left",
+   "file": "spine_laminectomy_full/07_l4_nerve_root_left.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 4370,
+   "volume_cm3": 0.44
+  },
+  {
+   "part": "l5_nerve_root_left",
+   "file": "spine_laminectomy_full/08_l5_nerve_root_left.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 5080,
+   "volume_cm3": 0.49
+  }
  ]
 }
