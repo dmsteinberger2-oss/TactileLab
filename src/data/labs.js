@@ -1,5 +1,5 @@
-// Clinical content for each lab. Every string here is displayed to users or sent to
-// Gemini as grounding context. Wording follows AJCC 8th edition (2017) for staging.
+// Clinical content for each lab. Every string here is displayed to users.
+// Wording follows AJCC 8th edition (2017) for staging.
 // Scene units are centimetres; exports convert to millimetres.
 
 export const KIDNEY_DIMS_CM = { length: 11, width: 6, thickness: 3 } // Gray's / Moore typical adult
@@ -81,17 +81,6 @@ export const labs = {
     cutaways: [
       { id: 'full', label: 'Whole kidney' },
       { id: 'coronal', label: 'Coronal section' },
-    ],
-    goals: [
-      { id: 'identify', label: 'Identify structures' },
-      { id: 'staging', label: 'Tumour staging' },
-      { id: 'compare', label: 'Normal vs abnormal' },
-      { id: 'surgical', label: 'Surgical planning' },
-    ],
-    audiences: [
-      { id: 'preclinical', label: 'Pre-clinical student' },
-      { id: 'clinical', label: 'Clinical student' },
-      { id: 'resident', label: 'Resident' },
     ],
     facts: {
       dimensions: 'Adult kidney: length 10–12 cm, width 5–7 cm, thickness about 3 cm, weight roughly 125–170 g.',

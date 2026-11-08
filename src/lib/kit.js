@@ -5,9 +5,8 @@ import { jsPDF } from 'jspdf'
 import { useLabStore } from '@/store/labStore'
 import { getLab, getStage, getPart, ajccTable } from '@/data/labs'
 import { getSceneRoot } from '@/lib/sceneRegistry'
-import { learnUrl } from '@/lib/share'
+import { viewUrl } from '@/lib/share'
 import { partReport, volumeReport, stlVolumeCm3, summarise, PRINT_ASSUMPTIONS } from '@/lib/printReport'
-import { generateLesson } from '@/ai/gemini'
 
 const CM_TO_MM = 10
 
@@ -76,7 +75,7 @@ export async function getPrintReport(ready) {
 }
 
 // ---- kit card PDF ----
-async function kitCardPDF({ lab, stage, cfg, report, lesson, qrDataUrl, listed = [] }) {
+async function kitCardPDF({ lab, stage, cfg, report, qrDataUrl, listed = [] }) {
   const doc = new jsPDF({ unit: 'mm', format: 'a4' })
   const W = 210, margin = 16
   let y = 20
@@ -111,15 +110,6 @@ async function kitCardPDF({ lab, stage, cfg, report, lesson, qrDataUrl, listed =
   doc.setFont('helvetica', 'bold'); doc.text('AJCC 8th edition T stage', margin, y); y += 6; doc.setFont('helvetica', 'normal'); doc.setFontSize(9)
   for (const [t, d] of ajccTable) { y = wrap(doc, `${t}: ${d}`, margin, y, W - 2 * margin) + 0.5; if (y > 270) { doc.addPage(); y = 20 } }
 
-  if (lesson) {
-    doc.addPage(); y = 20; doc.setFontSize(16); doc.setFont('helvetica', 'bold'); doc.text('Learning material', margin, y); y += 8
-    doc.setFontSize(11); doc.setFont('helvetica', 'normal')
-    y = wrap(doc, lesson.caseStudy, margin, y, W - 2 * margin) + 6
-    doc.setFont('helvetica', 'bold'); doc.text('Vocabulary', margin, y); y += 6; doc.setFont('helvetica', 'normal')
-    for (const v of lesson.vocab ?? []) { y = wrap(doc, `${v.term}: ${v.definition}`, margin, y, W - 2 * margin) + 1; if (y > 270) { doc.addPage(); y = 20 } }
-    y += 5; doc.setFont('helvetica', 'bold'); doc.text('Exercises', margin, y); y += 6; doc.setFont('helvetica', 'normal')
-    ;(lesson.exercises ?? []).forEach((e, i) => { y = wrap(doc, `${i + 1}. ${e}`, margin, y, W - 2 * margin) + 1; if (y > 270) { doc.addPage(); y = 20 } })
-  }
   doc.addPage(); y = 20; doc.setFontSize(9); doc.setFont('helvetica', 'normal')
   doc.text('Sources', margin, y); y += 5
   for (const s of lab.sources ?? []) y = wrap(doc, '• ' + s, margin, y, W - 2 * margin) + 1
@@ -158,7 +148,7 @@ async function loadPrintReadyParts(labId, stageId, cutaway) {
 }
 
 // ---- main entry ----
-export async function downloadKit({ includeLesson = true } = {}) {
+export async function downloadKit() {
   const state = useLabStore.getState()
   const cfg = state.config()
   const lab = getLab(cfg.labId)
@@ -177,18 +167,16 @@ export async function downloadKit({ includeLesson = true } = {}) {
   listed.forEach((p, i) => stl.file(`label_${String(i + 1).padStart(2, '0')}_${p.name}.stl`, labelTile(i)))
 
   const report = await getPrintReport(ready)
-  let lesson = null
-  if (includeLesson) { try { lesson = await generateLesson() } catch (e) { console.warn('Lesson generation skipped:', e) } }
 
   const qrCanvas = document.getElementById('kit-qr')
   const qrDataUrl = qrCanvas?.toDataURL?.('image/png') ?? null
-  folder.file('kit_card.pdf', await kitCardPDF({ lab, stage, cfg, report, lesson, qrDataUrl, listed }))
-  folder.file('config.json', JSON.stringify({ ...cfg, learnUrl: learnUrl(cfg), report, generatedAt: new Date().toISOString() }, null, 2))
+  folder.file('kit_card.pdf', await kitCardPDF({ lab, stage, cfg, report, qrDataUrl, listed }))
+  folder.file('config.json', JSON.stringify({ ...cfg, viewUrl: viewUrl(cfg), report, generatedAt: new Date().toISOString() }, null, 2))
   folder.file('README.txt', [
     `TactileLab kit — ${lab.name}, ${lab.condition}, ${stage.label}`,
     '', 'stl/            one STL per part, millimetres, 1:1 scale, oriented for printing (see kit_card.pdf for supports)',
-    'stl/label_*.stl  label tiles; notch count = part number', 'kit_card.pdf    print settings, assembly, staging reference, learning material, QR to the interactive model',
-    'config.json     the exact configuration that produced this kit', '', `Interactive model: ${learnUrl(cfg)}`,
+    'stl/label_*.stl  label tiles; notch count = part number', 'kit_card.pdf    print settings, assembly, staging reference, QR to the interactive model',
+    'config.json     the exact configuration that produced this kit', '', `Interactive model: ${viewUrl(cfg)}`,
   ].join('\n'))
 
   const blob = await zip.generateAsync({ type: 'blob' })

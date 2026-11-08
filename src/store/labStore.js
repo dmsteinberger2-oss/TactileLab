@@ -10,8 +10,6 @@ export const useLabStore = create((set, get) => ({
   cutaway: 'full',
   partColors: defaultColors('kidney'),
   labelsOn: true,
-  goal: 'staging',
-  audience: 'clinical',
   selectedPartId: null,
   exploded: false,
   compareNormal: false,
@@ -23,16 +21,14 @@ export const useLabStore = create((set, get) => ({
   setPartColor: (partId, hex) => set((s) => ({ partColors: { ...s.partColors, [partId]: hex } })),
   resetColors: () => set((s) => ({ partColors: defaultColors(s.labId) })),
   setLabelsOn: (labelsOn) => set({ labelsOn }),
-  setGoal: (goal) => set({ goal }),
-  setAudience: (audience) => set({ audience }),
   selectPart: (selectedPartId) => set({ selectedPartId }),
   setExploded: (exploded) => set({ exploded, liftedParts: {} }),
   setCompareNormal: (compareNormal) => set({ compareNormal }),
   toggleLift: (partId) => set((s) => ({ liftedParts: { ...s.liftedParts, [partId]: !s.liftedParts[partId] } })),
 
   config: () => {
-    const { labId, stageId, cutaway, partColors, labelsOn, goal, audience } = get()
-    return { labId, stageId, cutaway, partColors, labelsOn, goal, audience }
+    const { labId, stageId, cutaway, partColors, labelsOn } = get()
+    return { labId, stageId, cutaway, partColors, labelsOn }
   },
 
   hydrateFromSearchParams: (params) => {
@@ -41,7 +37,9 @@ export const useLabStore = create((set, get) => ({
     const patch = { labId, partColors: defaultColors(labId) }
     const stageId = p.get('stage')
     if (stageId && labs[labId].stages?.some((s) => s.id === stageId)) patch.stageId = stageId
-    for (const k of ['cutaway', 'goal', 'audience']) if (p.get(k)) patch[k] = p.get(k)
+    // Old /learn QR codes also carry goal and audience; they are ignored.
+    const views = labs[labId].cutaways?.map((c) => c.id) ?? ['full']
+    patch.cutaway = views.includes(p.get('cutaway')) ? p.get('cutaway') : views[0]   // share URLs omit the default view
     if (p.get('labels')) patch.labelsOn = p.get('labels') !== '0'
     const colors = p.get('colors')
     if (colors) { try { patch.partColors = { ...patch.partColors, ...JSON.parse(atob(colors)) } } catch {} }

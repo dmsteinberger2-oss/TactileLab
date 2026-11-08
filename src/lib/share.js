@@ -1,15 +1,13 @@
 import { useLabStore } from '@/store/labStore'
 import { labs } from '@/data/labs'
 
-// Absolute URL to the student view encoding the current config. Colours are included only
+// Absolute URL to the shareable /view page encoding the current config. Colours are included only
 // when they differ from defaults so the QR stays small.
-export function learnUrl(cfg = useLabStore.getState().config()) {
+export function viewUrl(cfg = useLabStore.getState().config()) {
   const p = new URLSearchParams()
   p.set('lab', cfg.labId)
   p.set('stage', cfg.stageId)
   if (cfg.cutaway !== 'full') p.set('cutaway', cfg.cutaway)
-  p.set('goal', cfg.goal)
-  p.set('audience', cfg.audience)
   if (!cfg.labelsOn) p.set('labels', '0')
   const defaults = Object.fromEntries((labs[cfg.labId]?.parts ?? []).map((x) => [x.id, x.defaultColor]))
   const diff = Object.fromEntries(Object.entries(cfg.partColors).filter(([k, v]) => defaults[k] !== v))
@@ -18,7 +16,7 @@ export function learnUrl(cfg = useLabStore.getState().config()) {
   // deployed address (e.g. http://192.168.1.20:5173) so QR codes point somewhere reachable.
   const env = import.meta.env.VITE_PUBLIC_ORIGIN
   const origin = env ? env.replace(/\/$/, '') : typeof window !== 'undefined' ? window.location.origin : ''
-  return `${origin}/learn?${p.toString()}`
+  return `${origin}/view?${p.toString()}`
 }
 
 export const shareIsLocalOnly = () =>

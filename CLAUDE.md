@@ -5,17 +5,16 @@ Hacking ends 11:00 Sunday Nov 8. Devpost due 9:00. Judging is a science-fair tab
 
 ## What it is
 Medical educators make the physical teaching models they need. Pick an organ and condition, customise it with a
-live 3D preview, download a print-ready kit. A QR on the kit opens the same model plus a lesson on a phone.
+live 3D preview, download a print-ready kit. A QR on the kit opens the same model on a phone (/view).
 Prototype: one kidney-tumour kit (renal cell carcinoma, Normal / T1a / T1b / T2a / T3a), whole and coronal views.
 
 ## Layout
-- `src/screens`, `src/components/LabUI.jsx`: UI (Home, Lab, Learn). Change freely, keep the look.
-- `src/store/labStore.js`: single Zustand config that drives the canvas, kit export, share URL and AI.
+- `src/screens`, `src/components/LabUI.jsx`: UI (Home, Lab, View; /learn redirects to /view). Change freely, keep the look.
+- `src/store/labStore.js`: single Zustand config that drives the canvas, kit export and share URL.
 - `src/data/labs.js`: all clinical text (AJCC 8th wording). Don't rewrite clinical wording without a source.
 - `src/scenes/ModelCanvas.jsx`: R3F viewer. Loads `/models/kidney_<stage>.glb` or `_coronal.glb`, one mesh per part id.
 - `src/lib/kit.js`: Download kit (print-ready STLs from `public/models/print/manifest.json`, kit_card.pdf, QR).
 - `src/lib/share.js`: student URL; uses `VITE_PUBLIC_ORIGIN` so QR codes work on phones.
-- `src/ai/gemini.js`: lesson (structured JSON) + model-grounded Q&A, cached in localStorage.
 - `tools/place_model.py`: builds every model and print file from `tools/source_kidney.glb`. See README.
 
 ## Rules
@@ -26,4 +25,4 @@ Prototype: one kidney-tumour kit (renal cell carcinoma, Normal / T1a / T1b / T2a
 - Commit after each working change; the history is our provenance.
 
 ## Run
-npm install; cp .env.example .env.local (add VITE_GEMINI_API_KEY and VITE_PUBLIC_ORIGIN); npm run dev
+npm install; cp .env.example .env.local (set VITE_PUBLIC_ORIGIN); npm run dev

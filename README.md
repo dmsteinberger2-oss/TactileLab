@@ -6,7 +6,7 @@ customize a template with a live 3D preview, download a print-ready kit. HackRPI
 ## Run
 ```
 npm install
-cp .env.example .env.local   # add VITE_GEMINI_API_KEY
+cp .env.example .env.local   # set VITE_PUBLIC_ORIGIN
 npm run dev                  # LAN-exposed; set VITE_PUBLIC_ORIGIN to the Network URL so QR codes work on phones
 ```
 
@@ -16,7 +16,7 @@ npm run dev                  # LAN-exposed; set VITE_PUBLIC_ORIGIN to the Networ
 
 ## Contract
 See `src/store/labStore.js`, `src/data/labs.js`, `src/scenes/ModelCanvas.jsx`, `src/lib/kit.js`,
-`src/lib/share.js`, `src/ai/gemini.js`, `src/components/KitQR.jsx`.
+`src/lib/share.js`, `src/components/KitQR.jsx`.
 
 ## Models
 Base anatomy: `tools/source_kidney.glb`, a normal kidney with separate watertight meshes (cortex with renal
