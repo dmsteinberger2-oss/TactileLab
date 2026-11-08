@@ -79,9 +79,11 @@ export function Panel({ step, title, aside, children, className = '', id }) {
 // Single-choice segmented control. Options: { id, label, sub?, marker? }.
 export function Segmented({ label, options = [], value, onChange, columns }) {
   const cols = columns ?? Math.min(options.length, 5)
+  // Long labels (e.g. "Microdiscectomy") don't fit side by side on a phone: stack them below sm.
+  const stack = options.length > 1 && options.some((o) => String(o.label).length > 12)
   return <fieldset className="min-w-0">
     <legend className="mb-2 text-xs font-semibold uppercase tracking-[0.08em] text-ink-soft">{label}</legend>
-    <div role="radiogroup" aria-label={label} className="grid gap-1.5 rounded-xl bg-bench p-1.5" style={{ gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))` }}>
+    <div role="radiogroup" aria-label={label} className={`grid grid-cols-[repeat(var(--cols),minmax(0,1fr))] gap-1.5 rounded-xl bg-bench p-1.5 ${stack ? 'max-sm:grid-cols-1' : ''}`} style={{ '--cols': cols }}>
       {options.map((o) => {
         const on = value === o.id
         return <button key={o.id} type="button" role="radio" aria-checked={on} onClick={() => onChange(o.id)}
@@ -128,3 +130,10 @@ export function LesionDot({ className = '' }) {
 export function Hint({ children }) {
   return <span className="inline-flex items-center gap-1.5 rounded-full bg-paper/90 px-3 py-1.5 text-xs font-medium text-ink-soft shadow-sm"><Icon name="rotate" className="h-3.5 w-3.5"/>{children}</span>
 }
+
+// Stage options carry the tumour size, so the selector doubles as a size scale.
+// Labs without tumour sizes (e.g. the spine) get plain labels.
+export const hasSizes = (stages) => stages.some((s) => s.sizeCm > 0)
+export const stageOptions = (stages) => hasSizes(stages)
+  ? stages.map((s) => ({ id: s.id, label: s.label, sub: s.sizeCm > 0 ? `${s.sizeCm.toFixed(1)} cm` : 'no mass', marker: s.sizeCm > 0 ? <LesionDot/> : null }))
+  : stages.map((s) => ({ id: s.id, label: s.label }))

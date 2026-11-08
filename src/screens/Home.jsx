@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { useLabStore } from '@/store/labStore'
 import { labs } from '@/data/labs'
 import ModelCanvas from '@/scenes/ModelCanvas'
 import { Chip, Header, Icon, LesionDot, ViewerFrame, theme } from '@/components/LabUI'
@@ -18,8 +19,7 @@ function LabCard({ lab, index }) {
       {lab.condition && <p className="mt-1 text-sm text-ink-soft">{lab.condition}</p>}
     </article>
   }
-  const tumourStages = lab.stages?.filter((s) => s.sizeCm > 0) ?? []
-  return <Link to={`/lab/${encodeURIComponent(lab.id)}`} className={`${theme.panel} group flex flex-col p-5 transition hover:-translate-y-0.5 hover:border-teal hover:shadow-[0_10px_30px_-12px_rgba(15,118,110,0.35)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-teal sm:col-span-2 lg:col-span-1 lg:row-span-2`}>
+  return <Link to={`/lab/${encodeURIComponent(lab.id)}`} className={`${theme.panel} group flex flex-col p-5 transition hover:-translate-y-0.5 hover:border-teal hover:shadow-[0_10px_30px_-12px_rgba(15,118,110,0.35)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-teal`}>
     <div className="flex items-center justify-between"><span className={`${theme.tag} text-teal`}>{n}</span><Chip tone="teal">Available</Chip></div>
     <h3 className="mt-8 text-3xl font-bold tracking-[-0.03em]">{lab.name}</h3>
     {lab.condition && <p className="mt-1 flex items-center gap-2 text-sm font-medium text-ink"><LesionDot/>{lab.condition}</p>}
@@ -28,15 +28,18 @@ function LabCard({ lab, index }) {
     <dl className="mt-auto grid grid-cols-3 gap-3 border-t border-line pt-4 text-xs">
       <div><dt className="text-ink-soft">Stages</dt><dd className="mt-0.5 font-mono text-sm font-semibold">{lab.stages?.length ?? 0}</dd></div>
       <div><dt className="text-ink-soft">Views</dt><dd className="mt-0.5 font-mono text-sm font-semibold">{lab.cutaways?.length ?? 1}</dd></div>
-      <div><dt className="text-ink-soft">With tumour</dt><dd className="mt-0.5 font-mono text-sm font-semibold">{tumourStages.length}</dd></div>
+      <div><dt className="text-ink-soft">Parts</dt><dd className="mt-0.5 font-mono text-sm font-semibold">{lab.parts?.length ?? 0}</dd></div>
     </dl>
     <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-teal">Open lab<Icon name="arrow" className="h-4 w-4 transition group-hover:translate-x-0.5"/></span>
   </Link>
 }
 
 export default function Home() {
-  const all = Object.values(labs)
+  const all = Object.values(labs).sort((a, b) => Number(!!a.comingSoon) - Number(!!b.comingSoon))   // available labs first
   const featured = all.find((l) => !l.comingSoon)
+  // The hero canvas shows whatever lab the store holds (the last one opened), so label it from the store.
+  const shownId = useLabStore((s) => s.labId)
+  const shown = labs[shownId] && !labs[shownId].comingSoon ? labs[shownId] : featured
   return <div className={theme.page}><Header/>
     <main>
       <section className={`${theme.wrap} grid items-center gap-8 pb-10 pt-8 sm:pt-14 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] lg:gap-14 lg:pb-16`}>
@@ -55,7 +58,7 @@ export default function Home() {
         {featured && <div className="pointer-events-none" aria-hidden="true">
           <ViewerFrame className="h-[320px] sm:h-[440px] lg:h-[540px]"
             topRight={<Chip>Live model</Chip>}
-            bottom={<><Chip><LesionDot/>{featured.name} · {featured.condition}</Chip></>}>
+            bottom={<><Chip><LesionDot/>{shown.name} · {shown.condition}</Chip></>}>
             <ModelCanvas/>
           </ViewerFrame>
         </div>}

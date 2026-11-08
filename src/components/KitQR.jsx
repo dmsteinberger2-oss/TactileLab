@@ -6,5 +6,6 @@ import { viewUrl } from '@/lib/share'
 // read the canvas for the PDF.
 export default function KitQR({ size = 160 }) {
   useLabStore((s) => s.stageId); useLabStore((s) => s.cutaway); useLabStore((s) => s.partColors); useLabStore((s) => s.labelsOn)
+  useLabStore((s) => s.labId); useLabStore((s) => s.partModes); useLabStore((s) => s.partVisibility)
   return <QRCodeCanvas id="kit-qr" value={viewUrl()} size={size} level="M" includeMargin />
 }

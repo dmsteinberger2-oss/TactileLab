@@ -3,7 +3,7 @@ import { Link, useSearchParams } from 'react-router-dom'
 import { useLabStore } from '@/store/labStore'
 import { labs } from '@/data/labs'
 import ModelCanvas from '@/scenes/ModelCanvas'
-import { Chip, Header, Hint, Icon, LesionDot, Segmented, Spinner, Toggle, ViewerFrame, theme } from '@/components/LabUI'
+import { Chip, Header, Hint, Icon, LesionDot, Segmented, Spinner, Toggle, ViewerFrame, hasSizes, stageOptions, theme } from '@/components/LabUI'
 
 // What the kit's QR opens, usually on a phone: the model, stage and view, explode, and the tapped part.
 export default function View() {
@@ -59,8 +59,8 @@ export default function View() {
             </section>
 
             <section aria-label="Model controls" className={`${theme.panel} space-y-5 p-5`}>
-              <Segmented label="Stage" options={lab.stages.map((s) => ({ id: s.id, label: s.label, sub: s.sizeCm > 0 ? `${s.sizeCm.toFixed(1)} cm` : 'no mass', marker: s.sizeCm > 0 ? <LesionDot/> : null }))} value={stage.id} onChange={setStage}/>
-              {lab.cutaways && <Segmented label="View" options={lab.cutaways} value={cutaway} onChange={setCutaway}/>}
+              <Segmented label={hasSizes(lab.stages) ? 'Tumour stage' : 'Stage'} options={stageOptions(lab.stages)} value={stage.id} onChange={setStage} columns={lab.stages.length > 3 ? undefined : lab.stages.length}/>
+              {lab.cutaways?.length > 1 && <Segmented label="View" options={lab.cutaways} value={cutaway} onChange={setCutaway}/>}
             </section>
 
             {stage?.readout && <section aria-labelledby="readout-title" className={`${theme.panel} p-5`}>

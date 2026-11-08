@@ -1,13 +1,15 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useLayoutEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { useLabStore } from '@/store/labStore'
 import { labs } from '@/data/labs'
 import ModelCanvas from '@/scenes/ModelCanvas'
-import { downloadKit, getPrintReport } from '@/lib/kit'
+import { downloadKit } from '@/lib/kit'
+import { usePrintReport } from '@/lib/usePrintReport'
 import { PRINT_ASSUMPTIONS } from '@/lib/printReport'
 import { viewUrl, shareIsLocalOnly } from '@/lib/share'
 import KitQR from '@/components/KitQR'
-import { Chip, Header, Hint, Icon, LesionDot, Panel, Segmented, Spinner, Toggle, ViewerFrame, theme } from '@/components/LabUI'
+import PartControls from '@/components/PartControls'
+import { Chip, Header, Hint, Icon, LesionDot, Panel, Segmented, Spinner, Toggle, ViewerFrame, hasSizes, stageOptions, theme } from '@/components/LabUI'
 
 function formatMinutes(value) {
   if (!Number.isFinite(value)) return '—'
@@ -15,12 +17,6 @@ function formatMinutes(value) {
   return h ? `${h} h ${String(m).padStart(2, '0')} min` : `${m} min`
 }
 
-// Stage options carry the tumour size so the selector doubles as a size scale.
-const stageOptions = (stages) => stages.map((s) => ({
-  id: s.id, label: s.label,
-  sub: s.sizeCm > 0 ? `${s.sizeCm.toFixed(1)} cm` : 'no mass',
-  marker: s.sizeCm > 0 ? <LesionDot/> : null,
-}))
 
 function PrintSummary({ report }) {
   if (report === null) return <p className="flex items-center gap-2 text-sm text-ink-soft"><Spinner/>Calculating print estimate…</p>
@@ -79,23 +75,19 @@ export default function Lab() {
   const partColors = useLabStore((s) => s.partColors), setPartColor = useLabStore((s) => s.setPartColor), resetColors = useLabStore((s) => s.resetColors)
   const labelsOn = useLabStore((s) => s.labelsOn), setLabelsOn = useLabStore((s) => s.setLabelsOn)
   const exploded = useLabStore((s) => s.exploded), setExploded = useLabStore((s) => s.setExploded)
-  // Print report comes from the print-ready STLs (or the loaded scene); refresh on stage/view change.
-  const [report, setReport] = useState(null)
-  useEffect(() => {
-    let tries = 0, timer, alive = true
-    setReport(null)
-    const tick = async () => {
-      try { const r = await getPrintReport(); if (!alive) return; setReport(r); if (r.parts.length === 0 && tries++ < 40) timer = setTimeout(tick, 250) }
-      catch { if (alive && tries++ < 40) timer = setTimeout(tick, 250); else if (alive) setReport({ parts: [] }) }
-    }
-    tick()
-    return () => { alive = false; clearTimeout(timer) }
-  }, [stageId, cutaway])
+  const setLab = useLabStore((s) => s.setLab), storeLabId = useLabStore((s) => s.labId)
+  // The share link and QR carry part settings, so re-render when they change.
+  useLabStore((s) => s.partModes); useLabStore((s) => s.partVisibility)
+  // The route picks the lab (setLab is a no-op when it's already current, so settings survive remounts).
+  useLayoutEffect(() => { if (lab && !lab.comingSoon) setLab(labId) }, [labId, lab, setLab])
+  // Print estimate follows stage, view, part modes, visibility and print scale.
+  const report = usePrintReport()
 
   if (!lab || lab.comingSoon) return <div className={theme.page}><Header/>
     <main className={`${theme.wrap} py-20`}><p className={`${theme.tag} text-ink-soft`}>{lab ? 'In development' : 'Not found'}</p><h1 className="mt-2 text-3xl font-bold tracking-[-0.03em]">{lab ? `The ${lab.name.toLowerCase()} lab isn’t ready yet` : 'Lab unavailable'}</h1><p className="mt-3 text-ink-soft">Choose an available lab to build a model.</p><Link to="/" className={`${theme.primary} mt-6`}><Icon name="back" className="h-4 w-4"/>Back to labs</Link></main>
   </div>
 
+  if (storeLabId !== labId) return <div className={theme.page}><Header badge="Model builder"/><main className={`${theme.wrap} py-16`}><p role="status" className="flex items-center gap-2 text-sm text-ink-soft"><Spinner/>Loading {lab.name.toLowerCase()} lab…</p></main></div>
   const stage = lab.stages.find((s) => s.id === stageId) || lab.stages[0]
   const view = lab.cutaways?.find((c) => c.id === cutaway) ?? lab.cutaways?.[0]
   const shareUrl = viewUrl()
@@ -124,8 +116,8 @@ export default function Lab() {
         <div className="space-y-4">
           <Panel step="01" title="Configure" id="configure">
             <div className="space-y-5">
-              <Segmented label="Tumour stage" options={stageOptions(lab.stages)} value={stage.id} onChange={setStage}/>
-              {lab.cutaways && <Segmented label="View" options={lab.cutaways} value={cutaway} onChange={setCutaway}/>}
+              <Segmented label={hasSizes(lab.stages) ? 'Tumour stage' : 'Stage'} options={stageOptions(lab.stages)} value={stage.id} onChange={setStage} columns={lab.stages.length > 3 ? undefined : lab.stages.length}/>
+              {lab.cutaways?.length > 1 && <Segmented label="View" options={lab.cutaways} value={cutaway} onChange={setCutaway}/>}
             </div>
           </Panel>
 
@@ -152,12 +144,14 @@ export default function Lab() {
             </ul>
           </Panel>
 
-          <Panel step="04" title="Print kit" id="print" aside={<Icon name="print" className="h-4 w-4 text-ink-soft"/>}>
+          <PartControls step="04"/>
+
+          <Panel step="05" title="Print kit" id="print" aside={<Icon name="print" className="h-4 w-4 text-ink-soft"/>}>
             <DownloadKit stageId={stageId} cutaway={cutaway}/>
             <div className="mt-5 border-t border-line pt-5"><h3 className="mb-3 text-xs font-semibold uppercase tracking-[0.08em] text-ink-soft">Print summary</h3><PrintSummary report={report}/></div>
           </Panel>
 
-          <Panel step="05" title="Share with students" id="share" aside={<Icon name="phone" className="h-4 w-4 text-ink-soft"/>}>
+          <Panel step="06" title="Share with students" id="share" aside={<Icon name="phone" className="h-4 w-4 text-ink-soft"/>}>
             <div className="flex flex-wrap items-start gap-5">
               <div className="shrink-0 rounded-xl border border-line bg-white p-1.5" role="img" aria-label="QR code that opens this model on a phone"><KitQR size={132}/></div>
               <div className="min-w-0 flex-1 basis-44">
