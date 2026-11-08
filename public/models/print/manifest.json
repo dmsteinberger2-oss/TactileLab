@@ -4434,5 +4434,440 @@
    "faces": 30000,
    "volume_cm3": 29.44
   }
+ ],
+ "aorta_aneurysm_full": [
+  {
+   "part": "aorta",
+   "file": "aorta_aneurysm_full/01_aorta.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 60000,
+   "volume_cm3": 116.1
+  },
+  {
+   "part": "brachiocephalic_trunk",
+   "file": "aorta_aneurysm_full/02_brachiocephalic_trunk.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 7932,
+   "volume_cm3": 4.65
+  },
+  {
+   "part": "right_subclavian",
+   "file": "aorta_aneurysm_full/03_right_subclavian.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 7968,
+   "volume_cm3": 3.32
+  },
+  {
+   "part": "right_common_carotid",
+   "file": "aorta_aneurysm_full/04_right_common_carotid.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 8280,
+   "volume_cm3": 3.53
+  },
+  {
+   "part": "left_common_carotid",
+   "file": "aorta_aneurysm_full/05_left_common_carotid.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 10808,
+   "volume_cm3": 4.84
+  },
+  {
+   "part": "left_subclavian",
+   "file": "aorta_aneurysm_full/06_left_subclavian.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 9812,
+   "volume_cm3": 4.37
+  },
+  {
+   "part": "right_vertebral",
+   "file": "aorta_aneurysm_full/07_right_vertebral.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 4288,
+   "volume_cm3": 0.85
+  },
+  {
+   "part": "left_vertebral",
+   "file": "aorta_aneurysm_full/08_left_vertebral.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 4116,
+   "volume_cm3": 0.84
+  },
+  {
+   "part": "pulmonary_trunk",
+   "file": "aorta_aneurysm_full/09_pulmonary_trunk.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 24000,
+   "volume_cm3": 32.25
+  },
+  {
+   "part": "ligamentum_arteriosum",
+   "file": "aorta_aneurysm_full/10_ligamentum_arteriosum.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 1768,
+   "volume_cm3": 0.2
+  },
+  {
+   "part": "aneurysm_sac",
+   "file": "aorta_aneurysm_full/11_aneurysm_sac.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 16232,
+   "volume_cm3": 18.0
+  },
+  {
+   "part": "trachea",
+   "file": "aorta_aneurysm_full/12_trachea.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 29998,
+   "volume_cm3": 37.41
+  },
+  {
+   "part": "oesophagus",
+   "file": "aorta_aneurysm_full/13_oesophagus.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 30000,
+   "volume_cm3": 29.44
+  }
+ ],
+ "aorta_dissection_a_full": [
+  {
+   "part": "aorta",
+   "file": "aorta_dissection_a_full/01_aorta.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 60000,
+   "volume_cm3": 102.37
+  },
+  {
+   "part": "brachiocephalic_trunk",
+   "file": "aorta_dissection_a_full/02_brachiocephalic_trunk.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 7972,
+   "volume_cm3": 4.65
+  },
+  {
+   "part": "right_subclavian",
+   "file": "aorta_dissection_a_full/03_right_subclavian.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 7968,
+   "volume_cm3": 3.32
+  },
+  {
+   "part": "right_common_carotid",
+   "file": "aorta_dissection_a_full/04_right_common_carotid.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 8280,
+   "volume_cm3": 3.53
+  },
+  {
+   "part": "left_common_carotid",
+   "file": "aorta_dissection_a_full/05_left_common_carotid.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 10848,
+   "volume_cm3": 4.85
+  },
+  {
+   "part": "left_subclavian",
+   "file": "aorta_dissection_a_full/06_left_subclavian.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 9848,
+   "volume_cm3": 4.38
+  },
+  {
+   "part": "right_vertebral",
+   "file": "aorta_dissection_a_full/07_right_vertebral.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 4288,
+   "volume_cm3": 0.85
+  },
+  {
+   "part": "left_vertebral",
+   "file": "aorta_dissection_a_full/08_left_vertebral.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 4116,
+   "volume_cm3": 0.84
+  },
+  {
+   "part": "pulmonary_trunk",
+   "file": "aorta_dissection_a_full/09_pulmonary_trunk.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 24000,
+   "volume_cm3": 32.25
+  },
+  {
+   "part": "ligamentum_arteriosum",
+   "file": "aorta_dissection_a_full/10_ligamentum_arteriosum.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 1752,
+   "volume_cm3": 0.2
+  },
+  {
+   "part": "false_lumen",
+   "file": "aorta_dissection_a_full/11_false_lumen.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 24000,
+   "volume_cm3": 26.51
+  },
+  {
+   "part": "trachea",
+   "file": "aorta_dissection_a_full/12_trachea.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 29998,
+   "volume_cm3": 37.41
+  },
+  {
+   "part": "oesophagus",
+   "file": "aorta_dissection_a_full/13_oesophagus.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 30000,
+   "volume_cm3": 29.44
+  }
+ ],
+ "aorta_dissection_b_full": [
+  {
+   "part": "aorta",
+   "file": "aorta_dissection_b_full/01_aorta.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 60000,
+   "volume_cm3": 112.94
+  },
+  {
+   "part": "brachiocephalic_trunk",
+   "file": "aorta_dissection_b_full/02_brachiocephalic_trunk.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 7932,
+   "volume_cm3": 4.65
+  },
+  {
+   "part": "right_subclavian",
+   "file": "aorta_dissection_b_full/03_right_subclavian.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 7968,
+   "volume_cm3": 3.32
+  },
+  {
+   "part": "right_common_carotid",
+   "file": "aorta_dissection_b_full/04_right_common_carotid.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 8280,
+   "volume_cm3": 3.53
+  },
+  {
+   "part": "left_common_carotid",
+   "file": "aorta_dissection_b_full/05_left_common_carotid.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 10808,
+   "volume_cm3": 4.84
+  },
+  {
+   "part": "left_subclavian",
+   "file": "aorta_dissection_b_full/06_left_subclavian.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 9812,
+   "volume_cm3": 4.37
+  },
+  {
+   "part": "right_vertebral",
+   "file": "aorta_dissection_b_full/07_right_vertebral.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 4288,
+   "volume_cm3": 0.85
+  },
+  {
+   "part": "left_vertebral",
+   "file": "aorta_dissection_b_full/08_left_vertebral.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 4116,
+   "volume_cm3": 0.84
+  },
+  {
+   "part": "pulmonary_trunk",
+   "file": "aorta_dissection_b_full/09_pulmonary_trunk.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 24000,
+   "volume_cm3": 32.25
+  },
+  {
+   "part": "ligamentum_arteriosum",
+   "file": "aorta_dissection_b_full/10_ligamentum_arteriosum.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 1752,
+   "volume_cm3": 0.2
+  },
+  {
+   "part": "false_lumen",
+   "file": "aorta_dissection_b_full/11_false_lumen.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 17960,
+   "volume_cm3": 9.58
+  },
+  {
+   "part": "trachea",
+   "file": "aorta_dissection_b_full/12_trachea.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 29998,
+   "volume_cm3": 37.41
+  },
+  {
+   "part": "oesophagus",
+   "file": "aorta_dissection_b_full/13_oesophagus.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 30000,
+   "volume_cm3": 29.44
+  }
  ]
 }
