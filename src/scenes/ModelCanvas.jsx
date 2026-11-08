@@ -1,11 +1,13 @@
 import { Component, Suspense, useMemo, useEffect, useLayoutEffect, useReducer, useRef, useState } from 'react'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
-import { OrbitControls, Html, Environment, ContactShadows, useGLTF } from '@react-three/drei'
+import { OrbitControls, Html, Environment, useGLTF } from '@react-three/drei'
 import { useSpring, a } from '@react-spring/three'
 import * as THREE from 'three'
 import { useLabStore } from '@/store/labStore'
 import { getLab, getStage, getPart, KIDNEY_DIMS_CM } from '@/data/labs'
 import { registerSceneRoot } from '@/lib/sceneRegistry'
+import { makeTissueHooks } from './tissue'
+import { Backdrop, IdleRotate, Lights, PostFX, qualityTier } from './Atmosphere'
 
 // Scene units are cm. Long axis +Y, hilum facing -X, anterior +Z.
 // Models come from tools/kidney_sdf.py: /models/<lab>_<stage>.glb (whole) and
@@ -13,6 +15,7 @@ import { registerSceneRoot } from '@/lib/sceneRegistry'
 // Placeholders render until a GLB exists, so the app never shows an empty canvas.
 
 const BASE_PARTS = new Set(['kidney_body', 'renal_cortex'])
+const LITE = qualityTier() === 'low'
 // drei's "studio" preset HDR (Poly Haven studio_small_03, CC0), served locally so lighting needs no network.
 const STUDIO_HDR = '/hdri/studio_small_03_1k.hdr'
 
@@ -26,7 +29,7 @@ class SilentBoundary extends Component {
 }
 const L = KIDNEY_DIMS_CM.length / 2, W = KIDNEY_DIMS_CM.width / 2, T = KIDNEY_DIMS_CM.thickness / 2
 
-function PartMesh({ partId, geometry, position = [0, 0, 0], rotation, explodeDir = [0, 0, 0], explodeDist = 3, clip, map = null, baked = false }) {
+function PartMesh({ partId, geometry, position = [0, 0, 0], rotation, explodeDir = [0, 0, 0], explodeDist = 3, clip, map = null, baked = false, coronal = false }) {
   const partColors = useLabStore((s) => s.partColors)
   const selectedPartId = useLabStore((s) => s.selectedPartId)
   const selectPart = useLabStore((s) => s.selectPart)
@@ -52,6 +55,10 @@ function PartMesh({ partId, geometry, position = [0, 0, 0], rotation, explodeDir
   const useMap = map && geometry.attributes.uv ? map : null
   const hasVertexColors = !!geometry.attributes.color
   const matte = partId === 'renal_sinus' || partId === 'adrenal_gland'
+  // Procedural tissue detail (see tissue.js). Uniform objects are shared with the compiled shader.
+  const uniforms = useMemo(() => ({ tlCut: { value: 0 }, tlHover: { value: 0 } }), [])
+  uniforms.tlCut.value = coronal && useMap ? 1 : 0
+  const tissue = useMemo(() => makeTissueHooks(partId, uniforms, LITE), [partId, uniforms])
 
   const labelPos = useMemo(() => {
     geometry.computeBoundingBox()
@@ -89,6 +96,7 @@ function PartMesh({ partId, geometry, position = [0, 0, 0], rotation, explodeDir
           clippingPlanes={clip ?? []}
           clipShadows
           side={clip ? THREE.DoubleSide : THREE.FrontSide}
+          {...tissue}
         />
       </mesh>
       {/* Exploded: only the selected part is labelled (every part is lifted, so labels would pile up).
@@ -132,7 +140,7 @@ function GLTFParts({ url, clip, coronal, onReady }) {
     <group>
       {meshes.map(({ partId, geometry, dir, map }) => (
         <PartMesh key={partId} partId={partId} geometry={geometry} explodeDir={dir} explodeDist={coronal ? 2.2 : 3}
-          clip={BASE_PARTS.has(partId) ? clip : undefined} map={map} baked />
+          clip={BASE_PARTS.has(partId) ? clip : undefined} map={map} baked coronal={coronal} />
       ))}
     </group>
   )
@@ -255,7 +263,7 @@ function useGLBExists(url) {
   return glbCache.get(url)   // undefined while checking
 }
 
-function Scene() {
+function Scene({ tier }) {
   const labId = useLabStore((s) => s.labId)
   const stageId = useLabStore((s) => s.stageId)
   const cutaway = useLabStore((s) => s.cutaway)
@@ -279,10 +287,8 @@ function Scene() {
 
   return (
     <>
-      <hemisphereLight args={['#ffffff', '#c9bdb4', 0.55]} />
-      <directionalLight position={[8, 14, 12]} intensity={1.7} castShadow shadow-mapSize={[2048, 2048]} shadow-bias={-0.0004} />
-      <directionalLight position={[-12, 4, -6]} intensity={0.6} color="#dfe8ff" />
-      <directionalLight position={[0, -8, 10]} intensity={0.25} />
+      <Backdrop />
+      <Lights shadows={tier === 'high'} />
       <SilentBoundary>
         <Suspense fallback={null}>
           <Environment files={STUDIO_HDR} environmentIntensity={0.55} />
@@ -303,8 +309,9 @@ function Scene() {
         </group>
       )}
       <CameraFit box={fitBox} />
-      <ContactShadows position={[0, -8.8, 0]} opacity={0.32} scale={34} blur={2.6} far={14} />
       <OrbitControls makeDefault enableDamping dampingFactor={0.08} minDistance={6} maxDistance={60} />
+      <IdleRotate />
+      {tier === 'high' && <PostFX />}
     </>
   )
 }
@@ -352,16 +359,17 @@ class ViewerBoundary extends Component {
 
 export default function ModelCanvas({ className = '' }) {
   const [webgl] = useState(hasWebGL2)
+  const [tier] = useState(qualityTier)
   const stageId = useLabStore((s) => s.stageId)
   const cutaway = useLabStore((s) => s.cutaway)
   return (
     <div className={`relative h-full w-full ${className}`}>
       {webgl ? (
         <ViewerBoundary resetKey={`${stageId}:${cutaway}`}>
-          <Canvas shadows="percentage" dpr={[1, 2]} camera={{ position: [5, 4, 30], fov: 32 }}
-            gl={{ antialias: true, preserveDrawingBuffer: true, toneMapping: THREE.NeutralToneMapping, toneMappingExposure: 1.0 }}>
+          <Canvas shadows={tier === 'high' ? 'percentage' : false} dpr={tier === 'high' ? [1, 2] : [1, 1.5]} camera={{ position: [5, 4, 30], fov: 32 }}
+            gl={{ antialias: tier !== 'high', preserveDrawingBuffer: true, toneMapping: THREE.NeutralToneMapping, toneMappingExposure: 1.0 }}>
             <Suspense fallback={null}>
-              <Scene />
+              <Scene tier={tier} />
             </Suspense>
           </Canvas>
         </ViewerBoundary>
