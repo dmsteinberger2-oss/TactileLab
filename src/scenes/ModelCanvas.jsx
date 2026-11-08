@@ -340,19 +340,24 @@ function ViewerUnavailable() {
 // Anything thrown inside the R3F tree (WebGL context creation, a model that fails to load, a
 // render error) surfaces here, so only the viewer area is replaced and the rest of the page,
 // including Download kit, keeps working.
+// Keyed on stage + view via `resetKey`: switching clears a failure and retries. Unlike a React
+// `key`, this does not remount a healthy canvas (and recreate its WebGL context) on every switch.
 class ViewerBoundary extends Component {
   state = { failed: false }
   static getDerivedStateFromError() { return { failed: true } }
   componentDidCatch(err) { console.error('[ModelCanvas] 3D view failed:', err) }
+  componentDidUpdate(prev) { if (this.state.failed && prev.resetKey !== this.props.resetKey) this.setState({ failed: false }) }
   render() { return this.state.failed ? <ViewerUnavailable /> : this.props.children }
 }
 
 export default function ModelCanvas({ className = '' }) {
   const [webgl] = useState(hasWebGL2)
+  const stageId = useLabStore((s) => s.stageId)
+  const cutaway = useLabStore((s) => s.cutaway)
   return (
     <div className={`relative h-full w-full ${className}`}>
       {webgl ? (
-        <ViewerBoundary>
+        <ViewerBoundary resetKey={`${stageId}:${cutaway}`}>
           <Canvas shadows="percentage" dpr={[1, 2]} camera={{ position: [5, 4, 30], fov: 32 }}
             gl={{ antialias: true, preserveDrawingBuffer: true, toneMapping: THREE.NeutralToneMapping, toneMappingExposure: 1.0 }}>
             <Suspense fallback={null}>
