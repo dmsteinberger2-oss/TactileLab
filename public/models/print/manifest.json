@@ -5163,5 +5163,791 @@
    "faces": 36196,
    "volume_cm3": 60.64
   }
+ ],
+ "far_lateral_full": [
+  {
+   "part": "disc_herniation",
+   "file": "spine_far_lateral_full/01_disc_herniation.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 10330,
+   "volume_cm3": 0.48
+  },
+  {
+   "part": "nucleus_pulposus",
+   "file": "spine_far_lateral_full/02_nucleus_pulposus.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 5822,
+   "volume_cm3": 1.79
+  },
+  {
+   "part": "l4_vertebra",
+   "file": "spine_far_lateral_full/03_l4_vertebra.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 30000,
+   "volume_cm3": 47.18
+  },
+  {
+   "part": "l5_vertebra",
+   "file": "spine_far_lateral_full/04_l5_vertebra.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 30000,
+   "volume_cm3": 47.35
+  },
+  {
+   "part": "annulus_fibrosus",
+   "file": "spine_far_lateral_full/05_annulus_fibrosus.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 29832,
+   "volume_cm3": 14.26
+  },
+  {
+   "part": "thecal_sac",
+   "file": "spine_far_lateral_full/06_thecal_sac.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 26186,
+   "volume_cm3": 12.59
+  },
+  {
+   "part": "nerve_roots",
+   "file": "spine_far_lateral_full/07_nerve_roots.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 2,
+   "faces": 9496,
+   "volume_cm3": 0.98
+  },
+  {
+   "part": "l4_nerve_root_left",
+   "file": "spine_far_lateral_full/08_l4_nerve_root_left.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 5502,
+   "volume_cm3": 0.42
+  },
+  {
+   "part": "l5_nerve_root_left",
+   "file": "spine_far_lateral_full/09_l5_nerve_root_left.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 5080,
+   "volume_cm3": 0.49
+  }
+ ],
+ "central_herniation_full": [
+  {
+   "part": "disc_herniation",
+   "file": "spine_central_herniation_full/01_disc_herniation.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 18232,
+   "volume_cm3": 0.96
+  },
+  {
+   "part": "nucleus_pulposus",
+   "file": "spine_central_herniation_full/02_nucleus_pulposus.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 5822,
+   "volume_cm3": 1.79
+  },
+  {
+   "part": "l4_vertebra",
+   "file": "spine_central_herniation_full/03_l4_vertebra.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 30000,
+   "volume_cm3": 47.18
+  },
+  {
+   "part": "l5_vertebra",
+   "file": "spine_central_herniation_full/04_l5_vertebra.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 30000,
+   "volume_cm3": 47.35
+  },
+  {
+   "part": "annulus_fibrosus",
+   "file": "spine_central_herniation_full/05_annulus_fibrosus.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 29832,
+   "volume_cm3": 14.26
+  },
+  {
+   "part": "thecal_sac",
+   "file": "spine_central_herniation_full/06_thecal_sac.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 30000,
+   "volume_cm3": 12.11
+  },
+  {
+   "part": "nerve_roots",
+   "file": "spine_central_herniation_full/07_nerve_roots.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 2,
+   "faces": 9496,
+   "volume_cm3": 0.98
+  },
+  {
+   "part": "l4_nerve_root_left",
+   "file": "spine_central_herniation_full/08_l4_nerve_root_left.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 4370,
+   "volume_cm3": 0.44
+  },
+  {
+   "part": "l5_nerve_root_left",
+   "file": "spine_central_herniation_full/09_l5_nerve_root_left.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 5080,
+   "volume_cm3": 0.49
+  }
+ ],
+ "spondylolysis_full": [
+  {
+   "part": "nucleus_pulposus",
+   "file": "spine_spondylolysis_full/01_nucleus_pulposus.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 5822,
+   "volume_cm3": 1.79
+  },
+  {
+   "part": "l4_vertebra",
+   "file": "spine_spondylolysis_full/02_l4_vertebra.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 2,
+   "faces": 30000,
+   "volume_cm3": 46.32
+  },
+  {
+   "part": "l5_vertebra",
+   "file": "spine_spondylolysis_full/03_l5_vertebra.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 30000,
+   "volume_cm3": 47.35
+  },
+  {
+   "part": "annulus_fibrosus",
+   "file": "spine_spondylolysis_full/04_annulus_fibrosus.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 29832,
+   "volume_cm3": 14.26
+  },
+  {
+   "part": "thecal_sac",
+   "file": "spine_spondylolysis_full/05_thecal_sac.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 26186,
+   "volume_cm3": 12.59
+  },
+  {
+   "part": "nerve_roots",
+   "file": "spine_spondylolysis_full/06_nerve_roots.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 2,
+   "faces": 9496,
+   "volume_cm3": 0.98
+  },
+  {
+   "part": "l4_nerve_root_left",
+   "file": "spine_spondylolysis_full/07_l4_nerve_root_left.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 4370,
+   "volume_cm3": 0.44
+  },
+  {
+   "part": "l5_nerve_root_left",
+   "file": "spine_spondylolysis_full/08_l5_nerve_root_left.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 5080,
+   "volume_cm3": 0.49
+  }
+ ],
+ "listhesis_1_full": [
+  {
+   "part": "l4_posterior_arch",
+   "file": "spine_listhesis_1_full/01_l4_posterior_arch.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 25144,
+   "volume_cm3": 8.47
+  },
+  {
+   "part": "nucleus_pulposus",
+   "file": "spine_listhesis_1_full/02_nucleus_pulposus.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 5822,
+   "volume_cm3": 1.79
+  },
+  {
+   "part": "l4_vertebra",
+   "file": "spine_listhesis_1_full/03_l4_vertebra.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 30000,
+   "volume_cm3": 37.85
+  },
+  {
+   "part": "l5_vertebra",
+   "file": "spine_listhesis_1_full/04_l5_vertebra.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 30000,
+   "volume_cm3": 47.35
+  },
+  {
+   "part": "annulus_fibrosus",
+   "file": "spine_listhesis_1_full/05_annulus_fibrosus.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 29832,
+   "volume_cm3": 14.26
+  },
+  {
+   "part": "thecal_sac",
+   "file": "spine_listhesis_1_full/06_thecal_sac.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 26308,
+   "volume_cm3": 12.59
+  },
+  {
+   "part": "nerve_roots",
+   "file": "spine_listhesis_1_full/07_nerve_roots.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 3,
+   "faces": 9564,
+   "volume_cm3": 0.93
+  },
+  {
+   "part": "l4_nerve_root_left",
+   "file": "spine_listhesis_1_full/08_l4_nerve_root_left.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 2,
+   "faces": 4116,
+   "volume_cm3": 0.38
+  },
+  {
+   "part": "l5_nerve_root_left",
+   "file": "spine_listhesis_1_full/09_l5_nerve_root_left.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 5080,
+   "volume_cm3": 0.49
+  }
+ ],
+ "listhesis_2_full": [
+  {
+   "part": "l4_posterior_arch",
+   "file": "spine_listhesis_2_full/01_l4_posterior_arch.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 25144,
+   "volume_cm3": 8.47
+  },
+  {
+   "part": "nucleus_pulposus",
+   "file": "spine_listhesis_2_full/02_nucleus_pulposus.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 5822,
+   "volume_cm3": 1.79
+  },
+  {
+   "part": "l4_vertebra",
+   "file": "spine_listhesis_2_full/03_l4_vertebra.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 30000,
+   "volume_cm3": 37.85
+  },
+  {
+   "part": "l5_vertebra",
+   "file": "spine_listhesis_2_full/04_l5_vertebra.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 30000,
+   "volume_cm3": 47.35
+  },
+  {
+   "part": "annulus_fibrosus",
+   "file": "spine_listhesis_2_full/05_annulus_fibrosus.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 30000,
+   "volume_cm3": 14.26
+  },
+  {
+   "part": "thecal_sac",
+   "file": "spine_listhesis_2_full/06_thecal_sac.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 26186,
+   "volume_cm3": 12.59
+  },
+  {
+   "part": "nerve_roots",
+   "file": "spine_listhesis_2_full/07_nerve_roots.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 2,
+   "faces": 9496,
+   "volume_cm3": 0.98
+  },
+  {
+   "part": "l4_nerve_root_left",
+   "file": "spine_listhesis_2_full/08_l4_nerve_root_left.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 4370,
+   "volume_cm3": 0.44
+  },
+  {
+   "part": "l5_nerve_root_left",
+   "file": "spine_listhesis_2_full/09_l5_nerve_root_left.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 5080,
+   "volume_cm3": 0.49
+  }
+ ],
+ "listhesis_3_full": [
+  {
+   "part": "l4_posterior_arch",
+   "file": "spine_listhesis_3_full/01_l4_posterior_arch.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 25144,
+   "volume_cm3": 8.47
+  },
+  {
+   "part": "nucleus_pulposus",
+   "file": "spine_listhesis_3_full/02_nucleus_pulposus.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 5822,
+   "volume_cm3": 1.79
+  },
+  {
+   "part": "l4_vertebra",
+   "file": "spine_listhesis_3_full/03_l4_vertebra.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 30000,
+   "volume_cm3": 37.85
+  },
+  {
+   "part": "l5_vertebra",
+   "file": "spine_listhesis_3_full/04_l5_vertebra.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 30000,
+   "volume_cm3": 47.35
+  },
+  {
+   "part": "annulus_fibrosus",
+   "file": "spine_listhesis_3_full/05_annulus_fibrosus.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 30000,
+   "volume_cm3": 14.25
+  },
+  {
+   "part": "thecal_sac",
+   "file": "spine_listhesis_3_full/06_thecal_sac.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 26186,
+   "volume_cm3": 12.59
+  },
+  {
+   "part": "nerve_roots",
+   "file": "spine_listhesis_3_full/07_nerve_roots.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 2,
+   "faces": 9496,
+   "volume_cm3": 0.98
+  },
+  {
+   "part": "l4_nerve_root_left",
+   "file": "spine_listhesis_3_full/08_l4_nerve_root_left.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 4370,
+   "volume_cm3": 0.44
+  },
+  {
+   "part": "l5_nerve_root_left",
+   "file": "spine_listhesis_3_full/09_l5_nerve_root_left.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 5080,
+   "volume_cm3": 0.49
+  }
+ ],
+ "listhesis_4_full": [
+  {
+   "part": "l4_posterior_arch",
+   "file": "spine_listhesis_4_full/01_l4_posterior_arch.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 25144,
+   "volume_cm3": 8.47
+  },
+  {
+   "part": "nucleus_pulposus",
+   "file": "spine_listhesis_4_full/02_nucleus_pulposus.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 5822,
+   "volume_cm3": 1.79
+  },
+  {
+   "part": "l4_vertebra",
+   "file": "spine_listhesis_4_full/03_l4_vertebra.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 30000,
+   "volume_cm3": 37.85
+  },
+  {
+   "part": "l5_vertebra",
+   "file": "spine_listhesis_4_full/04_l5_vertebra.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 30000,
+   "volume_cm3": 47.35
+  },
+  {
+   "part": "annulus_fibrosus",
+   "file": "spine_listhesis_4_full/05_annulus_fibrosus.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 30000,
+   "volume_cm3": 14.24
+  },
+  {
+   "part": "thecal_sac",
+   "file": "spine_listhesis_4_full/06_thecal_sac.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 26186,
+   "volume_cm3": 12.59
+  },
+  {
+   "part": "nerve_roots",
+   "file": "spine_listhesis_4_full/07_nerve_roots.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 2,
+   "faces": 9496,
+   "volume_cm3": 0.98
+  },
+  {
+   "part": "l4_nerve_root_left",
+   "file": "spine_listhesis_4_full/08_l4_nerve_root_left.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 4370,
+   "volume_cm3": 0.44
+  },
+  {
+   "part": "l5_nerve_root_left",
+   "file": "spine_listhesis_4_full/09_l5_nerve_root_left.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 5080,
+   "volume_cm3": 0.49
+  }
+ ],
+ "degen_listhesis_full": [
+  {
+   "part": "nucleus_pulposus",
+   "file": "spine_degen_listhesis_full/01_nucleus_pulposus.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 5822,
+   "volume_cm3": 1.79
+  },
+  {
+   "part": "l4_vertebra",
+   "file": "spine_degen_listhesis_full/02_l4_vertebra.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 30000,
+   "volume_cm3": 47.18
+  },
+  {
+   "part": "l5_vertebra",
+   "file": "spine_degen_listhesis_full/03_l5_vertebra.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 30000,
+   "volume_cm3": 47.32
+  },
+  {
+   "part": "annulus_fibrosus",
+   "file": "spine_degen_listhesis_full/04_annulus_fibrosus.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 29832,
+   "volume_cm3": 14.26
+  },
+  {
+   "part": "thecal_sac",
+   "file": "spine_degen_listhesis_full/05_thecal_sac.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 29054,
+   "volume_cm3": 11.92
+  },
+  {
+   "part": "nerve_roots",
+   "file": "spine_degen_listhesis_full/06_nerve_roots.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 3,
+   "faces": 9564,
+   "volume_cm3": 0.93
+  },
+  {
+   "part": "l4_nerve_root_left",
+   "file": "spine_degen_listhesis_full/07_l4_nerve_root_left.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 2,
+   "faces": 4114,
+   "volume_cm3": 0.38
+  },
+  {
+   "part": "l5_nerve_root_left",
+   "file": "spine_degen_listhesis_full/08_l5_nerve_root_left.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 5196,
+   "volume_cm3": 0.49
+  }
  ]
 }

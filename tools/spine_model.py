@@ -22,7 +22,7 @@ CLR = 0.25
 
 COLOURS = {'l4_vertebra': '#e6d9bf', 'l5_vertebra': '#e2d4b8', 'annulus_fibrosus': '#cfd8dc', 'nucleus_pulposus': '#9fb8c8',
            'disc_herniation': '#7f9fbc', 'thecal_sac': '#e9d27a', 'nerve_roots': '#f0d060', 'l5_nerve_root_left': '#f5c040',
-           'pedicle_screws': '#b8bec6', 'rods': '#c5cbd2', 'interbody_cage': '#cdbfa4', 'bone_graft': '#e8d7b0'}
+           'l4_nerve_root_left': '#f5c040', 'l4_posterior_arch': '#e6d9bf', 'pedicle_screws': '#b8bec6', 'rods': '#c5cbd2', 'interbody_cage': '#cdbfa4', 'bone_graft': '#e8d7b0'}
 B.DEFAULTS.update(COLOURS)
 
 def load():
@@ -189,13 +189,102 @@ def build(stage, P):
             v = (a - b) / np.linalg.norm(a - b); mid = (a + b) / 2 + np.array([0, 0, -1.5])
             rods.append(rod([a + v * 6, mid, b - v * 6]))
         show['rods'] = trimesh.util.concatenate(rods)
+    elif stage in VARIANTS:
+        return build_variant(stage, P)
     show['l4_vertebra'] = to_t(l4); show['l5_vertebra'] = to_t(l5)
     show['annulus_fibrosus'] = to_t(ann); show['thecal_sac'] = P['thecal_sac']
     show['nerve_roots'] = to_t(roots); show['l5_nerve_root_left'] = l5l
     return show
 
+# ---------------------------------------------------------------- VARIANTS_V1: pathology library (schematic)
+LISTHESIS = {'listhesis_1': 0.15, 'listhesis_2': 0.37, 'listhesis_3': 0.62, 'listhesis_4': 0.87}
+VARIANTS = ['far_lateral', 'central_herniation', 'spondylolysis', 'degen_listhesis'] + list(LISTHESIS)
+
+def blob(spheres, k=3.0, grow=0.0, noise=0.35):
+    """Soft disc fragment from a chain of spheres; grow>0 returns the dilated copy used to indent soft tissue."""
+    c = np.array([s[0] for s in spheres], float); r = max(s[1] for s in spheres) + 3 + grow
+    g = K.Grid(c.min(0) - r, c.max(0) + r, h=0.3); P = g.P
+    f = None
+    for cc, rr in spheres:
+        d = K.sd_sphere(P, cc, rr)
+        f = d if f is None else K.smin(f, d, k)
+    f = f + noise * (K.vnoise(P, 0.6) - 0.5) - grow
+    return K.mesh_from(g, f.astype(np.float32), target=20000)
+
+def pars_cut(P, z6=-28.0, slope=0.25, xa=7.0, gap=1.6):
+    """Bilateral L4 pars interarticularis defect: an oblique slab each side, lateral to the lamina (|x| > xa),
+    passing behind the pedicle (z = z6 at y = 6, tilting posteriorly as it rises). Parameters were chosen by
+    search so the cut splits L4 into exactly two bodies: body/pedicles/superior facets and the posterior arch."""
+    t = np.array([0, 1.0, -slope]); t /= np.linalg.norm(t); n = np.array([0, slope, 1.0]); n /= np.linalg.norm(n)
+    cut = None
+    for sgn in (1, -1):
+        b = trimesh.creation.box(extents=[32 - xa, gap, 60])
+        M = np.eye(4); M[:3, 0] = [1, 0, 0]; M[:3, 1] = n; M[:3, 2] = t
+        b.apply_transform(M); b.apply_translation([sgn * (xa + 32) / 2, 6 + t[1] * 17, z6 + t[2] * 17])
+        cut = to_m(b) if cut is None else cut + to_m(b)
+    return cut
+
+def shear(mesh, d, y0, y1, xw=None):
+    """Forward (+Z) displacement ramping from 0 at y0 to d at y1 (optionally faded in from the midline by |x|)."""
+    v = np.asarray(mesh.vertices, float).copy()
+    w = np.clip((v[:, 1] - y0) / (y1 - y0), 0, 1); w = w * w * (3 - 2 * w)
+    if xw is not None:
+        u = np.clip((np.abs(v[:, 0]) - xw[0]) / (xw[1] - xw[0]), 0, 1); w = w * (u * u * (3 - 2 * u))
+    v[:, 2] += d * w
+    return trimesh.Trimesh(v, mesh.faces, process=False)
+
+def build_variant(stage, P):
+    show = {}
+    l4, l5 = to_m(P['l4_vertebra']), to_m(P['l5_vertebra'])
+    ann, nuc = to_m(P['annulus_fibrosus']), to_m(P['nucleus_pulposus'])
+    sac = to_m(P['thecal_sac'])
+    r4l = to_m(P['l4_nerve_root_left']); l5l = to_m(P['l5_nerve_root_left'])
+    others = to_m(P['l4_nerve_root_right']) + to_m(P['l5_nerve_root_right'])
+    bones = l4 + l5
+    if stage in ('far_lateral', 'central_herniation'):
+        if stage == 'far_lateral':
+            # extraforaminal fragment from the left lateral annulus, lying ventral to the exiting L4 root
+            sph = [((19.5, 0.0, -8.5), 4.2), ((23.5, 1.0, -13.0), 4.4), ((22.0, 4.0, -15.0), 3.4)]
+        else:
+            # large central extrusion with slight caudal migration, filling the ventral canal
+            sph = [((0.0, 0.0, -13.0), 5.0), ((0.0, -1.0, -18.5), 5.6), ((0.0, -3.0, -22.0), 4.6)]
+        frag = to_m(blob(sph)) - ann - nuc - bones
+        big = to_m(blob(sph, grow=CLR))
+        sac = sac - big; r4l = r4l - big; l5l = l5l - big; others = others - big
+        show['disc_herniation'] = to_t(frag)
+    elif stage == 'spondylolysis':
+        l4 = l4 - pars_cut(P)
+    elif stage == 'degen_listhesis' or stage in LISTHESIS:
+        ep = P['l5_vertebra'].section(plane_origin=[0, P['annulus_fibrosus'].bounds[0, 1] - 1.5, 0], plane_normal=[0, 1, 0])
+        ap = float(np.ptp(max(ep.discrete, key=len)[:, 2])) if ep is not None else 30.0
+        y0, y1 = float(P['annulus_fibrosus'].bounds[0, 1]), float(P['annulus_fibrosus'].bounds[1, 1])
+        if stage == 'degen_listhesis':
+            d = 0.15 * ap
+            l4 = l4.translate([0, 0, d]); post = None
+        else:
+            d = LISTHESIS[stage] * ap
+            parts = sorted(to_t(l4 - pars_cut(P)).split(only_watertight=False), key=lambda m: -abs(m.volume))
+            if len(parts) < 2: raise SystemExit('pars cut did not separate the posterior arch')
+            front = [m for m in parts if m.contains([[0, 20.0, 0]])[0]]
+            front = front[0] if front else parts[0]
+            rest = [m for m in parts if m is not front and abs(m.volume) > 50]
+            l4 = to_m(front).translate([0, 0, d]); post = to_m(trimesh.util.concatenate(rest))
+        print(f'   {stage}: L5 endplate AP {ap:.1f} mm, slip {d:.1f} mm')
+        ann = to_m(shear(P['annulus_fibrosus'], d, y0, y1)); nuc = to_m(shear(P['nucleus_pulposus'], d, y0, y1))
+        # roots stay where the dura holds them; the slipped body is cut away from them (no stretched copies)
+        moved = l4 if post is None else l4 + post
+        l5 = l5 - moved.offset(CLR) if hasattr(moved, 'offset') else l5 - moved
+        ann = ann - moved - l5; nuc = nuc - moved - l5
+        sac = sac - moved; r4l = r4l - moved - l5; l5l = l5l - moved - l5; others = others - moved - l5
+        if post is not None: show['l4_posterior_arch'] = to_t(post)
+    show['nucleus_pulposus'] = to_t(nuc)
+    show['l4_vertebra'] = to_t(l4); show['l5_vertebra'] = to_t(l5)
+    show['annulus_fibrosus'] = to_t(ann); show['thecal_sac'] = to_t(sac)
+    show['nerve_roots'] = to_t(others); show['l4_nerve_root_left'] = to_t(r4l); show['l5_nerve_root_left'] = to_t(l5l)
+    return show
+
 def bone_colour(name, V):
-    if 'vertebra' in name: return (0.93 + 0.07 * K.fbm(V, 0.25))[:, None] * np.ones((len(V), 3))
+    if 'vertebra' in name or 'arch' in name: return (0.93 + 0.07 * K.fbm(V, 0.25))[:, None] * np.ones((len(V), 3))
     if name == 'bone_graft': return (0.85 + 0.15 * K.fbm(V, 1.0))[:, None] * np.ones((len(V), 3))
     return None
 
