@@ -70,6 +70,21 @@ def clean_for_print(name, t):
     dropped = [(round(vols[i] / 1000, 3), np.round(comps[i].centroid, 1).tolist()) for i in range(len(comps)) if i not in keep]
     return trimesh.util.concatenate([comps[i] for i in keep]), dropped
 
+CONTACT_EPS_MM = 0.005   # 5 um: far below print resolution
+
+def separate_contacts(t, eps=CONTACT_EPS_MM):
+    """Manifold booleans leave surfaces that touch themselves as distinct vertices at identical
+    positions: fine in memory, but an STL merges them by position into non-manifold edges.
+    Pull each such vertex eps inward along its own normal so the touching sheets separate.
+    Returns (mesh, number of vertices moved)."""
+    v = np.asarray(t.vertices, np.float32)
+    _, inv, counts = np.unique(v, axis=0, return_inverse=True, return_counts=True)
+    dup = counts[inv.reshape(-1)] > 1
+    if not dup.any(): return t, 0
+    t = t.copy()
+    t.vertices[dup] = t.vertices[dup] - t.vertex_normals[dup] * eps
+    return t, int(dup.sum())
+
 def check_stl(path):
     """Reload a written STL the way a slicer sees it (float32, vertices merged by position)."""
     m = trimesh.load(path, force='mesh')
@@ -309,6 +324,8 @@ if __name__ == '__main__':
                 pm, dropped = clean_for_print(name, pm)
                 big = [d for d in dropped if d[0] >= 0.01]
                 if dropped: print(f'   {key}/{name}: dropped {len(dropped)} stray bodies' + (f', incl. {big} (cm3, centroid mm)' if big else ' (all < 0.01 cm3)'))
+                pm, moved = separate_contacts(pm)
+                if moved: print(f'   {key}/{name}: separated {moved} self-touching vertices by {CONTACT_EPS_MM * 1000:.0f} um')
                 om = pm.copy()
                 if kind != 'as_is': om = K.orient(pm, kind, axis)
                 else: om.apply_translation([-om.bounds[:, 0].mean(), -om.bounds[:, 1].mean(), -om.bounds[0, 2]])
