@@ -9,7 +9,7 @@ Output (same layout the app already reads):
 
 Usage: python tools/place_model.py source.glb out_dir [stages] [forms]
 """
-import os, sys, json, math, pickle
+import os, sys, json, math, pickle, zlib
 import numpy as np
 import trimesh
 from manifold3d import Manifold, Mesh as MMesh
@@ -105,7 +105,7 @@ def tumor_spec(stage, kmesh, z0):
     t = TUMORS[stage]; d = K.unit(t['d']).astype(np.float32); R = t['D'] / 2
     s = surface_point(kmesh, np.array([0.0, 0.0, z0]), d)
     c = (s + d * 1.0).astype(np.float32)
-    rng = np.random.default_rng(abs(hash(stage)) % 2 ** 32); lobes = []
+    rng = np.random.default_rng(zlib.crc32(stage.encode())); lobes = []
     while len(lobes) < 5:
         u = K.unit(rng.normal(size=3))
         if u @ d > 0.3: lobes.append((c + R * 0.60 * u.astype(np.float32), R * rng.uniform(0.38, 0.5)))

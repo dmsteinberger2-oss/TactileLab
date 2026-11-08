@@ -12,7 +12,7 @@ STLs are exported in millimetres, pre-oriented for printing.
 
 Usage: python tools/kidney_sdf.py <out_dir>
 """
-import os, sys, json, math
+import os, sys, json, math, zlib
 import numpy as np
 import trimesh
 from skimage.measure import marching_cubes
@@ -223,7 +223,7 @@ def tumor_spec(stage):
     t = dict(TUMORS[stage]); d = unit(t['d']).astype(F); R = t['D'] / 2
     s = ray_surface((3.0, 0.0, Z0), d)
     c = (s + d * 1.0).astype(F)
-    rng = np.random.default_rng(hash(stage) % 2 ** 32)
+    rng = np.random.default_rng(zlib.crc32(stage.encode()))
     lobes = []
     while len(lobes) < 5:
         u = unit(rng.normal(size=3))
