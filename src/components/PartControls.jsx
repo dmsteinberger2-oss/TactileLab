@@ -14,7 +14,7 @@ const PRINT_SIZES = { 1: 'life size', 1.5: '3.4× filament', 2: '8× filament' }
 
 // Compact single-choice control, styled like LabUI's Segmented.
 function Choice({ label, options, value, onChange, disabled }) {
-  return <div role="radiogroup" aria-label={label} className="grid gap-1 rounded-lg bg-bench p-1" style={{ gridTemplateColumns: `repeat(${options.length}, minmax(0, 1fr))` }}>
+  return <div role="radiogroup" aria-label={label} className="part-choices grid gap-1 rounded-lg bg-bench p-1" style={{ gridTemplateColumns: `repeat(${options.length}, minmax(0, 1fr))` }}>
     {options.map((o) => {
       const on = value === o.id, off = disabled || o.disabled
       return <button key={o.id} type="button" role="radio" aria-checked={on} disabled={off} title={o.title} onClick={() => onChange(o.id)}

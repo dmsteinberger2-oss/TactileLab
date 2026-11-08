@@ -23,7 +23,7 @@ function PrintSummary({ report }) {
   if (!report?.parts?.length) return <p className="text-sm text-ink-soft">Print estimates appear once the model has loaded.</p>
   const a = PRINT_ASSUMPTIONS
   return <div>
-    <dl className="grid grid-cols-3 divide-x divide-line rounded-xl border border-line">
+    <dl className="print-totals grid grid-cols-3 divide-x divide-line rounded-xl border border-line">
       {[['Print time', formatMinutes(report.totalMinutes)], ['Filament', Number.isFinite(report.totalGrams) ? `${report.totalGrams} g` : '—'], ['Est. cost', Number.isFinite(report.costUsd) ? `$${report.costUsd.toFixed(2)}` : '—']].map(([k, v]) =>
         <div key={k} className="min-w-0 px-2.5 py-3 sm:px-3"><dt className="text-[11px] font-medium text-ink-soft">{k}</dt><dd className="mt-1 whitespace-nowrap font-mono text-[13px] font-semibold tracking-tight sm:text-[15px]">{v}</dd></div>)}
     </dl>
@@ -76,7 +76,7 @@ function DownloadKit({ stageId, cutaway }) {
       {state === 'pending' && <p className="text-ink-soft">Packing STLs and writing the kit card…</p>}
       {state === 'done' && <p className="flex items-center gap-1.5 font-medium text-teal"><Icon name="check" className="h-4 w-4"/>Kit downloaded. Check your downloads folder.</p>}
     </div>
-    {state === 'error' && <div role="alert" className="mt-1 flex gap-2.5 rounded-xl border border-lesion/25 bg-lesion-soft px-3.5 py-3 text-sm text-lesion">
+    {state === 'error' && <div role="alert" className="mt-1 flex gap-2.5 rounded-xl border border-ink/25 bg-bench px-3.5 py-3 text-sm text-ink">
       <Icon name="alert" className="mt-0.5 h-4 w-4 shrink-0"/><div><p className="font-semibold">The kit could not be built.</p><p className="mt-0.5 break-words">{error}</p><button type="button" onClick={run} className="mt-1.5 font-semibold underline underline-offset-4">Try again</button></div>
     </div>}
   </div>
@@ -111,14 +111,14 @@ export default function Lab() {
   const coloursChanged = colourParts.some((p) => partColors?.[p.id] && partColors[p.id].toLowerCase() !== p.defaultColor.toLowerCase())
 
   return <div className={theme.page}><Header badge="Model builder"/>
-    <main className={`${theme.wrap} pb-16 pt-6`}>
-      <nav aria-label="Breadcrumb" className="mb-5 text-xs"><ol className="flex items-center gap-2 text-ink-soft"><li><Link to="/" className={theme.link}>Labs</Link></li><li aria-hidden="true">/</li><li aria-current="page" className="font-medium text-ink">{lab.name}</li></ol></nav>
-      <div className="mb-7 flex flex-wrap items-end justify-between gap-x-8 gap-y-4">
+    <main className={`${theme.wrap} workspace-main pb-16 pt-6`}>
+      <nav aria-label="Breadcrumb" className="workspace-breadcrumb mb-5 text-xs"><ol className="flex items-center gap-2 text-ink-soft"><li><Link to="/" className={theme.link}>Labs</Link></li><li aria-hidden="true">/</li><li aria-current="page" className="font-medium text-ink">{lab.name}</li></ol></nav>
+      <div className="workspace-heading mb-7 flex flex-wrap items-end justify-between gap-x-8 gap-y-4">
         <div className="min-w-0"><h1 className="lab-page-title font-semibold tracking-[-0.04em]">{lab.name}</h1>{lab.condition && <p className="mt-2 flex items-start gap-2 text-sm leading-relaxed text-ink-soft"><LesionDot className="mt-2"/>{lab.condition}</p>}</div>
         {lab.description && <p className="max-w-[30rem] text-sm leading-[1.7] text-ink-soft">{lab.description}</p>}
       </div>
 
-      <div className="grid items-start gap-5 lg:grid-cols-[minmax(0,1fr)_400px] xl:grid-cols-[minmax(0,1fr)_440px] xl:gap-6">
+      <div className="workspace-grid grid items-start gap-5 lg:grid-cols-[minmax(0,1fr)_400px] xl:grid-cols-[minmax(0,1fr)_440px] xl:gap-6">
         <section aria-label="Interactive 3D model" className="workspace-viewer min-w-0">
           <ViewerFrame className="h-[58vh] max-h-[560px] min-h-[340px] lg:h-[calc(100vh-120px)] lg:max-h-[820px]"
             topLeft={<><Toggle label="Labels" icon="tag" checked={labelsOn} onChange={setLabelsOn}/><Toggle label="Explode" icon="layers" checked={exploded} onChange={setExploded}/></>}
@@ -168,7 +168,7 @@ export default function Lab() {
 
           <Panel step="06" title="Share with students" id="share" aside={<Icon name="phone" className="h-4 w-4 text-ink-soft"/>}>
             <div className="flex flex-wrap items-start gap-5">
-              <div className="shrink-0 rounded-xl border border-line bg-white p-1.5" role="img" aria-label="QR code that opens this model on a phone"><KitQR size={132}/></div>
+              <div className="share-qr shrink-0 rounded-xl border border-line bg-white p-1.5" role="img" aria-label="QR code that opens this model on a phone"><KitQR size={132}/></div>
               <div className="min-w-0 flex-1 basis-44">
                 <p className="text-sm leading-relaxed text-ink-soft">The same QR is printed on the kit card. It opens this exact configuration on a phone, with no sign-in.</p>
                 <a href={shareUrl} className={`${theme.link} mt-3 text-sm`}>Open shareable view<Icon name="external" className="h-4 w-4"/></a>

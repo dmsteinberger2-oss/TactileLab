@@ -25,11 +25,11 @@ export default function View() {
   const part = lab?.parts?.find((p) => p.id === selectedPartId)
 
   return <div className={theme.page}><Header badge="Shared model"/>
-    <main className={`${theme.wrap} pb-14 pt-4 sm:pt-6`}>
+    <main className={`${theme.wrap} workspace-main shared-main pb-14 pt-4 sm:pt-6`}>
       {hydratedSearch !== search ? <p role="status" className="flex items-center gap-2 py-16 text-sm text-ink-soft"><Spinner/>Loading model…</p>
       : !lab || lab.comingSoon ? <div className="py-16"><h1 className="text-2xl font-bold">Model unavailable</h1><p className="mt-2 text-sm text-ink-soft">This shared model could not be found.</p><Link to="/" className={`${theme.primary} mt-6`}>Browse labs</Link></div>
       : <>
-        <div className="mb-4 flex flex-wrap items-end justify-between gap-x-4 gap-y-2">
+        <div className="workspace-heading mb-4 flex flex-wrap items-end justify-between gap-x-4 gap-y-2">
           <div className="min-w-0">
             <p className={`${theme.tag} text-teal`}>Shared model</p>
             <h1 className="lab-page-title mt-2 font-semibold tracking-[-0.04em]">{lab.name}</h1>
@@ -38,7 +38,7 @@ export default function View() {
           <div className="flex gap-1.5"><Chip tone={isLesion(stage) ? 'lesion' : 'plain'}>{isLesion(stage) && <LesionDot/>}{stage?.ajcc ?? stage?.label}</Chip>{view && <Chip>{view.label}</Chip>}</div>
         </div>
 
-        <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,1fr)_400px] xl:grid-cols-[minmax(0,1fr)_440px] lg:gap-6">
+        <div className="workspace-grid grid items-start gap-4 lg:grid-cols-[minmax(0,1fr)_400px] xl:grid-cols-[minmax(0,1fr)_440px] lg:gap-6">
           <section aria-label="Interactive 3D model" className="workspace-viewer min-w-0">
             <ViewerFrame className="h-[56vh] max-h-[620px] min-h-[320px] lg:h-[calc(100vh-170px)] lg:max-h-none"
               topLeft={<Toggle label="Explode" icon="layers" checked={exploded} onChange={setExploded}/>}

@@ -7,10 +7,10 @@ import { Link } from 'react-router-dom'
 
 export const theme = {
   page: 'min-h-screen bg-bench text-ink antialiased selection:bg-teal-soft',
-  wrap: 'mx-auto w-full max-w-[1440px] px-5 sm:px-8 lg:px-10',
+  wrap: 'app-wrap mx-auto w-full max-w-[1440px] px-5 sm:px-8 lg:px-12',
   panel: 'app-panel rounded-2xl border border-line bg-paper',
-  primary: 'inline-flex min-h-12 items-center justify-center gap-2 rounded-[10px] bg-teal px-5 text-sm font-semibold text-white shadow-[0_1px_2px_rgba(15,118,110,0.15)] transition hover:bg-[#0b5f58] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal disabled:cursor-progress disabled:opacity-80',
-  secondary: 'inline-flex min-h-10 items-center justify-center gap-2 rounded-lg border border-line bg-paper px-3.5 text-sm font-semibold text-ink transition hover:border-teal hover:text-teal focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal',
+  primary: 'ui-primary inline-flex min-h-12 items-center justify-center gap-2 rounded-[10px] bg-teal px-5 text-sm font-semibold text-white shadow-[0_1px_2px_rgba(15,118,110,0.15)] transition hover:bg-[#0b5f58] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal disabled:cursor-progress disabled:opacity-80',
+  secondary: 'ui-secondary inline-flex min-h-10 items-center justify-center gap-2 rounded-lg border border-line bg-paper px-3.5 text-sm font-semibold text-ink transition hover:border-teal hover:text-teal focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal',
   link: 'inline-flex items-center gap-1 font-semibold text-teal underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal rounded',
   tag: 'text-xs font-medium uppercase tracking-[0.09em]',
   prose: 'text-[15px] leading-[1.75] text-ink',
@@ -43,7 +43,7 @@ export function Spinner({ className = 'h-4 w-4' }) {
 }
 
 export function Wordmark() {
-  return <span className="flex items-center gap-2.5">
+  return <span className="wordmark flex items-center gap-2.5">
     <span className="flex h-9 w-9 items-center justify-center rounded-[10px] bg-ink text-teal-soft"><Icon name="mark" className="h-5 w-5"/></span>
     <span className="text-[19px] font-bold tracking-[-0.03em] text-ink">TactileLab</span>
   </span>
@@ -51,13 +51,13 @@ export function Wordmark() {
 
 // Every page: wordmark links home; `badge` names the page's role (e.g. "Shared model").
 export function Header({ badge }) {
-  return <header className="sticky top-0 z-30 border-b border-line bg-paper/95 backdrop-blur supports-[backdrop-filter]:bg-paper/85">
+  return <header className="app-header sticky top-0 z-30 border-b border-line bg-paper/95 backdrop-blur supports-[backdrop-filter]:bg-paper/85">
     <div className={`${theme.wrap} flex h-[72px] items-center justify-between gap-4`}>
       <div className="flex min-w-0 items-center gap-3">
         <Link to="/" aria-label="TactileLab home" className="rounded-lg focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-teal"><Wordmark/></Link>
-        {badge && <span className="hidden border-l border-line pl-4 text-sm text-ink-soft sm:inline">{badge}</span>}
+        {badge && <span className="header-context hidden border-l border-line pl-4 text-sm text-ink-soft sm:inline">{badge}</span>}
       </div>
-      <nav aria-label="Primary"><Link to="/" className={theme.secondary}><Icon name="cube" className="h-4 w-4"/>Labs</Link></nav>
+      <nav aria-label="Primary" className="header-nav"><Link to="/" className={theme.secondary}><Icon name="cube" className="h-4 w-4"/>Labs</Link></nav>
     </div>
   </header>
 }
@@ -98,7 +98,7 @@ export function Segmented({ label, options = [], value, onChange, columns }) {
 
 export function Toggle({ label, checked, onChange, icon }) {
   return <button type="button" role="switch" aria-checked={checked} onClick={() => onChange(!checked)}
-    className={`inline-flex min-h-10 items-center gap-2 rounded-lg border px-3 text-sm font-semibold shadow-sm backdrop-blur transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal ${checked ? 'border-teal bg-teal-soft/90 text-teal' : 'border-line bg-paper/90 text-ink hover:border-teal'}`}>
+    className={`viewer-toggle inline-flex min-h-10 items-center gap-2 rounded-lg border px-3 text-sm font-semibold shadow-sm backdrop-blur transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal ${checked ? 'border-teal bg-teal-soft/90 text-teal' : 'border-line bg-paper/90 text-ink hover:border-teal'}`}>
     {icon && <Icon name={icon} className="h-4 w-4"/>}{label}
     <span aria-hidden="true" className={`ml-0.5 inline-flex h-[18px] w-8 items-center rounded-full p-0.5 transition ${checked ? 'bg-teal' : 'bg-line'}`}><span className={`h-3.5 w-3.5 rounded-full bg-white shadow transition ${checked ? 'translate-x-3.5' : ''}`}/></span>
   </button>
@@ -107,11 +107,14 @@ export function Toggle({ label, checked, onChange, icon }) {
 // Frame around the 3D viewport: specimen-plate background, overlay slots. The canvas is `children`.
 export function ViewerFrame({ children, topLeft, topRight, bottom, className = '' }) {
   return <div className={`viewer-frame relative overflow-hidden rounded-2xl border border-line bg-[#17252d] ${className}`}>
-    <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_50%_42%,#ffffff_0%,#f3f6f7_45%,#e6ebee_100%)]"/>
-    <div aria-hidden="true" className="pointer-events-none absolute inset-0 opacity-[0.55] [background-image:linear-gradient(#dfe5e9_1px,transparent_1px),linear-gradient(90deg,#dfe5e9_1px,transparent_1px)] [background-size:32px_32px] [mask-image:radial-gradient(ellipse_at_center,black_20%,transparent_75%)]"/>
+    <div aria-hidden="true" className="viewer-backdrop pointer-events-none absolute inset-0"/>
+    <div aria-hidden="true" className="viewer-grid pointer-events-none absolute inset-0"/>
     <div className="absolute inset-0">{children}</div>
-    {topLeft && <div className="viewer-top-left absolute left-3 top-3 z-10 flex flex-wrap gap-2 sm:left-4 sm:top-4">{topLeft}</div>}
-    {topRight && <div className="pointer-events-none absolute right-3 top-3 z-10 sm:right-4 sm:top-4">{topRight}</div>}
+    <div aria-hidden="true" className="viewer-corners"/>
+    {(topLeft || topRight) && <div className="viewer-toolbar">
+      {topLeft && <div className="viewer-top-left">{topLeft}</div>}
+      {topRight && <div className="viewer-top-right">{topRight}</div>}
+    </div>}
     {bottom && <div className="viewer-bottom pointer-events-none absolute inset-x-3 bottom-3 z-10 flex justify-between gap-2 sm:inset-x-4 sm:bottom-4">{bottom}</div>}
   </div>
 }
