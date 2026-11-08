@@ -92,10 +92,10 @@ canvas { touch-action: none; }
 }
 .segment-label {
   width: 100%; min-width: 0; font-size: .875rem; font-weight: 600; line-height: 1.35;
-  overflow-wrap: anywhere; white-space: normal;
+  overflow-wrap: anywhere; white-space: normal; text-wrap: pretty;
 }
 .segment-marker { display: inline-flex; vertical-align: middle; margin-right: .375rem; }
-.segment-sub { width: 100%; font-size: .75rem; line-height: 1.4; color: var(--color-ink-soft); overflow-wrap: anywhere; white-space: normal; }
+.segment-sub { width: 100%; font-size: .75rem; line-height: 1.4; color: var(--color-ink-soft); overflow-wrap: anywhere; white-space: normal; text-wrap: pretty; }
 .segment-option[aria-checked="true"] .segment-sub { color: #326c66; }
 .stage-picker { display: grid; gap: 1.5rem; }
 .stage-picker .segment-option { align-items: flex-start; text-align: left; padding-inline: .75rem; }

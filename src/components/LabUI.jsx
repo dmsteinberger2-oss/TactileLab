@@ -85,9 +85,10 @@ export function Segmented({ label, options = [], value, onChange, columns }) {
     <div role="radiogroup" aria-label={label} className="segmented-grid" data-long-labels={longLabels} style={{ '--cols': cols }}>
       {options.map((o) => {
         const on = value === o.id
+        const displayLabel = String(o.label).replace(/ (\S{1,3})$/u, '\u00a0$1')
         return <button key={o.id} type="button" role="radio" aria-checked={on} onClick={() => onChange(o.id)}
           className={`segment-option relative focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-teal ${on ? 'text-ink' : 'text-ink-soft'}`}>
-          <span className="segment-label">{o.marker && <span className="segment-marker">{o.marker}</span>}{o.label}</span>
+          <span className="segment-label">{o.marker && <span className="segment-marker">{o.marker}</span>}{displayLabel}</span>
           {o.sub && <span className="segment-sub">{o.sub}</span>}
         </button>
       })}
