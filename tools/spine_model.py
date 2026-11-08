@@ -22,7 +22,7 @@ CLR = 0.25
 
 COLOURS = {'l4_vertebra': '#e6d9bf', 'l5_vertebra': '#e2d4b8', 'annulus_fibrosus': '#cfd8dc', 'nucleus_pulposus': '#9fb8c8',
            'disc_herniation': '#7f9fbc', 'thecal_sac': '#e9d27a', 'nerve_roots': '#f0d060', 'l5_nerve_root_left': '#f5c040',
-           'l4_nerve_root_left': '#f5c040', 'l4_posterior_arch': '#e6d9bf', 'pedicle_screws': '#b8bec6', 'rods': '#c5cbd2', 'interbody_cage': '#cdbfa4', 'bone_graft': '#e8d7b0'}
+           'l4_nerve_root_left': '#f5c040', 'l4_posterior_arch': '#e6d9bf', 'bone_cement': '#f4f4f0', 'pedicle_screws': '#b8bec6', 'rods': '#c5cbd2', 'interbody_cage': '#cdbfa4', 'bone_graft': '#e8d7b0'}
 B.DEFAULTS.update(COLOURS)
 
 def load():
@@ -198,7 +198,7 @@ def build(stage, P):
 
 # ---------------------------------------------------------------- VARIANTS_V1: pathology library (schematic)
 LISTHESIS = {'listhesis_1': 0.15, 'listhesis_2': 0.37, 'listhesis_3': 0.62, 'listhesis_4': 0.87}
-VARIANTS = ['far_lateral', 'central_herniation', 'spondylolysis', 'degen_listhesis'] + list(LISTHESIS)
+VARIANTS = ['far_lateral', 'central_herniation', 'spondylolysis', 'degen_listhesis'] + list(LISTHESIS) + ['compression_fracture', 'kyphoplasty', 'recurrent_herniation']  # VARIANTS_V2
 
 def blob(spheres, k=3.0, grow=0.0, noise=0.35):
     """Soft disc fragment from a chain of spheres; grow>0 returns the dilated copy used to indent soft tissue."""
@@ -233,8 +233,21 @@ def shear(mesh, d, y0, y1, xw=None):
     v[:, 2] += d * w
     return trimesh.Trimesh(v, mesh.faces, process=False)
 
+def wedge(mesh, frac, y_inf=7.5, y_sup=34.0, z_post=-16.0, z_ant=13.0):
+    """Anterior wedge compression of the L4 body: the superior endplate drops by frac of body height at the
+    anterior cortex, tapering to nothing at the posterior wall; the inferior endplate and the arch stay put."""
+    v = np.asarray(mesh.vertices, float).copy()
+    wz = np.clip((v[:, 2] - z_post) / (z_ant - z_post), 0, 1); wz = wz * wz * (3 - 2 * wz)
+    wy = np.clip((v[:, 1] - y_inf) / (y_sup - y_inf), 0, 1)
+    v[:, 1] -= frac * (y_sup - y_inf) * wz * wy
+    return trimesh.Trimesh(v, mesh.faces, process=False)
+
 def build_variant(stage, P):
     show = {}
+    if stage == 'recurrent_herniation':
+        # microdiscectomy anatomy (laminotomy window, annulotomy) with a new fragment through the same tear
+        show = build('discectomy', P); show['disc_herniation'] = P['disc_herniation']
+        return show
     l4, l5 = to_m(P['l4_vertebra']), to_m(P['l5_vertebra'])
     ann, nuc = to_m(P['annulus_fibrosus']), to_m(P['nucleus_pulposus'])
     sac = to_m(P['thecal_sac'])
@@ -254,6 +267,15 @@ def build_variant(stage, P):
         show['disc_herniation'] = to_t(frag)
     elif stage == 'spondylolysis':
         l4 = l4 - pars_cut(P)
+    elif stage in ('compression_fracture', 'kyphoplasty'):
+        frac = 0.40 if stage == 'compression_fracture' else 0.15
+        l4 = to_m(wedge(P['l4_vertebra'], frac))
+        if stage == 'kyphoplasty':
+            # balloon-tamp cavity filled with cement: one central bolus, reached through both pedicles
+            sph = [((-4.0, 19.0, -2.0), 7.0), ((4.0, 19.0, -2.0), 7.0), ((0.0, 18.0, 3.5), 6.0)]
+            cem = to_m(blob(sph, k=4.0, noise=0.6)) ^ l4.offset(-1.2) if hasattr(l4, 'offset') else to_m(blob(sph, k=4.0, noise=0.6))
+            l4 = l4 - cem
+            show['bone_cement'] = to_t(cem)
     elif stage == 'degen_listhesis' or stage in LISTHESIS:
         ep = P['l5_vertebra'].section(plane_origin=[0, P['annulus_fibrosus'].bounds[0, 1] - 1.5, 0], plane_normal=[0, 1, 0])
         ap = float(np.ptp(max(ep.discrete, key=len)[:, 2])) if ep is not None else 30.0

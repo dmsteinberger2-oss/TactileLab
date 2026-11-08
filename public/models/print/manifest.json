@@ -5949,5 +5949,286 @@
    "faces": 5196,
    "volume_cm3": 0.49
   }
+ ],
+ "compression_fracture_full": [
+  {
+   "part": "nucleus_pulposus",
+   "file": "spine_compression_fracture_full/01_nucleus_pulposus.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 5822,
+   "volume_cm3": 1.79
+  },
+  {
+   "part": "l4_vertebra",
+   "file": "spine_compression_fracture_full/02_l4_vertebra.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 30000,
+   "volume_cm3": 40.87
+  },
+  {
+   "part": "l5_vertebra",
+   "file": "spine_compression_fracture_full/03_l5_vertebra.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 30000,
+   "volume_cm3": 47.35
+  },
+  {
+   "part": "annulus_fibrosus",
+   "file": "spine_compression_fracture_full/04_annulus_fibrosus.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 29832,
+   "volume_cm3": 14.26
+  },
+  {
+   "part": "thecal_sac",
+   "file": "spine_compression_fracture_full/05_thecal_sac.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 26186,
+   "volume_cm3": 12.59
+  },
+  {
+   "part": "nerve_roots",
+   "file": "spine_compression_fracture_full/06_nerve_roots.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 2,
+   "faces": 9496,
+   "volume_cm3": 0.98
+  },
+  {
+   "part": "l4_nerve_root_left",
+   "file": "spine_compression_fracture_full/07_l4_nerve_root_left.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 4370,
+   "volume_cm3": 0.44
+  },
+  {
+   "part": "l5_nerve_root_left",
+   "file": "spine_compression_fracture_full/08_l5_nerve_root_left.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 5080,
+   "volume_cm3": 0.49
+  }
+ ],
+ "kyphoplasty_full": [
+  {
+   "part": "bone_cement",
+   "file": "spine_kyphoplasty_full/01_bone_cement.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 20000,
+   "volume_cm3": 3.17
+  },
+  {
+   "part": "nucleus_pulposus",
+   "file": "spine_kyphoplasty_full/02_nucleus_pulposus.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 5822,
+   "volume_cm3": 1.79
+  },
+  {
+   "part": "l4_vertebra",
+   "file": "spine_kyphoplasty_full/03_l4_vertebra.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 25532,
+   "volume_cm3": 44.81
+  },
+  {
+   "part": "l5_vertebra",
+   "file": "spine_kyphoplasty_full/04_l5_vertebra.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 30000,
+   "volume_cm3": 47.35
+  },
+  {
+   "part": "annulus_fibrosus",
+   "file": "spine_kyphoplasty_full/05_annulus_fibrosus.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 29832,
+   "volume_cm3": 14.26
+  },
+  {
+   "part": "thecal_sac",
+   "file": "spine_kyphoplasty_full/06_thecal_sac.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 26186,
+   "volume_cm3": 12.59
+  },
+  {
+   "part": "nerve_roots",
+   "file": "spine_kyphoplasty_full/07_nerve_roots.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 2,
+   "faces": 9496,
+   "volume_cm3": 0.98
+  },
+  {
+   "part": "l4_nerve_root_left",
+   "file": "spine_kyphoplasty_full/08_l4_nerve_root_left.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 4370,
+   "volume_cm3": 0.44
+  },
+  {
+   "part": "l5_nerve_root_left",
+   "file": "spine_kyphoplasty_full/09_l5_nerve_root_left.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 5080,
+   "volume_cm3": 0.49
+  }
+ ],
+ "recurrent_herniation_full": [
+  {
+   "part": "nucleus_pulposus",
+   "file": "spine_recurrent_herniation_full/01_nucleus_pulposus.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 5822,
+   "volume_cm3": 1.79
+  },
+  {
+   "part": "l4_vertebra",
+   "file": "spine_recurrent_herniation_full/02_l4_vertebra.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 30000,
+   "volume_cm3": 46.59
+  },
+  {
+   "part": "l5_vertebra",
+   "file": "spine_recurrent_herniation_full/03_l5_vertebra.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 30000,
+   "volume_cm3": 47.35
+  },
+  {
+   "part": "annulus_fibrosus",
+   "file": "spine_recurrent_herniation_full/04_annulus_fibrosus.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 29760,
+   "volume_cm3": 14.11
+  },
+  {
+   "part": "thecal_sac",
+   "file": "spine_recurrent_herniation_full/05_thecal_sac.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 26186,
+   "volume_cm3": 12.59
+  },
+  {
+   "part": "nerve_roots",
+   "file": "spine_recurrent_herniation_full/06_nerve_roots.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 3,
+   "faces": 13866,
+   "volume_cm3": 1.43
+  },
+  {
+   "part": "l5_nerve_root_left",
+   "file": "spine_recurrent_herniation_full/07_l5_nerve_root_left.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 5080,
+   "volume_cm3": 0.49
+  },
+  {
+   "part": "disc_herniation",
+   "file": "spine_recurrent_herniation_full/08_disc_herniation.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 2192,
+   "volume_cm3": 0.38
+  }
  ]
 }
