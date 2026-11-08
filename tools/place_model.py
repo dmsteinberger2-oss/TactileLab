@@ -217,11 +217,15 @@ def build(stage, form, parts, kidney_m, kmesh, z0, centre, adr0=None, adr_n=None
         if adr is not None:
             show['adrenal_gland'] = prn['adrenal_gland'] = to_t(adr); specs['adrenal_gland'] = ('as_is', None, True)
         show['renal_artery'] = parts['renal_artery']; show['renal_vein'] = to_t(vein); show['ureter'] = parts['ureter']
-        # print: vessels branch inside the sinus, so they print fused to the kidney; the tumour lifts out
-        fused = body + to_m(parts['renal_artery']) + vein + to_m(parts['ureter'])
+        # print: vessels branch inside the sinus, so they print fused to the kidney; the tumour lifts out.
+        # The ureter only meets the pelvis along an edge (fusing it made a second, non-manifold body),
+        # so it prints as its own part, lying flat.
+        fused = body + to_m(parts['renal_artery']) + vein
         if T: fused = (fused - cavity) + pegs
         prn['kidney_body'] = to_t(fused)
         specs['kidney_body'] = ('as_is', None, True)
+        prn['ureter'] = parts['ureter']
+        specs['ureter'] = ('flat_down', None, False)
         if T:
             tt = to_t(tumor); show['tumor'] = prn['tumor'] = tt
             along = (np.asarray(tt.vertices) - T['c']) @ T['d']
