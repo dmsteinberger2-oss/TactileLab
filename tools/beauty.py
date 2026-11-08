@@ -335,6 +335,9 @@ def write_glb(path, parts, texture=None):
         accessors.append(a); return len(accessors) - 1
     meshes, nodes = [], []
     for p in parts:
+        n = len(p['pos'])
+        for k in ('nrm', 'col', 'uv'):
+            if p.get(k) is not None: assert len(p[k]) == n, f"{p['name']}: {k} has {len(p[k])} rows for {n} vertices"
         attrs = {'POSITION': add_acc(p['pos'].astype(np.float32), 5126, 'VEC3', 34962, minmax=True),
                  'NORMAL': add_acc(p['nrm'].astype(np.float32), 5126, 'VEC3', 34962),
                  'COLOR_0': add_acc(p['col'].astype(np.uint16), 5123, 'VEC3', 34962, normalized=True)}
@@ -369,7 +372,8 @@ def export_parts(meshes, colour_fn, z0=None, tex_bounds=None, texture=None, unte
         V = np.asarray(g.vertices, np.float32); N = np.asarray(g.vertex_normals, np.float32)
         mult = colour_fn(name, V)
         base = srgb2lin(hex2rgb(DEFAULTS.get(name, '#999999')))
-        lin = base[None] * (mult if mult is not None else 1.0)
+        # One colour per vertex even for flat-coloured parts (glTF needs COLOR_0.count == POSITION.count).
+        lin = np.broadcast_to(base[None] * (mult if mult is not None else 1.0), (len(V), 3))
         uv = None
         if texture is not None:
             x0, y0, x1, y1 = tex_bounds
