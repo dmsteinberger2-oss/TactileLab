@@ -1,4 +1,4 @@
-import { Suspense, useMemo, useEffect, useReducer } from 'react'
+import { Component, Suspense, useMemo, useEffect, useReducer } from 'react'
 import { Canvas, useThree } from '@react-three/fiber'
 import { OrbitControls, Html, Bounds, Environment, ContactShadows, useGLTF } from '@react-three/drei'
 import { useSpring, a } from '@react-spring/three'
@@ -13,6 +13,17 @@ import { registerSceneRoot } from '@/lib/sceneRegistry'
 // Placeholders render until a GLB exists, so the app never shows an empty canvas.
 
 const BASE_PARTS = new Set(['kidney_body', 'renal_cortex'])
+// drei's "studio" preset HDR (Poly Haven studio_small_03, CC0), served locally so lighting needs no network.
+const STUDIO_HDR = '/hdri/studio_small_03_1k.hdr'
+
+// Renders `fallback` (default: nothing) if anything below throws, e.g. the HDR failing to load.
+// The directional and hemisphere lights live outside it, so the model stays lit.
+class SilentBoundary extends Component {
+  state = { failed: false }
+  static getDerivedStateFromError() { return { failed: true } }
+  componentDidCatch(err) { console.warn('[ModelCanvas] optional scene element failed, continuing without it:', err?.message ?? err) }
+  render() { return this.state.failed ? (this.props.fallback ?? null) : this.props.children }
+}
 const L = KIDNEY_DIMS_CM.length / 2, W = KIDNEY_DIMS_CM.width / 2, T = KIDNEY_DIMS_CM.thickness / 2
 
 function PartMesh({ partId, geometry, position = [0, 0, 0], rotation, explodeDir = [0, 0, 0], explodeDist = 3, clip, map = null, baked = false }) {
@@ -188,7 +199,11 @@ function Scene() {
       <directionalLight position={[8, 14, 12]} intensity={1.7} castShadow shadow-mapSize={[2048, 2048]} shadow-bias={-0.0004} />
       <directionalLight position={[-12, 4, -6]} intensity={0.6} color="#dfe8ff" />
       <directionalLight position={[0, -8, 10]} intensity={0.25} />
-      <Environment preset="studio" environmentIntensity={0.55} />
+      <SilentBoundary>
+        <Suspense fallback={null}>
+          <Environment files={STUDIO_HDR} environmentIntensity={0.55} />
+        </Suspense>
+      </SilentBoundary>
       {!checking && (
         <Bounds key={url ?? 'placeholder'} fit clip observe margin={1.18}>
           <group onPointerMissed={() => selectPart(null)}>
