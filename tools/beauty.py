@@ -364,8 +364,9 @@ def write_glb(path, parts, texture=None):
     out += struct.pack('<II', len(js), 0x4E4F534A) + js + struct.pack('<II', len(binary), 0x004E4942) + binary
     open(path, 'wb').write(out)
 
-def export_parts(meshes, colour_fn, z0=None, tex_bounds=None, texture=None, untextured=('ureter',)):
-    """Bake full colours into vertices; flat cut faces get planar UVs into the painted section."""
+def export_parts(meshes, colour_fn, z0=None, tex_bounds=None, texture=None, untextured=('ureter',), cut_sign=1):
+    """Bake full colours into vertices; flat cut faces get planar UVs into the painted section.
+    cut_sign: +1 for pieces whose cut face looks toward +Z (posterior half), -1 for the anterior half."""
     out = []
     for name, m in meshes.items():
         g = trimesh.graph.smooth_shade(m, angle=np.radians(38), facet_minarea=None)
@@ -377,10 +378,18 @@ def export_parts(meshes, colour_fn, z0=None, tex_bounds=None, texture=None, unte
         uv = None
         if texture is not None:
             x0, y0, x1, y1 = tex_bounds
-            cut = (np.abs(V[:, 2] - z0) < 0.08) & (N[:, 2] > 0.9) & (name not in untextured)
+            cut = (np.abs(V[:, 2] - z0) < 0.08) & (N[:, 2] * cut_sign > 0.9) & (name not in untextured)
             uv = np.tile([1 - 24 / texture.width, 1 - 24 / texture.height], (len(V), 1)).astype(np.float32)
             uv[cut, 0] = (V[cut, 0] - x0) / (x1 - x0); uv[cut, 1] = (y1 - V[cut, 1]) / (y1 - y0)
             lin = np.where(cut[:, None], 1.0, lin)
         col = (np.clip(lin, 0, 1) * 65535).astype(np.uint16)
         out.append(dict(name=name, pos=V * 0.1, nrm=N, col=col, uv=uv, idx=np.asarray(g.faces)))
     return out
+
+def combine(parts, name):
+    """Concatenate export_parts entries into one part (one mesh in the GLB), offsetting indices."""
+    off = np.cumsum([0] + [len(p['pos']) for p in parts[:-1]])
+    has_uv = all(p.get('uv') is not None for p in parts)
+    return dict(name=name, pos=np.concatenate([p['pos'] for p in parts]), nrm=np.concatenate([p['nrm'] for p in parts]),
+                col=np.concatenate([p['col'] for p in parts]), uv=np.concatenate([p['uv'] for p in parts]) if has_uv else None,
+                idx=np.concatenate([np.asarray(p['idx']) + o for p, o in zip(parts, off)]))
