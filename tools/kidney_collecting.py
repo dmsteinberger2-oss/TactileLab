@@ -16,9 +16,10 @@ F = np.float32
 H = 0.5      # grid spacing, mm
 WALL = 1.6   # wall of the dilated collecting system, mm
 
-# grade: (pelvis growth, calyx growth, calyx-tip clubbing, parenchymal rim kept), mm
-HYDRO = {'hydro_1': (3.0, 0.0, 0.0, 7.0), 'hydro_2': (5.5, 1.0, 0.0, 6.0),
-         'hydro_3': (7.0, 2.5, 3.0, 4.5), 'hydro_4': (8.5, 4.0, 7.0, 2.2)}
+# grade: (pelvis growth, calyx growth, calyx-tip clubbing, parenchymal rim kept, reach of the pelvic dilatation
+# along the infundibula), mm. Grade 1 dilates the pelvis only; the reach grows with grade so that the calyces follow.
+HYDRO = {'hydro_1': (3.5, 0.0, 0.0, 7.0, 2.5), 'hydro_2': (5.0, 2.0, 0.0, 6.0, 6.0),
+         'hydro_3': (6.5, 3.5, 3.0, 4.0, 9.0), 'hydro_4': (8.5, 5.0, 7.0, 2.0, 13.0)}
 STAGES = set(HYDRO) | {'staghorn'}
 
 def inside_mask(mesh, g):
@@ -57,11 +58,11 @@ def fields(parts):
     return g, sdf(pel, blur=0), sdf(lumen), sdf(solid)
 
 def hydro(g, p, L, kd, stage):
-    A, B, C, rim = HYDRO[stage]
+    A, B, C, rim, reach = HYDRO[stage]
     core = L < -1.6                                        # the wide pelvis; infundibula and calyces are narrower
     dcore = ndimage.distance_transform_edt(~core) * H
-    w = np.exp(-(dcore / 8.0) ** 2)                        # 1 in the pelvis, falling off along the infundibula
-    tip = np.clip((dcore - 8.0) / 10.0, 0, 1)              # calyx ends: clubbing at higher grades
+    w = np.exp(-(dcore / reach) ** 2)                        # 1 in the pelvis, falling off along the infundibula
+    tip = np.clip((dcore - 8.0) / 10.0, 0, 1) if C else 0.0              # calyx ends: clubbing at higher grades
     fl = L - (A * w + B * (1 - w) + C * tip)
     fl = np.maximum(fl, -(kd + rim + WALL))                # keep a parenchymal rim
     fl = np.minimum(fl, L)                                 # never smaller than the source lumen
