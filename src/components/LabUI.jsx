@@ -134,6 +134,28 @@ export function Hint({ children }) {
 // Stage options carry the tumour size, so the selector doubles as a size scale.
 // Labs without tumour sizes (e.g. the spine) get plain labels.
 export const hasSizes = (stages) => stages.some((s) => s.sizeCm > 0)
-export const stageOptions = (stages) => hasSizes(stages)
-  ? stages.map((s) => ({ id: s.id, label: s.label, sub: s.sizeCm > 0 ? `${s.sizeCm.toFixed(1)} cm` : 'no mass', marker: s.sizeCm > 0 ? <LesionDot/> : null }))
-  : stages.map((s) => ({ id: s.id, label: s.label }))
+// A stage shows the pathology marker when it has a lesion: a sized tumour, or `lesion: true`.
+export const isLesion = (s) => !!(s && (s.lesion ?? s.sizeCm > 0))
+export const stageOptions = (stages) => {
+  const sized = hasSizes(stages)
+  return stages.map((s) => ({
+    id: s.id, label: s.label,
+    sub: s.sub ?? (sized ? (s.sizeCm > 0 ? `${s.sizeCm.toFixed(1)} cm` : 'no mass') : undefined),
+    marker: isLesion(s) ? <LesionDot/> : null,
+  }))
+}
+
+// Stage selector. Stages with a `group` (e.g. RCC, Bosniak cysts) get one labelled row per group,
+// in the order the groups first appear; labs without groups keep the single selector.
+export function StagePicker({ stages, value, onChange }) {
+  const groups = []
+  for (const s of stages) {
+    const name = s.group ?? ''
+    let g = groups.find((x) => x.name === name)
+    if (!g) groups.push(g = { name, stages: [] })
+    g.stages.push(s)
+  }
+  const row = (label, list) => <Segmented key={label} label={label} options={stageOptions(list)} value={value} onChange={onChange} columns={list.length > 3 ? undefined : list.length}/>
+  if (groups.length < 2) return row(hasSizes(stages) ? 'Tumour stage' : 'Stage', stages)
+  return <div className="space-y-4">{groups.map((g) => row(g.name || 'Stage', g.stages))}</div>
+}

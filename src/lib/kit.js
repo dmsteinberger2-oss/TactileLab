@@ -54,7 +54,7 @@ function collectParts() {
   root.updateMatrixWorld(true)
   root.traverse((o) => {
     if (!o.isMesh || !wanted.has(o.name)) return
-    if (stage && stage.parts && !stage.parts.includes(o.name) && getPart(labId, o.name)?.removable && ['tumor', 'vein_thrombus'].includes(o.name)) return
+    if (stage && stage.parts && !stage.parts.includes(o.name) && getPart(labId, o.name)?.removable && lab.stages.some((s) => s.parts?.includes(o.name))) return   // belongs to another stage
     out.push(o)
   })
   return out

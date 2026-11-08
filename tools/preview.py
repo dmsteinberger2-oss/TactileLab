@@ -7,7 +7,7 @@ from PIL import Image
 
 COL = {'kidney_body': '#8a3b32', 'renal_cortex': '#b0614f', 'renal_medulla': '#64271f', 'renal_sinus': '#efd57e',
        'renal_pelvis': '#ece7da', 'ureter': '#ece7da', 'renal_artery': '#c0392b', 'renal_vein': '#2e5c9e',
-       'tumor': '#dda033', 'vein_thrombus': '#cf9233'}
+       'tumor': '#dda033', 'vein_thrombus': '#cf9233', 'ivc': '#2e5c9e', 'ivc_thrombus': '#cf9233', 'cyst': '#cdd7d5', 'aml': '#e2c05a', 'adrenal_gland': '#d9a441'}
 VIEWS = {'back': (-0.12, 0.08, -1.0), 'front': (0.12, 0.08, 1.0), 'three': (0.55, 0.35, 0.75), 'medial': (-0.9, 0.15, 0.45), 'cut': (0.0, 0.0, 1.0), 'tilt': (0.25, -0.35, 0.9)}
 def hex2rgb(h): return np.array([int(h[i:i + 2], 16) / 255 for i in (1, 3, 5)])
 

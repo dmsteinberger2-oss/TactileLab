@@ -23,6 +23,8 @@ C = dict(
     pelvis=(240, 234, 222), pelvis_lo=(210, 200, 186),
     tumor=(226, 172, 58), tumor_lo=(196, 138, 40), tumor_hi=(244, 206, 110), hem=(140, 40, 32), necro=(214, 206, 188), septa=(236, 214, 170),
     adr_cortex=(232, 182, 72), adr_medulla=(150, 78, 50),
+    cyst_wall=(232, 226, 212), cyst_wall_lo=(208, 198, 182), cyst_fluid=(176, 186, 170), nodule=(214, 150, 104), nodule_lo=(184, 112, 76),
+    aml_fat=(246, 222, 120), aml_fat_lo=(226, 192, 84), aml_septa=(250, 238, 196), aml_muscle=(214, 150, 132), aml_vessel=(150, 44, 40),
 )
 DEFAULTS = {'kidney_body': '#8a3b32', 'renal_cortex': '#b0614f', 'renal_medulla': '#64271f', 'renal_sinus': '#efd57e',
             'renal_pelvis': '#ece7da', 'ureter': '#ece7da', 'renal_artery': '#c0392b', 'renal_vein': '#2e5c9e',
@@ -180,8 +182,11 @@ def paint_section(polys, ppm=16.0, max_px=2600):
     cv = Canvas((x0, y0, x1, y1), ppm)
     get = lambda k: polys.get(k, sg.MultiPolygon())
     cortex, med, fat, pel, art, tum, adr, ure = (get(k) for k in ('renal_cortex', 'renal_medulla', 'renal_sinus', 'renal_pelvis', 'renal_artery', 'tumor', 'adrenal_gland', 'ureter'))
+    cyst, cfl, cnod, aml = (get(k) for k in ('cyst', 'cyst_fluid', 'cyst_nodule', 'aml'))
     kidney = so.unary_union([g for g in (cortex, med, fat, pel) if not g.is_empty])
-    M = {k: cv.mask(g) for k, g in dict(cortex=cortex, med=med, fat=fat, pel=pel, art=art, tum=tum, adr=adr, ure=ure, kid=kidney).items()}
+    M = {k: cv.mask(g) for k, g in dict(cortex=cortex, med=med, fat=fat, pel=pel, art=art, tum=tum, adr=adr, ure=ure, kid=kidney,
+                                        cyst=cyst, cfl=cfl, cnod=cnod, aml=aml).items()}
+    M['les'] = np.clip(M['tum'] + M['cyst'] + M['aml'], 0, 1)          # any lesion: vessels are not drawn over it
     tissue = np.clip(M['cortex'] + M['med'], 0, 1)
 
     # 1 cortex: granular parenchyma with glomeruli
@@ -260,7 +265,7 @@ def paint_section(polys, ppm=16.0, max_px=2600):
             a0 = P['apex'] + P['axis'] * 1.5 + off * 1.6
             lob_a.append(wiggle(a0, c + off * 1.2, 14, amp=0.4, seed=int(abs(c[0] * 10))))
             lob_v.append(wiggle(a0 + off * 1.2, c + off * 2.3, 14, amp=0.4, seed=int(abs(c[1] * 10))))
-    clip_t = np.clip(tissue - M['tum'], 0, 1)
+    clip_t = np.clip(tissue - M['les'], 0, 1)
     vessel(cv, arc_v + lob_v, 0.62, 'vein', clip_t)
     vessel(cv, arc_a + lob_a, 0.5, 'art', clip_t)
 
@@ -301,6 +306,32 @@ def paint_section(polys, ppm=16.0, max_px=2600):
         rim = M['tum'] * (1 - cv.mask(tum.buffer(-0.9)))
         cv.paint(rim * 0.9, (176, 120, 60))
 
+    # 8b cyst: pale fibrous wall and septa around the fluid locules (recessed in the model), nodules
+    if not cyst.is_empty:
+        w = (0.92 + 0.1 * cv.noise(1.2, 41))[..., None]
+        cv.img = cv.img * (1 - M['cyst'][..., None]) + (np.array(C['cyst_wall'])[None, None] * w) * M['cyst'][..., None]
+        cv.paint(M['cfl'] * 0.95, C['cyst_fluid'], M['cyst'])
+        lip = np.clip(cv.mask(cfl.buffer(0.5)) - M['cfl'], 0, 1)
+        cv.paint(lip * 0.6, C['cyst_wall_lo'], M['cyst'])
+        if not cnod.is_empty:
+            cv.paint(M['cnod'], C['nodule'], M['cyst'])
+            cv.paint(np.clip((cv.noise(1.5, 43) - 0.55) / 0.1, 0, 1) * M['cnod'] * 0.7, C['nodule_lo'], M['cyst'])
+        rim = M['cyst'] * (1 - cv.mask(cyst.buffer(-0.5)))
+        cv.paint(rim * 0.7, C['cyst_wall_lo'])
+
+    # 8c angiomyolipoma: mature fat lobules, smooth-muscle bundles, thick-walled vessels
+    if not aml.is_empty:
+        voronoi_texture(cv, M['aml'], 1.7, C['aml_fat'], C['aml_fat_lo'], C['aml_septa'], 17, septa_w=0.16, var=0.9)
+        mus = np.clip((cv.noise(5, 51) * 0.7 + cv.noise(2, 52) * 0.3 - 0.58) / 0.07, 0, 1)
+        cv.paint(mus * 0.85, C['aml_muscle'], M['aml'])
+        minx, miny, maxx, maxy = aml.bounds
+        pts = np.c_[RNG.uniform(minx, maxx, 900), RNG.uniform(miny, maxy, 900)]
+        pts = pts[[aml.contains(sg.Point(q)) for q in pts]][:160]
+        cv.dots(pts, 0.55, C['aml_vessel'], M['aml'])
+        cv.dots(pts, 0.25, (236, 200, 180), M['aml'])
+        rim = M['aml'] * (1 - cv.mask(aml.buffer(-0.8)))
+        cv.paint(rim * 0.8, (200, 150, 70))
+
     # 9 adrenal: yellow cortex, brown medulla core
     if not adr.is_empty:
         cv.fill(M['adr'], C['adr_cortex'])
@@ -308,7 +339,7 @@ def paint_section(polys, ppm=16.0, max_px=2600):
         if not core.is_empty: cv.paint(cv.mask(core) * 0.9, C['adr_medulla'])
 
     # 10 depth: soft darkening along every boundary, capsule line
-    lab = (M['cortex'] * 1 + M['med'] * 2 + M['fat'] * 3 + M['pel'] * 4 + M['tum'] * 5 + M['art'] * 6 + M['adr'] * 7)
+    lab = (M['cortex'] * 1 + M['med'] * 2 + M['fat'] * 3 + M['pel'] * 4 + M['tum'] * 5 + M['art'] * 6 + M['adr'] * 7 + M['cyst'] * 8 + M['cfl'] * 9 + M['aml'] * 10)
     edge = (np.abs(np.diff(lab, axis=0, prepend=lab[:1])) + np.abs(np.diff(lab, axis=1, prepend=lab[:, :1]))) > 0.5
     ao = np.asarray(Image.fromarray((edge * 255).astype(np.uint8)).filter(ImageFilter.GaussianBlur(cv.mm(0.5))), np.float32) / 255
     cv.img *= (1 - 0.35 * np.clip(ao * 3, 0, 1))[..., None]

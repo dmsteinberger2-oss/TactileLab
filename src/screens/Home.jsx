@@ -24,7 +24,7 @@ function LabCard({ lab, index }) {
     <h3 className="mt-8 text-3xl font-bold tracking-[-0.03em]">{lab.name}</h3>
     {lab.condition && <p className="mt-1 flex items-center gap-2 text-sm font-medium text-ink"><LesionDot/>{lab.condition}</p>}
     {lab.description && <p className="mt-4 text-sm leading-relaxed text-ink-soft">{lab.description}</p>}
-    {lab.stages && <ul aria-label="Stages" className="mt-5 flex flex-wrap gap-1.5">{lab.stages.map((s) => <li key={s.id}><Chip className={s.sizeCm > 0 ? '' : 'opacity-80'}>{s.label}</Chip></li>)}</ul>}
+    {lab.stages && <ul aria-label="Stages" className="mt-5 flex flex-wrap gap-1.5">{stageChips(lab.stages).map((c) => <li key={c.key}><Chip className={c.dim ? 'opacity-80' : ''}>{c.label}</Chip></li>)}</ul>}
     <dl className="mt-auto grid grid-cols-3 gap-3 border-t border-line pt-4 text-xs">
       <div><dt className="text-ink-soft">Stages</dt><dd className="mt-0.5 font-mono text-sm font-semibold">{lab.stages?.length ?? 0}</dd></div>
       <div><dt className="text-ink-soft">Views</dt><dd className="mt-0.5 font-mono text-sm font-semibold">{lab.cutaways?.length ?? 1}</dd></div>
@@ -32,6 +32,19 @@ function LabCard({ lab, index }) {
     </dl>
     <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-teal">Open lab<Icon name="arrow" className="h-4 w-4 transition group-hover:translate-x-0.5"/></span>
   </Link>
+}
+
+
+// Card chips: one per stage, or one per group ("Bosniak cysts · 5") once a lab groups its stages.
+function stageChips(stages) {
+  if (!stages.some((s) => s.group)) return stages.map((s) => ({ key: s.id, label: s.label, dim: !(s.lesion ?? s.sizeCm > 0) }))
+  const out = []
+  for (const s of stages) {
+    const g = s.group ?? 'Other'
+    const c = out.find((x) => x.key === g)
+    if (c) c.n++; else out.push({ key: g, n: 1 })
+  }
+  return out.map((c) => ({ key: c.key, label: `${c.key} · ${c.n}` }))
 }
 
 export default function Home() {

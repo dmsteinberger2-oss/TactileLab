@@ -9,7 +9,7 @@ import { PRINT_ASSUMPTIONS } from '@/lib/printReport'
 import { viewUrl, shareIsLocalOnly } from '@/lib/share'
 import KitQR from '@/components/KitQR'
 import PartControls from '@/components/PartControls'
-import { Chip, Header, Hint, Icon, LesionDot, Panel, Segmented, Spinner, Toggle, ViewerFrame, hasSizes, stageOptions, theme } from '@/components/LabUI'
+import { Chip, Header, Hint, Icon, LesionDot, Panel, Segmented, Spinner, Toggle, ViewerFrame, StagePicker, isLesion, theme } from '@/components/LabUI'
 
 function formatMinutes(value) {
   if (!Number.isFinite(value)) return '—'
@@ -122,7 +122,7 @@ export default function Lab() {
         <section aria-label="Interactive 3D model" className="lg:sticky lg:top-20">
           <ViewerFrame className="h-[60vh] max-h-[560px] min-h-[340px] lg:h-[calc(100vh-150px)] lg:max-h-none"
             topLeft={<><Toggle label="Labels" icon="tag" checked={labelsOn} onChange={setLabelsOn}/><Toggle label="Explode" icon="layers" checked={exploded} onChange={setExploded}/></>}
-            topRight={<div className="hidden flex-col items-end gap-1.5 sm:flex"><Chip tone={stage.sizeCm > 0 ? 'lesion' : 'plain'}>{stage.sizeCm > 0 && <LesionDot/>}{stage.ajcc ?? stage.label}</Chip><Chip>{view?.label}</Chip></div>}
+            topRight={<div className="hidden flex-col items-end gap-1.5 sm:flex"><Chip tone={isLesion(stage) ? 'lesion' : 'plain'}>{isLesion(stage) && <LesionDot/>}{stage.ajcc ?? stage.label}</Chip><Chip>{view?.label}</Chip></div>}
             bottom={<Hint>Drag to rotate · tap a part to lift it</Hint>}>
             <ModelCanvas/>
           </ViewerFrame>
@@ -131,12 +131,12 @@ export default function Lab() {
         <div className="space-y-4">
           <Panel step="01" title="Configure" id="configure">
             <div className="space-y-5">
-              <Segmented label={hasSizes(lab.stages) ? 'Tumour stage' : 'Stage'} options={stageOptions(lab.stages)} value={stage.id} onChange={setStage} columns={lab.stages.length > 3 ? undefined : lab.stages.length}/>
+              <StagePicker stages={lab.stages} value={stage.id} onChange={setStage}/>
               {lab.cutaways?.length > 1 && <Segmented label="View" options={lab.cutaways} value={cutaway} onChange={setCutaway}/>}
             </div>
           </Panel>
 
-          <Panel step="02" title="Readout" id="readout" aside={<Chip tone={stage.sizeCm > 0 ? 'lesion' : 'plain'}>{stage.ajcc ? `AJCC ${stage.ajcc}` : stage.label}</Chip>}>
+          <Panel step="02" title="Readout" id="readout" aside={<Chip tone={isLesion(stage) ? 'lesion' : 'plain'}>{stage.ajcc ? `AJCC ${stage.ajcc}` : stage.label}</Chip>}>
             <div aria-live="polite">
               {stage.readout && <p className={theme.prose}>{stage.readout}</p>}
               {stage.teaching && <div className="mt-4 border-l-2 border-teal pl-3.5"><p className="text-xs font-semibold uppercase tracking-[0.08em] text-teal">Teaching note</p><p className="mt-1 text-sm leading-relaxed text-ink-soft">{stage.teaching}</p></div>}

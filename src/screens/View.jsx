@@ -3,7 +3,7 @@ import { Link, useSearchParams } from 'react-router-dom'
 import { useLabStore } from '@/store/labStore'
 import { labs } from '@/data/labs'
 import ModelCanvas from '@/scenes/ModelCanvas'
-import { Chip, Header, Hint, Icon, LesionDot, Segmented, Spinner, Toggle, ViewerFrame, hasSizes, stageOptions, theme } from '@/components/LabUI'
+import { Chip, Header, Hint, Icon, LesionDot, Segmented, Spinner, Toggle, ViewerFrame, StagePicker, isLesion, theme } from '@/components/LabUI'
 
 // What the kit's QR opens, usually on a phone: the model, stage and view, explode, and the tapped part.
 export default function View() {
@@ -35,7 +35,7 @@ export default function View() {
             <h1 className="mt-1 text-[28px] font-bold leading-tight tracking-[-0.03em] sm:text-4xl">{lab.name}</h1>
             {lab.condition && <p className="mt-0.5 flex items-center gap-2 text-sm text-ink-soft"><LesionDot/>{lab.condition}</p>}
           </div>
-          <div className="flex gap-1.5"><Chip tone={stage?.sizeCm > 0 ? 'lesion' : 'plain'}>{stage?.sizeCm > 0 && <LesionDot/>}{stage?.ajcc ?? stage?.label}</Chip>{view && <Chip>{view.label}</Chip>}</div>
+          <div className="flex gap-1.5"><Chip tone={isLesion(stage) ? 'lesion' : 'plain'}>{isLesion(stage) && <LesionDot/>}{stage?.ajcc ?? stage?.label}</Chip>{view && <Chip>{view.label}</Chip>}</div>
         </div>
 
         <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,1fr)_380px] lg:gap-5">
@@ -59,7 +59,7 @@ export default function View() {
             </section>
 
             <section aria-label="Model controls" className={`${theme.panel} space-y-5 p-5`}>
-              <Segmented label={hasSizes(lab.stages) ? 'Tumour stage' : 'Stage'} options={stageOptions(lab.stages)} value={stage.id} onChange={setStage} columns={lab.stages.length > 3 ? undefined : lab.stages.length}/>
+              <StagePicker stages={lab.stages} value={stage.id} onChange={setStage}/>
               {lab.cutaways?.length > 1 && <Segmented label="View" options={lab.cutaways} value={cutaway} onChange={setCutaway}/>}
             </section>
 

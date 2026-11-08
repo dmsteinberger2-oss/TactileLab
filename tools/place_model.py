@@ -17,6 +17,7 @@ import fast_simplification
 sys.path.insert(0, os.path.dirname(__file__))
 import kidney_sdf as K   # SDF primitives, colours, meshing, orientation helpers
 import beauty as B       # painted section, adrenal, textured GLB
+import kidney_conditions as KC   # T3b, T4, Bosniak cysts, angiomyolipoma
 
 SRC, OUT = sys.argv[1], sys.argv[2]
 STAGES = sys.argv[3].split(',') if len(sys.argv) > 3 else ['normal', 't1a', 't1b', 't2a', 't3a']
@@ -135,7 +136,9 @@ TUMORS = {
     't2a': dict(D=85.0, d=(0.33, 0.94, 0.0), e=0.80, root=False),
     't3a': dict(D=60.0, d=(-0.20, 0.98, 0.0), e=0.90, root=True),
 }
+TUMORS.update(KC.LESIONS)
 TRUNC = 0.55
+CURRENT = {'T': None}     # lesion of the stage being built (colour functions read it)
 
 def surface_point(kmesh, origin, d):
     d = K.unit(d); loc, _, _ = kmesh.ray.intersects_location([origin + d * 300], [-d])
@@ -144,26 +147,29 @@ def surface_point(kmesh, origin, d):
 def tumor_spec(stage, kmesh, z0):
     t = TUMORS[stage]; d = K.unit(t['d']).astype(np.float32); R = t['D'] / 2
     s = surface_point(kmesh, np.array([0.0, 0.0, z0]), d)
-    c = (s + d * 1.0).astype(np.float32)
+    c = (s + d * (1.0 + t.get('out', 0.0))).astype(np.float32)   # out: mass sits further out of the kidney
     rng = np.random.default_rng(zlib.crc32(stage.encode())); lobes = []
-    while len(lobes) < 5:
+    while len(lobes) < t.get('lobes', 5):
         u = K.unit(rng.normal(size=3))
         if u @ d > 0.3: lobes.append((c + R * 0.60 * u.astype(np.float32), R * rng.uniform(0.38, 0.5)))
     trunc = TRUNC * R * t['e']; fc = (c - d * trunc).astype(np.float32)
     s_off = min(0.35 * R * math.sqrt(1 - TRUNC ** 2), 7.0)
     pegs = [fc + np.array([0, 0, s_off], np.float32), fc - np.array([0, 0, s_off], np.float32)]
-    return dict(c=c, d=d, R=R, e=t['e'], lobes=lobes, trunc=trunc, fc=fc, pegs=pegs, root=t['root'])
+    return dict(c=c, d=d, R=R, e=t['e'], lobes=lobes, trunc=trunc, fc=fc, pegs=pegs, root=t['root'],
+                part=t.get('part', 'tumor'), cyst=t.get('cyst'), invade=t.get('invade'), extra=[], single=stage in KC.LESIONS)
 
 def lobed(T, grow=0.0):
     """Lobed, slightly oblate tumour body as a manifold (grow = outward offset in mm)."""
     c, d, R, e = T['c'], T['d'], T['R'], T['e']
     lo, hi = c - R * 1.3 - 2, c + R * 1.3 + 2
     if T['root']: lo = np.minimum(lo, c - d * (T['trunc'] + 22) - 12); hi = np.maximum(hi, c - d * (T['trunc'] + 22) + 12)
+    for ec, er in T.get('extra', []): lo = np.minimum(lo, ec - er - 3); hi = np.maximum(hi, ec + er + 3)
     g = K.Grid(lo, hi, h=0.5); P = g.P
     p = P - c; along = p @ d
     q = p + d[None] * (along * (1 / e - 1))[:, None]
     f = (K.norm(q) - R) * e
     for lc, lr in T['lobes']: f = K.smin(f, K.sd_sphere(P, lc, lr), 0.18 * R)
+    for ec, er in T.get('extra', []): f = K.smin(f, K.sd_sphere(P, np.asarray(ec, np.float32), er), 6.0)   # invasion
     if T['root']: f = np.minimum(f, K.sd_round_cone(P, c - d * 0.4 * R, c - d * (T['trunc'] + 16.0), 0.3 * R, 3.5))
     m = K.mesh_from(g, f - grow, target=40000)
     return to_m(m)
@@ -181,11 +187,14 @@ def build_tumor(T, kidney_m):
         root = to_m(K.mesh_from(g, rf, target=8000)); rootc = to_m(K.mesh_from(g, rf - CLR, target=8000))
     # flat base only inside the kidney; outside it the mass curves naturally into the surface
     tumor = (S ^ above) + (S - kidney_m) + root
+    if T.get('single'):   # new lesions only: drop islands where S fills internal gaps of the source union
+        tumor = max(tumor.decompose(), key=lambda m: m.volume())
     cavity = (Sc ^ inside_base) + (rootc if T['root'] else Manifold())
     return tumor, cavity
 
 def peg_parts(T):
     pegs, holes = Manifold(), Manifold()
+    if T.get('single') and T['root']: return pegs, holes   # new rooted lesions: the root keys the piece; pegs would float in the root cavity
     for pg in T['pegs']:
         a = pg - T['d'] * 1.5; pegs += to_m(trimesh.creation.cylinder(radius=2.4, segment=[a, pg + T['d'] * 3.8], sections=40))
         holes += to_m(trimesh.creation.cylinder(radius=2.6, segment=[pg - T['d'] * 1.0, pg + T['d'] * 4.4], sections=40))
@@ -233,13 +242,20 @@ def colour_ctx(parts, z0):
 def build(stage, form, parts, kidney_m, kmesh, z0, centre, adr0=None, adr_n=None):
     """Returns (display meshes, print meshes, print specs, section polygons)."""
     T = tumor_spec(stage, kmesh, z0) if stage in TUMORS else None
+    CURRENT['T'] = T
+    lp = T['part'] if T else 'tumor'
+    if T and T['invade'] == 'adrenal' and adr0 is not None:
+        # T4: a lobe of the mass grows into the adrenal gland, which is molded around it
+        T['extra'] = [(to_t(adr0).centroid.astype(np.float32), 10.0)]
     tumor = cavity = None
     if T: tumor, cavity = build_tumor(T, kidney_m)
     show, prn, specs, polys = {}, {}, {}, {}
     adr = None
     if adr0 is not None:
         adr = adr0
-        if T:   # the adrenal stays in place, indented where the mass presses against it
+        if T and T['invade'] == 'adrenal':
+            adr = adr0 - lobed(T, grow=CLR)
+        elif T:   # the adrenal stays in place, indented where the mass presses against it
             adr = adr0 - lobed(T, grow=0.8)
             if T['root']: adr = adr - tumor
     if form == 'whole':
@@ -253,6 +269,13 @@ def build(stage, form, parts, kidney_m, kmesh, z0, centre, adr0=None, adr_n=None
             lumen, th = thrombus(parts['renal_vein'], centre)
             vein = vein - lumen
             show['vein_thrombus'] = prn['vein_thrombus'] = to_t(th); specs['vein_thrombus'] = ('as_is', None, False)
+        if stage == 't3b':
+            ivc, ith, vth, lumen = KC.ivc_parts(vein_axis, parts['renal_vein'], centre, to_m)
+            vein = vein - lumen
+            ivc = ivc - to_m(parts['renal_artery'])     # schematic: keep the artery stub clear of the caval wall
+            show['vein_thrombus'] = prn['vein_thrombus'] = to_t(vth); specs['vein_thrombus'] = ('as_is', None, False)
+            show['ivc'] = prn['ivc'] = to_t(ivc); specs['ivc'] = ('flat_down', None, True)
+            show['ivc_thrombus'] = prn['ivc_thrombus'] = to_t(ith); specs['ivc_thrombus'] = ('as_is', None, False)
         show['kidney_body'] = to_t(body)
         if adr is not None:
             show['adrenal_gland'] = prn['adrenal_gland'] = to_t(adr); specs['adrenal_gland'] = ('as_is', None, True)
@@ -267,9 +290,9 @@ def build(stage, form, parts, kidney_m, kmesh, z0, centre, adr0=None, adr_n=None
         prn['ureter'] = parts['ureter']
         specs['ureter'] = ('flat_down', None, False)
         if T:
-            tt = to_t(tumor); show['tumor'] = prn['tumor'] = tt
+            tt = to_t(tumor); show[lp] = prn[lp] = tt
             along = (np.asarray(tt.vertices) - T['c']) @ T['d']
-            specs['tumor'] = ('axis_down', -T['d'], bool(along.min() < -(T['trunc'] + 1.0)))
+            specs[lp] = ('axis_down', -T['d'], bool(along.min() < -(T['trunc'] + 1.0)))
             for v in ('renal_artery', 'renal_vein'):
                 hit = to_t(tumor ^ to_m(parts[v]))
                 if len(hit.faces) and hit.volume > 1: print(f'   ! tumour intersects {v} ({hit.volume:.0f} mm3)')
@@ -294,10 +317,22 @@ def build(stage, form, parts, kidney_m, kmesh, z0, centre, adr0=None, adr_n=None
                 # the adrenal sits 0.6 mm off the capsule; its hull bridges that gap so the lid prints as one solid
                 if name == 'adrenal_gland': lid += to_m(to_t(a).convex_hull) ^ front
         if T:
-            show['tumor'] = prn['tumor'] = to_t(tumor ^ keep); specs['tumor'] = ('cut_down', None, False)
-            polys['tumor'] = B.section_polys(to_t(tumor), z0)
+            post = tumor ^ keep
+            if T['cyst']:
+                # fluid locules recessed into the cut face: septa, wall and nodules stand proud
+                rec = KC.cyst_recess(T, z0, to_m)
+                if rec is not None: post = post - rec
+                fl = KC.cyst_fluid_mesh(T)
+                if fl is not None: polys['cyst_fluid'] = B.section_polys(fl, z0)
+                nd = KC.nodule_mesh(T)
+                if nd is not None: polys['cyst_nodule'] = B.section_polys(nd, z0)
+                specs[lp] = ('as_is', None, True)       # cut face up, so the recess needs no bridging
+            else:
+                specs[lp] = ('cut_down', None, False)
+            show[lp] = prn[lp] = to_t(post)
+            polys[lp] = B.section_polys(to_t(tumor), z0)
             a = tumor ^ front
-            if a.volume() > 20: anterior['tumor'] = to_t(a); lid += a
+            if a.volume() > 20: anterior[lp] = to_t(a); lid += a
             lid += cavity ^ front          # the lid prints as one solid: fill the tumour's clearance gap
         # front half: one display part made of the anterior pieces (each keeps its own colour and painted cut face),
         # and one print part, the union, lying on its cut face (z = z0, facing -Z)
@@ -310,7 +345,12 @@ def densify(t, max_edge):
     t2 = trimesh.Trimesh(v, f, process=True)
     return t2 if t2.is_watertight else t
 
-DENSIFY = {'tumor': 1.5}
+DENSIFY = {'tumor': 1.5, 'cyst': 1.2, 'aml': 1.5, 'ivc_thrombus': 1.5}
+
+# colours for the extra lesions (vertex multipliers on beauty.DEFAULTS)
+B.DEFAULTS.update(KC.DEFAULTS)
+K.COLOURS.update({'ivc_thrombus': K.col_tumor, 'aml': KC.col_aml,
+                  'cyst': lambda V, ctx: KC.col_cyst(V, CURRENT['T'], K.Z0)})
 
 if __name__ == '__main__':
     parts = load_parts()
@@ -341,6 +381,9 @@ if __name__ == '__main__':
                 if dropped: print(f'   {key}/{name}: dropped {len(dropped)} stray bodies' + (f', incl. {big} (cm3, centroid mm)' if big else ' (all < 0.01 cm3)'))
                 pm, moved = separate_contacts(pm)
                 if moved: print(f'   {key}/{name}: separated {moved} self-touching vertices by {CONTACT_EPS_MM * 1000:.0f} um')
+                if pm is None or len(pm.faces) == 0: print(f'   ! {key}/{name}: EMPTY mesh'); failures.append(f'{key}/{name}: empty'); continue
+                if pm is None or len(pm.faces) == 0: print(f'   ! {key}/{name}: EMPTY mesh'); failures.append(f'{key}/{name}: empty'); continue
+                if pm is None or len(pm.faces) == 0: print(f'   ! {key}/{name}: EMPTY mesh'); failures.append(f'{key}/{name}: empty'); continue
                 om = pm.copy()
                 if kind != 'as_is': om = K.orient(pm, kind, axis)
                 else: om.apply_translation([-om.bounds[:, 0].mean(), -om.bounds[:, 1].mean(), -om.bounds[0, 2]])
