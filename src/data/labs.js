@@ -27,6 +27,8 @@ const kidneyParts = [
     tooltip: 'Clear cell renal cell carcinoma: a well-circumscribed, golden-yellow cortical mass that bulges from the kidney contour. The cut surface is variegated with haemorrhage.' },
   { id: 'vein_thrombus', name: 'Renal vein tumour thrombus', removable: true, defaultColor: '#cf9233',
     tooltip: 'Solid tumour growing along the renal vein, visible at its cut end. Any extension into the renal vein or its segmental branches makes the tumour T3a.' },
+  { id: 'anterior_half', name: 'Front half', removable: true, defaultColor: '#b0614f',
+    tooltip: 'The front half of the kidney. Click to open or close it.' },
 ]
 
 // sizeCm is tumour greatest dimension. position is centre in scene cm, kidney centred at origin,
@@ -77,6 +79,8 @@ export const labs = {
     description: 'A kidney with a removable tumour at four AJCC T stages, plus a normal kidney for comparison.',
     comingSoon: false,
     parts: kidneyParts,
+    // the part the rest of the model sits on, per cutaway
+    basePart: { full: 'kidney_body', coronal: 'renal_cortex' },
     stages: kidneyStages,
     cutaways: [
       { id: 'full', label: 'Whole kidney' },
@@ -130,6 +134,7 @@ export const labs = {
         teaching: 'Fusion is not first-line for a simple herniation. Typical indications are recurrent herniation, segmental instability or spondylolisthesis, and deformity.' },
     ],
     cutaways: [{ id: 'full', label: 'Whole segment' }],
+    basePart: { full: 'l5_vertebra' },
     sources: ['Base anatomy generated during HackRPI 2026; implant placement from the model\u2019s own pedicles.', 'NASS clinical guideline: diagnosis and treatment of lumbar disc herniation with radiculopathy.'],
   },
   artery: { id: 'artery', name: 'Artery', condition: 'Atherosclerosis',         comingSoon: true },
