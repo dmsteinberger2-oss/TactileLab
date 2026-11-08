@@ -18,7 +18,7 @@ const KINDS = {
   frontHalf: { id: 8, wrap: 0.55 }, // openable kidney's front half: capsule + front of tumour
 }
 const PART_KIND = {
-  kidney_body: 'capsule', renal_cortex: 'capsule', anterior_half: 'frontHalf',
+  kidney_body: 'capsule', renal_cortex: 'capsule', resection_margin: 'capsule', anterior_half: 'frontHalf',
   tumor: 'tumor', vein_thrombus: 'tumor', ivc_thrombus: 'tumor',
   renal_sinus: 'lobular', adrenal_gland: 'lobular', aml: 'lobular', calculus: 'bone',
   ivc: 'vessel', cyst: 'vessel',

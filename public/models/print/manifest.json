@@ -4994,5 +4994,174 @@
    "faces": 35484,
    "volume_cm3": 55.9
   }
+ ],
+ "partial_nephrectomy_full": [
+  {
+   "part": "adrenal_gland",
+   "file": "kidney_partial_nephrectomy_full/01_adrenal_gland.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 12000,
+   "volume_cm3": 2.37
+  },
+  {
+   "part": "kidney_body",
+   "file": "kidney_partial_nephrectomy_full/02_kidney_body.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 48480,
+   "volume_cm3": 95.57
+  },
+  {
+   "part": "ureter",
+   "file": "kidney_partial_nephrectomy_full/03_ureter.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 3998,
+   "volume_cm3": 0.65
+  },
+  {
+   "part": "resection_margin",
+   "file": "kidney_partial_nephrectomy_full/04_resection_margin.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 9642,
+   "volume_cm3": 4.73
+  },
+  {
+   "part": "tumor",
+   "file": "kidney_partial_nephrectomy_full/05_tumor.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 24000,
+   "volume_cm3": 14.25
+  }
+ ],
+ "partial_nephrectomy_coronal": [
+  {
+   "part": "renal_cortex",
+   "file": "kidney_partial_nephrectomy_coronal/01_renal_cortex.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 29642,
+   "volume_cm3": 34.08
+  },
+  {
+   "part": "renal_medulla",
+   "file": "kidney_partial_nephrectomy_coronal/02_renal_medulla.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 10,
+   "faces": 12000,
+   "volume_cm3": 5.87
+  },
+  {
+   "part": "renal_sinus",
+   "file": "kidney_partial_nephrectomy_coronal/03_renal_sinus.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 9418,
+   "volume_cm3": 6.0
+  },
+  {
+   "part": "renal_pelvis",
+   "file": "kidney_partial_nephrectomy_coronal/04_renal_pelvis.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 12000,
+   "volume_cm3": 1.58
+  },
+  {
+   "part": "renal_artery",
+   "file": "kidney_partial_nephrectomy_coronal/05_renal_artery.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 4496,
+   "volume_cm3": 0.27
+  },
+  {
+   "part": "ureter",
+   "file": "kidney_partial_nephrectomy_coronal/06_ureter.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 3834,
+   "volume_cm3": 0.59
+  },
+  {
+   "part": "adrenal_gland",
+   "file": "kidney_partial_nephrectomy_coronal/07_adrenal_gland.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 8868,
+   "volume_cm3": 1.12
+  },
+  {
+   "part": "resection_margin",
+   "file": "kidney_partial_nephrectomy_coronal/08_resection_margin.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 5162,
+   "volume_cm3": 2.51
+  },
+  {
+   "part": "tumor",
+   "file": "kidney_partial_nephrectomy_coronal/09_tumor.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 18014,
+   "volume_cm3": 7.14
+  },
+  {
+   "part": "anterior_half",
+   "file": "kidney_partial_nephrectomy_coronal/10_anterior_half.stl",
+   "supports": false,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 36196,
+   "volume_cm3": 60.64
+  }
  ]
 }

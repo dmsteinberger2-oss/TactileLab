@@ -241,8 +241,57 @@ def colour_ctx(parts, z0):
     return {'pyrs': pyrs}
 
 # ---------------------------------------------------------------- build
+PN_MARGIN = 5.0    # mm of normal parenchyma removed around the tumour (schematic)
+B.DEFAULTS.setdefault('resection_margin', '#b0614f')
+
+def build_pn(form, parts, kidney_m, kmesh, z0, adr0):
+    """Partial nephrectomy: the T1a tumour plus a rim of normal kidney lift out as a specimen, leaving the resection bed.
+    Display/print parts: kidney (with bed), resection_margin (rim of parenchyma), tumor (seated in the rim)."""
+    T = tumor_spec('t1a', kmesh, z0); CURRENT['T'] = T
+    S = lobed(T)
+    Ts = dict(T, lobes=[], extra=[], root=False)
+    env = lobed(Ts, grow=PN_MARGIN)
+    bed = lobed(Ts, grow=PN_MARGIN + CLR)
+    margin = max(((env ^ kidney_m) - lobed(T, grow=CLR)).decompose(), key=lambda m: m.volume())   # one rim; drop slivers in the sinus
+    adr = (adr0 - lobed(T, grow=0.8)) if adr0 is not None else None
+    show, prn, specs, polys = {}, {}, {}, {}
+    if form == 'whole':
+        body = kidney_m - bed
+        vein = to_m(parts['renal_vein'])
+        show['kidney_body'] = to_t(body)
+        if adr is not None: show['adrenal_gland'] = prn['adrenal_gland'] = to_t(adr); specs['adrenal_gland'] = ('as_is', None, True)
+        show['renal_artery'] = parts['renal_artery']; show['renal_vein'] = to_t(vein); show['ureter'] = parts['ureter']
+        prn['kidney_body'] = to_t(body + to_m(parts['renal_artery']) + vein); specs['kidney_body'] = ('as_is', None, True)
+        prn['ureter'] = parts['ureter']; specs['ureter'] = ('flat_down', None, False)
+        show['resection_margin'] = prn['resection_margin'] = to_t(margin); specs['resection_margin'] = ('axis_down', -T['d'], True)
+        show['tumor'] = prn['tumor'] = to_t(S); specs['tumor'] = ('axis_down', -T['d'], True)
+        return show, prn, specs, polys
+    keep = halfspace(np.array([0, 0, z0]), [0, 0, 1]); front = halfspace(np.array([0, 0, z0]), [0, 0, -1])
+    full = {n: to_m(parts[n]) - (bed if n in INTERNAL else Manifold()) for n in INTERNAL + ['renal_artery', 'renal_vein', 'ureter']}
+    if adr is not None: full['adrenal_gland'] = adr
+    full['resection_margin'] = margin; full['tumor'] = S
+    anterior, lid = {}, Manifold()
+    for name, m in full.items():
+        polys[name] = B.section_polys(to_t(m), z0)
+        h = to_t(m ^ keep)
+        if len(h.faces) and h.volume > 20:
+            show[name] = prn[name] = h
+            specs[name] = ('as_is', None, True) if name == 'renal_cortex' else ('cut_down', None, False)
+        if name == 'ureter': continue
+        a = m ^ front
+        if a.volume() > 20:
+            anterior[name] = to_t(a); lid += a
+            if name == 'adrenal_gland': lid += to_m(to_t(a).convex_hull) ^ front
+    lid += ((bed ^ kidney_m) + lobed(T, grow=CLR)) ^ front        # fill the print clearances so the lid is one solid
+    import shapely.ops as so               # the painted section draws the rim as cortex
+    polys['renal_cortex'] = so.unary_union([polys['renal_cortex'], polys.pop('resection_margin')])
+    show['__anterior__'] = anterior
+    prn['anterior_half'] = to_t(lid); specs['anterior_half'] = ('flat_down', None, False)
+    return show, prn, specs, polys
+
 def build(stage, form, parts, kidney_m, kmesh, z0, centre, adr0=None, adr_n=None):
     """Returns (display meshes, print meshes, print specs, section polygons)."""
+    if stage == 'partial_nephrectomy': return build_pn(form, parts, kidney_m, kmesh, z0, adr0)
     T = tumor_spec(stage, kmesh, z0) if stage in TUMORS else None
     CURRENT['T'] = T
     lp = T['part'] if T else 'tumor'
