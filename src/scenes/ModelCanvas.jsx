@@ -15,6 +15,10 @@ import { Backdrop, IdleRotate, Lights, PostFX, qualityTier } from './Atmosphere'
 // Placeholders render until a GLB exists, so the app never shows an empty canvas.
 
 const BASE_PARTS = new Set(['kidney_body', 'renal_cortex'])
+// Surgical implants are not tissue: no procedural detail, no wrap lighting, no wet clearcoat.
+const TITANIUM = { metalness: 1, roughness: 0.3, clearcoat: 0, sheen: 0, envMapIntensity: 1.1 }
+const PEEK = { metalness: 0, roughness: 0.65, clearcoat: 0, sheen: 0, envMapIntensity: 0.6 }
+const FINISH = { pedicle_screws: TITANIUM, rods: TITANIUM, interbody_cage: PEEK }
 const LITE = qualityTier() === 'low'
 // drei's "studio" preset HDR (Poly Haven studio_small_03, CC0), served locally so lighting needs no network.
 const STUDIO_HDR = '/hdri/studio_small_03_1k.hdr'
@@ -55,6 +59,7 @@ function PartMesh({ partId, geometry, position = [0, 0, 0], rotation, explodeDir
   const useMap = map && geometry.attributes.uv ? map : null
   const hasVertexColors = !!geometry.attributes.color
   const matte = partId === 'renal_sinus' || partId === 'adrenal_gland'
+  const finish = FINISH[partId]
   // Procedural tissue detail (see tissue.js). Uniform objects are shared with the compiled shader.
   const uniforms = useMemo(() => ({ tlCut: { value: 0 }, tlHover: { value: 0 } }), [])
   uniforms.tlCut.value = coronal && useMap ? 1 : 0
@@ -83,14 +88,14 @@ function PartMesh({ partId, geometry, position = [0, 0, 0], rotation, explodeDir
           color={color}
           map={useMap}
           vertexColors={hasVertexColors}
-          roughness={matte ? 0.58 : 0.46}
-          metalness={0}
-          clearcoat={0.55}
+          roughness={finish?.roughness ?? (matte ? 0.58 : 0.46)}
+          metalness={finish?.metalness ?? 0}
+          clearcoat={finish?.clearcoat ?? 0.55}
           clearcoatRoughness={0.28}
-          sheen={0.2}
+          sheen={finish?.sheen ?? 0.2}
           sheenRoughness={0.6}
           sheenColor={'#fff4ee'}
-          envMapIntensity={0.7}
+          envMapIntensity={finish?.envMapIntensity ?? 0.7}
           emissive={selected ? '#0f766e' : '#000000'}
           emissiveIntensity={selected ? 0.28 : 0}
           clippingPlanes={clip ?? []}

@@ -120,11 +120,12 @@ const DETAIL = /* glsl */`
   tlH = tlNoise(tlP * 10.0) * 0.006 + s * 0.01;
   tlRough = 0.45; tlCoat = 0.7;
 #elif TL_KIND == 6
-  vec2 c = tlCell(tlP * 7.0);
-  float pore = 1.0 - smoothstep(0.05, 0.28, c.x);
+  vec2 c = tlCell(tlP * 6.0);
+  // Pores vary in size and cluster, so the surface reads as porous rather than evenly dotted.
+  float pore = (1.0 - smoothstep(0.04, 0.12 + 0.18 * tlNoise(tlP * 1.7), c.x)) * smoothstep(0.25, 0.65, tlNoise(tlP * 2.3 + 5.0));
   float stain = tlFbm(tlP * 0.8 + 2.0);
   tlCol = mix(vec3(1.0), vec3(0.93, 0.88, 0.8), smoothstep(0.4, 0.75, stain)) * mix(1.0, 0.72, pore * 0.8);
-  tlH = -pore * 0.02 + tlNoise(tlP * 20.0) * 0.004;
+  tlH = -pore * 0.02 + tlFbm(tlP * 2.5) * 0.03 + tlNoise(tlP * 14.0) * 0.004;
   tlRough = 0.72; tlCoat = 0.0;
 #elif TL_KIND == 7
   vec2 c = tlCell(tlP * 4.5);
