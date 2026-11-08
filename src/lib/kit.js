@@ -98,7 +98,7 @@ async function kitCardPDF({ lab, stage, cfg, report, lesson, qrDataUrl, listed =
     supported.length ? `Supports touching the build plate: ${supported.join(', ')}. Everything else prints without supports.` : 'No supports needed.',
     cfg.cutaway === 'coronal'
       ? 'Coronal kit: the cortex prints cut-face up; each inlay (pyramids, sinus fat, collecting system, artery, ureter, tumour) prints cut-face down and drops into its pocket.'
-      : 'The renal vessels and ureter print fused to the kidney body. Removable parts (the tumour, plus the vein thrombus at T3a) press-fit by hand; the tumour lifts out along its keyed pegs.',
+      : 'The renal artery and vein print fused to the kidney body; the ureter prints as a separate part, lying flat. Removable parts (the tumour, plus the vein thrombus at T3a) press-fit by hand; the tumour lifts out along its keyed pegs.',
     'Mating clearance is 0.25 mm. Print each part in a different colour for the clearest model. Label tiles: notch count = part number.',
   ]
   for (const line of how) y = wrap(doc, '• ' + line, margin, y, W - 2 * margin) + 1
@@ -106,7 +106,7 @@ async function kitCardPDF({ lab, stage, cfg, report, lesson, qrDataUrl, listed =
   doc.setFont('helvetica', 'bold'); doc.text('Assembly', margin, y); y += 6; doc.setFont('helvetica', 'normal')
   y = wrap(doc, cfg.cutaway === 'coronal'
     ? 'Seat the collecting system and artery first, then the sinus fat around them, then the pyramids and the tumour. Pull each inlay straight up to remove it.'
-    : 'Seat removable parts into their sockets; they press-fit by hand. Hilar order front to back: renal vein, renal artery, renal pelvis; top to bottom: artery, vein, pelvis.', margin, y, W - 2 * margin) + 6
+    : 'Seat removable parts into their sockets; they press-fit by hand. The ureter has no socket: lay it at the lower hilum, where it leaves the renal pelvis. Hilar order front to back: renal vein, renal artery, renal pelvis; top to bottom: artery, vein, pelvis.', margin, y, W - 2 * margin) + 6
 
   doc.setFont('helvetica', 'bold'); doc.text('AJCC 8th edition T stage', margin, y); y += 6; doc.setFont('helvetica', 'normal'); doc.setFontSize(9)
   for (const [t, d] of ajccTable) { y = wrap(doc, `${t}: ${d}`, margin, y, W - 2 * margin) + 0.5; if (y > 270) { doc.addPage(); y = 20 } }
