@@ -4,63 +4,174 @@ import { useLabStore } from '@/store/labStore'
 import { labs } from '@/data/labs'
 import ModelCanvas from '@/scenes/ModelCanvas'
 import { downloadKit, getPrintReport } from '@/lib/kit'
+import { PRINT_ASSUMPTIONS } from '@/lib/printReport'
 import { viewUrl, shareIsLocalOnly } from '@/lib/share'
 import KitQR from '@/components/KitQR'
-import { Header, Icon, Segment, Toggle, theme } from '@/components/LabUI'
+import { Chip, Header, Hint, Icon, LesionDot, Panel, Segmented, Spinner, Toggle, ViewerFrame, theme } from '@/components/LabUI'
 
 function formatMinutes(value) {
   if (!Number.isFinite(value)) return '—'
-  const hours = Math.floor(value / 60), minutes = Math.round(value % 60)
-  return hours ? `${hours} hr ${minutes} min` : `${minutes} min`
+  const h = Math.floor(value / 60), m = Math.round(value % 60)
+  return h ? `${h} h ${String(m).padStart(2, '0')} min` : `${m} min`
 }
+
+// Stage options carry the tumour size so the selector doubles as a size scale.
+const stageOptions = (stages) => stages.map((s) => ({
+  id: s.id, label: s.label,
+  sub: s.sizeCm > 0 ? `${s.sizeCm.toFixed(1)} cm` : 'no mass',
+  marker: s.sizeCm > 0 ? <LesionDot/> : null,
+}))
+
 function PrintSummary({ report }) {
-  if (!report) return <p className="text-sm text-[#6a7970]">Print estimates are unavailable right now.</p>
-  return <div className="space-y-3"><dl className="grid grid-cols-3 gap-2 text-sm"><div><dt className="text-xs text-[#817a73]">Print time</dt><dd className="mt-1 font-semibold">{formatMinutes(report.totalMinutes)}</dd></div><div><dt className="text-xs text-[#817a73]">Material</dt><dd className="mt-1 font-semibold">{Number.isFinite(report.totalGrams) ? `${report.totalGrams} g` : '—'}</dd></div><div><dt className="text-xs text-[#817a73]">Est. cost</dt><dd className="mt-1 font-semibold">{Number.isFinite(report.costUsd) ? `$${report.costUsd.toFixed(2)}` : '—'}</dd></div></dl>{report.parts?.length > 0 && <details className="text-xs text-[#706a66]"><summary className="cursor-pointer font-semibold text-[#176b61]">View parts</summary><ul className="mt-2 space-y-1.5">{report.parts.map(part => <li key={part.id} className="flex justify-between gap-2"><span>{part.name}</span><span>{part.grams} g · {formatMinutes(part.minutes)}</span></li>)}</ul></details>}</div>
+  if (report === null) return <p className="flex items-center gap-2 text-sm text-ink-soft"><Spinner/>Calculating print estimate…</p>
+  if (!report?.parts?.length) return <p className="text-sm text-ink-soft">Print estimates appear once the model has loaded.</p>
+  const a = PRINT_ASSUMPTIONS
+  return <div>
+    <dl className="grid grid-cols-3 divide-x divide-line rounded-xl border border-line">
+      {[['Print time', formatMinutes(report.totalMinutes)], ['Filament', Number.isFinite(report.totalGrams) ? `${report.totalGrams} g` : '—'], ['Est. cost', Number.isFinite(report.costUsd) ? `$${report.costUsd.toFixed(2)}` : '—']].map(([k, v]) =>
+        <div key={k} className="min-w-0 px-2.5 py-3 sm:px-3"><dt className="text-[11px] font-medium text-ink-soft">{k}</dt><dd className="mt-1 whitespace-nowrap font-mono text-[13px] font-semibold tracking-tight sm:text-[15px]">{v}</dd></div>)}
+    </dl>
+    <table className="mt-4 w-full text-sm">
+      <caption className="sr-only">Parts in this kit</caption>
+      <thead><tr className="text-left text-[11px] text-ink-soft"><th scope="col" className="pb-1.5 font-medium">Part</th><th scope="col" className="pb-1.5 text-right font-medium">Filament</th><th scope="col" className="pb-1.5 text-right font-medium">Time</th></tr></thead>
+      <tbody className="divide-y divide-line border-t border-line">
+        {report.parts.map((p, i) => <tr key={`${p.id}-${i}`}>
+          <td className="py-2 pr-2"><span className="mr-2 font-mono text-[11px] text-ink-soft">{String(i + 1).padStart(2, '0')}</span>{p.name}</td>
+          <td className="whitespace-nowrap py-2 text-right font-mono text-[13px]">{p.grams} g</td>
+          <td className="whitespace-nowrap py-2 pl-3 text-right font-mono text-[13px]">{formatMinutes(p.minutes)}</td>
+        </tr>)}
+      </tbody>
+    </table>
+    <p className="mt-3 text-xs text-ink-soft">Estimate for {a.material}, {a.layerMm} mm layers, {a.infillPct}% infill. Your slicer will differ.</p>
+  </div>
 }
+
+function DownloadKit({ stageId, cutaway }) {
+  const [state, setState] = useState('idle')
+  const [error, setError] = useState('')
+  useEffect(() => { setState((s) => (s === 'pending' ? s : 'idle')); setError('') }, [stageId, cutaway])
+  async function run() {
+    if (state === 'pending') return
+    setError(''); setState('pending')
+    try { await downloadKit(); setState('done') }
+    catch (e) { setState('error'); setError(e?.message || 'Please try again.') }
+  }
+  return <div>
+    <button type="button" onClick={run} disabled={state === 'pending'} aria-busy={state === 'pending'} className={`${theme.primary} w-full`}>
+      {state === 'pending' ? <><Spinner/>Preparing kit…</> : state === 'done' ? <><Icon name="download" className="h-4 w-4"/>Download again</> : <><Icon name="download" className="h-4 w-4"/>Download kit</>}
+    </button>
+    <div aria-live="polite" className="mt-2.5 min-h-5 text-sm">
+      {state === 'idle' && <p className="text-ink-soft">STL for every part, label tiles and a kit card PDF, in one zip.</p>}
+      {state === 'pending' && <p className="text-ink-soft">Packing STLs and writing the kit card…</p>}
+      {state === 'done' && <p className="flex items-center gap-1.5 font-medium text-teal"><Icon name="check" className="h-4 w-4"/>Kit downloaded. Check your downloads folder.</p>}
+    </div>
+    {state === 'error' && <div role="alert" className="mt-1 flex gap-2.5 rounded-xl border border-lesion/25 bg-lesion-soft px-3.5 py-3 text-sm text-lesion">
+      <Icon name="alert" className="mt-0.5 h-4 w-4 shrink-0"/><div><p className="font-semibold">The kit could not be built.</p><p className="mt-0.5 break-words">{error}</p><button type="button" onClick={run} className="mt-1.5 font-semibold underline underline-offset-4">Try again</button></div>
+    </div>}
+  </div>
+}
+
 export default function Lab() {
   const { labId } = useParams()
   const lab = labs[labId]
-  const stageId = useLabStore(s => s.stageId), setStage = useLabStore(s => s.setStage)
-  const cutaway = useLabStore(s => s.cutaway), setCutaway = useLabStore(s => s.setCutaway)
-  const partColors = useLabStore(s => s.partColors), setPartColor = useLabStore(s => s.setPartColor)
-  const labelsOn = useLabStore(s => s.labelsOn), setLabelsOn = useLabStore(s => s.setLabelsOn)
-  const exploded = useLabStore(s => s.exploded), setExploded = useLabStore(s => s.setExploded)
-  const [downloadState, setDownloadState] = useState('idle')
-  const [downloadError, setDownloadError] = useState('')
-  // Report comes from the print-ready STLs (or, without them, the scene once it has loaded); refresh on stage/view change.
+  const stageId = useLabStore((s) => s.stageId), setStage = useLabStore((s) => s.setStage)
+  const cutaway = useLabStore((s) => s.cutaway), setCutaway = useLabStore((s) => s.setCutaway)
+  const partColors = useLabStore((s) => s.partColors), setPartColor = useLabStore((s) => s.setPartColor), resetColors = useLabStore((s) => s.resetColors)
+  const labelsOn = useLabStore((s) => s.labelsOn), setLabelsOn = useLabStore((s) => s.setLabelsOn)
+  const exploded = useLabStore((s) => s.exploded), setExploded = useLabStore((s) => s.setExploded)
+  // Print report comes from the print-ready STLs (or the loaded scene); refresh on stage/view change.
   const [report, setReport] = useState(null)
   useEffect(() => {
     let tries = 0, timer, alive = true
+    setReport(null)
     const tick = async () => {
       try { const r = await getPrintReport(); if (!alive) return; setReport(r); if (r.parts.length === 0 && tries++ < 40) timer = setTimeout(tick, 250) }
-      catch { if (alive && tries++ < 40) timer = setTimeout(tick, 250) }
+      catch { if (alive && tries++ < 40) timer = setTimeout(tick, 250); else if (alive) setReport({ parts: [] }) }
     }
     tick()
     return () => { alive = false; clearTimeout(timer) }
   }, [stageId, cutaway])
-  if (!lab || lab.comingSoon) return <div className={theme.page}><Header/><main className="mx-auto max-w-2xl px-6 py-20"><h1 className="text-3xl font-bold">Lab unavailable</h1><p className="mt-3 text-[#716b67]">This lab is not available yet.</p><Link to="/" className={`${theme.secondary} mt-6`}>Back to labs</Link></main></div>
-  const stage = lab.stages.find(item => item.id === stageId) || lab.stages[0]
-  const studentUrl = viewUrl()
-  async function handleDownload() {
-    if (downloadState === 'pending') return
-    setDownloadError(''); setDownloadState('pending')
-    try { await downloadKit(); setDownloadState('done') }
-    catch (error) { setDownloadState('error'); setDownloadError(error?.message || 'Please try again.') }
-  }
-  return <div className={theme.page}><Header/><main className="mx-auto max-w-[1600px] px-4 pb-10 pt-5 sm:px-6 lg:px-8">
-    <div className="mb-4 flex flex-wrap items-center gap-3 text-sm"><Link to="/" className="inline-flex items-center gap-1 font-semibold text-[#176b61] hover:underline"><Icon name="back" className="h-4 w-4"/>All labs</Link><span className="text-[#d1cac5]">/</span><span className={`${theme.eyebrow} text-[#6a7970]`}>{lab.name}{lab.condition ? ` / ${lab.condition}` : ''}</span></div>
-    <div className="mb-7 flex flex-wrap items-end justify-between gap-4"><div><p className={`${theme.eyebrow} mb-2 !text-[#176b61]`}>The anatomy studio</p><h1 className="font-serif text-4xl tracking-[-0.04em] text-[#173f38] sm:text-5xl">{lab.name}<span className="ml-3 font-sans text-sm font-medium tracking-normal text-[#6a7970]">/ Model builder</span></h1></div><p className="max-w-md text-sm leading-relaxed text-[#6a7970]">{lab.description}</p></div>
-    <div className="grid items-start gap-5 lg:grid-cols-[minmax(0,1fr)_390px] xl:grid-cols-[minmax(0,1fr)_430px]">
-      <section aria-label="Interactive anatomy model" className={`${theme.card} overflow-hidden p-2 sm:p-3 lg:sticky lg:top-5`}><div className="relative overflow-hidden rounded-xl bg-[radial-gradient(ellipse_at_center,#f4f6ed_0%,#e3ebdc_100%)]"><span aria-hidden="true" className="pointer-events-none absolute right-5 top-6 hidden xl:block text-[10px] font-semibold uppercase tracking-[0.18em] text-[#63765e]">3D / Interactive</span><div className="absolute left-3 top-3 z-10 flex flex-wrap gap-2 sm:left-4 sm:top-4"><Toggle label="Labels" icon="tag" checked={labelsOn} onChange={setLabelsOn}/><Toggle label="Explode" icon="layers" checked={exploded} onChange={setExploded}/></div><p className="pointer-events-none absolute bottom-3 left-3 z-10 rounded-full bg-[#ffffff]/90 px-3 py-1.5 text-xs font-medium text-[#5c7164] sm:bottom-4 sm:left-4">Drag to rotate · Click a part to lift</p><div className="h-[420px] w-full sm:h-[540px] lg:h-[calc(100vh-220px)] lg:min-h-[560px]"><ModelCanvas/></div></div></section>
-      <aside className={`${theme.card} p-5 sm:p-6`}><div className="mb-6"><p className={`${theme.eyebrow} mb-1 text-[#176b61]`}>01 / Configure</p><h2 className="font-serif text-3xl tracking-[-0.04em]">Customize model</h2></div>
-        <div className="space-y-7"><Segment label="Tumor stage" options={lab.stages} value={stageId} onChange={setStage}/><Segment label="View" options={lab.cutaways} value={cutaway} onChange={setCutaway}/>
-          <div><h2 className="mb-3 text-sm font-bold">Part colors</h2><div className="space-y-2">{lab.parts.filter(part => part.removable).map(part => <label key={part.id} className="flex cursor-pointer items-center justify-between gap-3 rounded-xl border border-[#e4eae3] bg-[#f7f9f4] px-3 py-2"><span className="text-sm font-medium">{part.name}</span><input type="color" aria-label={`${part.name} color`} value={partColors?.[part.id] || part.defaultColor || '#c87970'} onChange={event => setPartColor(part.id, event.target.value)} className="h-8 w-9 cursor-pointer rounded border-0 bg-transparent p-0"/></label>)}</div></div>
-          {stage?.readout && <div className="rounded-xl bg-[#e8eee5] p-4"><p className="mb-1 text-sm font-bold text-[#385b4a]">Stage readout</p><p className="text-sm leading-relaxed text-[#374c41]">{stage.readout}</p></div>}
-          <div><button type="button" onClick={handleDownload} disabled={downloadState === 'pending'} className={`${theme.primary} w-full`}><Icon name="download" className="h-4 w-4"/>{downloadState === 'pending' ? 'Preparing kit…' : downloadState === 'done' ? 'Download again' : 'Download kit'}</button><div aria-live="polite">{downloadState === 'done' && <p className="mt-2 text-xs text-[#49705a]">Your kit is ready.</p>}{downloadState === 'error' && <p role="alert" className="mt-2 text-xs text-[#b34235]">Could not download kit. {downloadError}</p>}</div></div>
-          <div className="border-t border-[#e0e7df] pt-5"><div className="mb-4 flex items-center gap-2"><Icon name="print" className="h-4 w-4 text-[#176b61]"/><h2 className="text-sm font-bold">Print summary</h2></div><PrintSummary report={report}/></div>
-          <div className="flex flex-wrap items-center justify-between gap-4 border-t border-[#e0e7df] pt-5"><div className="min-w-0 flex-1 basis-40"><p className="text-sm font-bold">Share the student view</p><p className="mt-1 text-xs leading-relaxed text-[#6a7970]">Open this model on another device.</p>{shareIsLocalOnly() && <p className="mt-1 text-xs leading-relaxed text-[#b34235]">This QR points to localhost. Set VITE_PUBLIC_ORIGIN so phones can open it.</p>}<a href={studentUrl} className="mt-2 inline-flex items-center gap-1 text-sm font-bold text-[#176b61] hover:underline">Open student view <Icon name="arrow" className="h-4 w-4"/></a></div><div className="shrink-0 rounded-lg bg-white p-1" aria-label="QR code for student view"><KitQR/></div></div>
+
+  if (!lab || lab.comingSoon) return <div className={theme.page}><Header/>
+    <main className={`${theme.wrap} py-20`}><p className={`${theme.tag} text-ink-soft`}>{lab ? 'In development' : 'Not found'}</p><h1 className="mt-2 text-3xl font-bold tracking-[-0.03em]">{lab ? `The ${lab.name.toLowerCase()} lab isn’t ready yet` : 'Lab unavailable'}</h1><p className="mt-3 text-ink-soft">Choose an available lab to build a model.</p><Link to="/" className={`${theme.primary} mt-6`}><Icon name="back" className="h-4 w-4"/>Back to labs</Link></main>
+  </div>
+
+  const stage = lab.stages.find((s) => s.id === stageId) || lab.stages[0]
+  const view = lab.cutaways?.find((c) => c.id === cutaway) ?? lab.cutaways?.[0]
+  const shareUrl = viewUrl()
+  const localOnly = shareIsLocalOnly()
+  const colourParts = lab.parts.filter((p) => p.removable)
+  const coloursChanged = colourParts.some((p) => partColors?.[p.id] && partColors[p.id].toLowerCase() !== p.defaultColor.toLowerCase())
+
+  return <div className={theme.page}><Header badge="Model builder"/>
+    <main className={`${theme.wrap} pb-16 pt-5`}>
+      <nav aria-label="Breadcrumb" className="mb-3 text-sm"><ol className="flex items-center gap-2 text-ink-soft"><li><Link to="/" className={theme.link}>Labs</Link></li><li aria-hidden="true">/</li><li aria-current="page" className="font-medium text-ink">{lab.name}</li></ol></nav>
+      <div className="mb-5 flex flex-wrap items-end justify-between gap-x-6 gap-y-2">
+        <div><h1 className="text-3xl font-bold tracking-[-0.035em] sm:text-4xl">{lab.name}</h1>{lab.condition && <p className="mt-1 flex items-center gap-2 text-sm font-medium text-ink-soft"><LesionDot/>{lab.condition}</p>}</div>
+        {lab.description && <p className="max-w-md text-sm leading-relaxed text-ink-soft">{lab.description}</p>}
+      </div>
+
+      <div className="grid items-start gap-5 lg:grid-cols-[minmax(0,1fr)_400px] xl:grid-cols-[minmax(0,1fr)_420px]">
+        <section aria-label="Interactive 3D model" className="lg:sticky lg:top-20">
+          <ViewerFrame className="h-[60vh] max-h-[560px] min-h-[340px] lg:h-[calc(100vh-150px)] lg:max-h-none"
+            topLeft={<><Toggle label="Labels" icon="tag" checked={labelsOn} onChange={setLabelsOn}/><Toggle label="Explode" icon="layers" checked={exploded} onChange={setExploded}/></>}
+            topRight={<div className="hidden flex-col items-end gap-1.5 sm:flex"><Chip tone={stage.sizeCm > 0 ? 'lesion' : 'plain'}>{stage.sizeCm > 0 && <LesionDot/>}{stage.ajcc ?? stage.label}</Chip><Chip>{view?.label}</Chip></div>}
+            bottom={<Hint>Drag to rotate · tap a part to lift it</Hint>}>
+            <ModelCanvas/>
+          </ViewerFrame>
+        </section>
+
+        <div className="space-y-4">
+          <Panel step="01" title="Configure" id="configure">
+            <div className="space-y-5">
+              <Segmented label="Tumour stage" options={stageOptions(lab.stages)} value={stage.id} onChange={setStage}/>
+              {lab.cutaways && <Segmented label="View" options={lab.cutaways} value={cutaway} onChange={setCutaway}/>}
+            </div>
+          </Panel>
+
+          <Panel step="02" title="Readout" id="readout" aside={<Chip tone={stage.sizeCm > 0 ? 'lesion' : 'plain'}>{stage.ajcc ? `AJCC ${stage.ajcc}` : stage.label}</Chip>}>
+            <div aria-live="polite">
+              {stage.readout && <p className={theme.prose}>{stage.readout}</p>}
+              {stage.teaching && <div className="mt-4 border-l-2 border-teal pl-3.5"><p className="text-xs font-semibold uppercase tracking-[0.08em] text-teal">Teaching note</p><p className="mt-1 text-sm leading-relaxed text-ink-soft">{stage.teaching}</p></div>}
+            </div>
+          </Panel>
+
+          <Panel step="03" title="Part colours" id="colours" aside={coloursChanged && <button type="button" onClick={resetColors} className={`${theme.link} text-xs`}><Icon name="reset" className="h-3.5 w-3.5"/>Reset</button>}>
+            <p className="-mt-2 mb-3 text-xs text-ink-soft">Match these to your filament so the screen and the printed kit agree.</p>
+            <ul className="grid grid-cols-1 gap-1 sm:grid-cols-2 sm:gap-x-3 lg:grid-cols-1">
+              {colourParts.map((p) => {
+                const value = partColors?.[p.id] || p.defaultColor
+                return <li key={p.id}><label className="flex min-h-11 cursor-pointer items-center gap-3 rounded-lg border border-transparent px-2 py-1.5 transition hover:border-line hover:bg-bench focus-within:border-teal">
+                  <span className="relative h-7 w-7 shrink-0 overflow-hidden rounded-md shadow-[inset_0_0_0_1px_rgba(22,33,43,0.15)]" style={{ background: value }}>
+                    <input type="color" aria-label={`${p.name} colour`} value={value} onChange={(e) => setPartColor(p.id, e.target.value)} className="absolute inset-0 h-full w-full cursor-pointer opacity-0"/>
+                  </span>
+                  <span className="min-w-0 flex-1 text-sm leading-tight">{p.name}</span>
+                  <span className="font-mono text-[10.5px] uppercase text-ink-soft">{value.replace('#', '')}</span>
+                </label></li>
+              })}
+            </ul>
+          </Panel>
+
+          <Panel step="04" title="Print kit" id="print" aside={<Icon name="print" className="h-4 w-4 text-ink-soft"/>}>
+            <DownloadKit stageId={stageId} cutaway={cutaway}/>
+            <div className="mt-5 border-t border-line pt-5"><h3 className="mb-3 text-xs font-semibold uppercase tracking-[0.08em] text-ink-soft">Print summary</h3><PrintSummary report={report}/></div>
+          </Panel>
+
+          <Panel step="05" title="Share with students" id="share" aside={<Icon name="phone" className="h-4 w-4 text-ink-soft"/>}>
+            <div className="flex flex-wrap items-start gap-5">
+              <div className="shrink-0 rounded-xl border border-line bg-white p-1.5" role="img" aria-label="QR code that opens this model on a phone"><KitQR size={132}/></div>
+              <div className="min-w-0 flex-1 basis-44">
+                <p className="text-sm leading-relaxed text-ink-soft">The same QR is printed on the kit card. It opens this exact configuration on a phone, with no sign-in.</p>
+                <a href={shareUrl} className={`${theme.link} mt-3 text-sm`}>Open shareable view<Icon name="external" className="h-4 w-4"/></a>
+                <p className="mt-2 break-all font-mono text-[11px] leading-snug text-ink-soft">{shareUrl}</p>
+              </div>
+            </div>
+            {localOnly && <div role="note" className="mt-4 flex gap-2.5 rounded-xl border border-[#e9c46a] bg-[#fdf6e3] px-3.5 py-3 text-sm text-[#7a5a00]">
+              <Icon name="alert" className="mt-0.5 h-4 w-4 shrink-0"/><p><span className="font-semibold">This QR points to localhost,</span> which phones can’t open. Set <code className="font-mono text-[12px]">VITE_PUBLIC_ORIGIN</code> to your LAN or deployed address.</p>
+            </div>}
+          </Panel>
         </div>
-      </aside>
-    </div>
-  </main></div>
+      </div>
+    </main>
+  </div>
 }
