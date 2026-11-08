@@ -225,8 +225,8 @@ async function fusePoses(cfg, plan) {
   for (const f of plan.fused) {
     const pf = assembled && await printPose(cfg, f, assembled)
     if (!pb || !pf) out[f.part] = { error: 'no assembled geometry' }
-    else if (Math.max(pb.rms, pf.rms) > MAX_ALIGN_RMS_MM) out[f.part] = { error: 'alignment', rms: Math.max(pb.rms, pf.rms) }
-    else out[f.part] = { ...composePoses(pb, pf), rms: Math.max(pb.rms, pf.rms) }
+    else if (Math.max(pb.rms, pf.rms) > MAX_ALIGN_RMS_MM) out[f.part] = { error: 'alignment', rms: pf.rms, baseRms: pb.rms }
+    else out[f.part] = { ...composePoses(pb, pf), rms: pf.rms, baseRms: pb.rms }
   }
   return out
 }
@@ -433,7 +433,9 @@ async function buildKit(cfg) {
       data: tri ? writeStl(tri, `TactileLab ${cfg.labId} ${cfg.stageId} ${stem} x${scale}`) : e.data,
     }
   })
-  const alignment = Object.fromEntries(Object.entries(poses).map(([k, v]) => [k, v.error ? { error: v.error, rmsMm: v.rms } : { rmsMm: Math.round(v.rms * 1000) / 1000 }]))
+  // Registration residuals (trimmed RMS, mm) of each fused part and of the base it was placed into.
+  const mm = (x) => (Number.isFinite(x) ? Math.round(x * 1000) / 1000 : undefined)
+  const alignment = Object.fromEntries(Object.entries(poses).map(([k, v]) => [k, { ...(v.error ? { error: v.error } : {}), rmsMm: mm(v.rms), baseRmsMm: mm(v.baseRms) }]))
   return { plan, files, alignment }
 }
 
