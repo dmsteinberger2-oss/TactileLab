@@ -1,4 +1,4 @@
-import { Component, Suspense, useMemo, useEffect, useLayoutEffect, useReducer, useRef, useState } from 'react'
+import { Component, Suspense, memo, useCallback, useMemo, useEffect, useLayoutEffect, useReducer, useRef, useState } from 'react'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { OrbitControls, Html, Environment, useGLTF } from '@react-three/drei'
 import { useSpring, a } from '@react-spring/three'
@@ -25,6 +25,9 @@ const FINISH = { pedicle_screws: TITANIUM, rods: TITANIUM, interbody_cage: PEEK 
 const LITE = qualityTier() === 'low'
 // drei's "studio" preset HDR (Poly Haven studio_small_03, CC0), served locally so lighting needs no network.
 const STUDIO_HDR = '/hdri/studio_small_03_1k.hdr'
+// EffectComposer rebuilds its passes (new shaders, render targets) whenever its children change, i.e. on
+// every re-render. Memoised, a stage or view switch leaves post-processing alone.
+const StablePostFX = memo(PostFX)
 
 // Renders `fallback` (default: nothing) if anything below throws, e.g. the HDR failing to load.
 // The directional and hemisphere lights live outside it, so the model stays lit.
@@ -200,7 +203,8 @@ function GLTFParts({ url, clip, coronal, onReady, baseParts, opensSectionPart })
       else if (coronal) dir = new THREE.Vector3(c.x * 0.06, c.y * 0.04, 1).normalize()   // inlays lift out of the cut face
       else dir = c.lengthSq() > 1e-6 ? c.clone().normalize() : new THREE.Vector3(0, 1, 0)
       const map = m.material?.map ?? null
-      if (map) { map.colorSpace = THREE.SRGBColorSpace; map.anisotropy = 8; map.needsUpdate = true }
+      // Once per texture: needsUpdate re-uploads it to the GPU, which should not happen on every view switch.
+      if (map && !map.userData.tlPrepared) { map.colorSpace = THREE.SRGBColorSpace; map.anisotropy = 8; map.needsUpdate = true; map.userData.tlPrepared = true }
       return { partId, geometry: m.geometry, dir: dir.toArray(), map, hinge }
     })
   }, [scene, coronal, baseParts])
@@ -345,6 +349,13 @@ function CameraFit({ box }) {
 }
 
 // ---------- scene ----------
+// Loads a GLB without showing it (suspends in its own boundary), then reports it ready.
+function LoadGLB({ url, onLoaded }) {
+  useGLTF(url)
+  useEffect(() => { onLoaded(url) }, [url, onLoaded])
+  return null
+}
+
 const glbCache = new Map()
 function useGLBExists(url) {
   const [, force] = useReducer((x) => x + 1, 0)
@@ -381,10 +392,18 @@ function Scene({ tier }) {
   const coronalUrl = `/models/${labId}_${stage.id}_coronal.glb`
   const hasFull = useGLBExists(fullUrl)
   const hasCoronal = useGLBExists(coronalUrl)
-  const url = wantCoronal && hasCoronal ? coronalUrl : hasFull ? fullUrl : null
-  const coronal = url === coronalUrl
-  const clip = useMemo(() => (wantCoronal && !coronal ? [new THREE.Plane(new THREE.Vector3(0, 0, -1), -0.1)] : undefined), [wantCoronal, coronal])
   const checking = hasFull === undefined || (wantCoronal && hasCoronal === undefined)
+  // The GLB this stage and view want: undefined while checking, null when there is none (placeholder).
+  const target = checking ? undefined : wantCoronal && hasCoronal ? coronalUrl : hasFull ? fullUrl : null
+  // The GLB on screen. A newly wanted one loads offscreen and replaces it only once ready, so switching
+  // view or stage keeps the previous model up instead of showing an empty frame.
+  const [shownUrl, setShownUrl] = useState(null)
+  const coronal = !!shownUrl?.endsWith('_coronal.glb')
+  // No coronal GLB for this stage: clip the whole model instead.
+  const coronalMissing = wantCoronal && hasCoronal === false
+  const clip = useMemo(() => (coronalMissing && !coronal ? [new THREE.Plane(new THREE.Vector3(0, 0, -1), -0.1)] : undefined), [coronalMissing, coronal])
+  // Fetch the current stage's coronal section as soon as it is known to exist, so the first switch is instant.
+  useEffect(() => { if (hasCoronal) useGLTF.preload(coronalUrl) }, [hasCoronal, coronalUrl])
 
   return (
     <>
@@ -395,24 +414,25 @@ function Scene({ tier }) {
           <Environment files={STUDIO_HDR} environmentIntensity={0.55} />
         </Suspense>
       </SilentBoundary>
-      {!checking && (
-        <group onPointerMissed={() => selectPart(null)}>
-          {url ? (
-            <Suspense fallback={null}>
-              <GLTFParts key={url} url={url} clip={clip} coronal={coronal} onReady={setFitBox} baseParts={baseParts} opensSectionPart={opensSectionPart} />
-            </Suspense>
-          ) : (
-            <PlaceholderParts stage={stage} clip={clip} onReady={setFitBox} />
-          )}
-          {compareNormal && stage.id !== 'normal' && hasFull && lab.stages.some((s) => s.id === 'normal') && (
-            <Suspense fallback={null}><GhostNormal labId={labId} coronal={coronal} baseParts={baseParts} /></Suspense>
-          )}
-        </group>
-      )}
+      <group onPointerMissed={() => selectPart(null)}>
+        {target === null ? (
+          <PlaceholderParts stage={stage} clip={clip} onReady={setFitBox} />
+        ) : shownUrl && (
+          <Suspense fallback={null}>
+            <GLTFParts key={shownUrl} url={shownUrl} clip={clip} coronal={coronal} onReady={setFitBox} baseParts={baseParts} opensSectionPart={opensSectionPart} />
+          </Suspense>
+        )}
+        {target && target !== shownUrl && (
+          <Suspense fallback={null}><LoadGLB url={target} onLoaded={setShownUrl} /></Suspense>
+        )}
+        {!checking && compareNormal && stage.id !== 'normal' && hasFull && lab.stages.some((s) => s.id === 'normal') && (
+          <Suspense fallback={null}><GhostNormal labId={labId} coronal={coronal} baseParts={baseParts} /></Suspense>
+        )}
+      </group>
       <CameraFit box={fitBox} />
       <OrbitControls makeDefault enableDamping dampingFactor={0.08} minDistance={6} maxDistance={60} />
-      <IdleRotate holdKey={url ?? stage.id} />
-      {tier === 'high' && <PostFX />}
+      <IdleRotate holdKey={shownUrl ?? stage.id} />
+      {tier === 'high' && <StablePostFX />}
     </>
   )
 }
@@ -463,14 +483,28 @@ export default function ModelCanvas({ className = '' }) {
   const [tier] = useState(qualityTier)
   const stageId = useLabStore((s) => s.stageId)
   const cutaway = useLabStore((s) => s.cutaway)
+  // The GPU can drop the WebGL context (memory pressure, driver reset). preventDefault on loss lets the
+  // browser restore it. Rendering pauses meanwhile; on restore the scene is rebuilt in the same canvas
+  // (environment map and render targets re-created), never a new canvas.
+  const [contextLost, setContextLost] = useState(false)
+  const [restores, setRestores] = useState(0)
+  const onCreated = useCallback(({ gl }) => {
+    const el = gl.domElement
+    if (el.dataset.tlContext) return
+    el.dataset.tlContext = '1'
+    el.addEventListener('webglcontextlost', (e) => { e.preventDefault(); setContextLost(true) })
+    el.addEventListener('webglcontextrestored', () => { setContextLost(false); setRestores((n) => n + 1) })
+  }, [])
   return (
     <div className={`relative h-full w-full ${className}`}>
       {webgl ? (
         <ViewerBoundary resetKey={`${stageId}:${cutaway}`}>
+          {/* One persistent canvas: stage and view switches change only the model inside it. dpr is capped at 2. */}
           <Canvas shadows={tier === 'high' ? 'percentage' : false} dpr={tier === 'high' ? [1, 2] : [1, 1.5]} camera={{ position: [5, 4, 30], fov: 32 }}
+            frameloop={contextLost ? 'never' : 'always'} onCreated={onCreated}
             gl={{ antialias: tier !== 'high', preserveDrawingBuffer: true, toneMapping: THREE.NeutralToneMapping, toneMappingExposure: 1.0 }}>
             <Suspense fallback={null}>
-              <Scene tier={tier} />
+              <Scene key={restores} tier={tier} />
             </Suspense>
           </Canvas>
           <HoverLabel />
