@@ -27,6 +27,7 @@ const PART_KIND = {
   l4_vertebra: 'bone', l5_vertebra: 'bone', l4_posterior_arch: 'bone', bone_cement: 'bone', ligamentum_flavum: 'inner',
   bone_graft: 'graft',
   kidneys: 'capsule',
+  common_carotid: 'vessel', internal_carotid: 'vessel', external_carotid: 'vessel', eca_branches: 'vessel', plaque: 'lobular',
   internal_carotids: 'vessel', anterior_cerebrals: 'vessel', anterior_communicating: 'vessel', middle_cerebrals: 'vessel', posterior_communicatings: 'vessel', posterior_cerebrals: 'vessel', basilar_artery: 'vessel', vertebral_arteries: 'vessel', aneurysm: 'vessel',
 }
 const NONE = { id: 0, wrap: 0 }

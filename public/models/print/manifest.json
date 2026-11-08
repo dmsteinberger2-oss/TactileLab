@@ -8250,5 +8250,290 @@
    "faces": 2024,
    "volume_cm3": 0.66
   }
+ ],
+ "carotid_normal_full": [
+  {
+   "part": "common_carotid",
+   "file": "carotid_normal_full/01_common_carotid.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 15820,
+   "volume_cm3": 12.62
+  },
+  {
+   "part": "internal_carotid",
+   "file": "carotid_normal_full/02_internal_carotid.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 16856,
+   "volume_cm3": 11.09
+  },
+  {
+   "part": "external_carotid",
+   "file": "carotid_normal_full/03_external_carotid.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 9804,
+   "volume_cm3": 4.2
+  },
+  {
+   "part": "eca_branches",
+   "file": "carotid_normal_full/04_eca_branches.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 3,
+   "faces": 4460,
+   "volume_cm3": 0.6
+  }
+ ],
+ "carotid_stenosis_moderate_full": [
+  {
+   "part": "common_carotid",
+   "file": "carotid_stenosis_moderate_full/01_common_carotid.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 16280,
+   "volume_cm3": 12.86
+  },
+  {
+   "part": "internal_carotid",
+   "file": "carotid_stenosis_moderate_full/02_internal_carotid.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 11916,
+   "volume_cm3": 5.97
+  },
+  {
+   "part": "external_carotid",
+   "file": "carotid_stenosis_moderate_full/03_external_carotid.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 10328,
+   "volume_cm3": 4.47
+  },
+  {
+   "part": "eca_branches",
+   "file": "carotid_stenosis_moderate_full/04_eca_branches.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 3,
+   "faces": 4460,
+   "volume_cm3": 0.6
+  },
+  {
+   "part": "plaque",
+   "file": "carotid_stenosis_moderate_full/05_plaque.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 2,
+   "faces": 11340,
+   "volume_cm3": 3.97
+  }
+ ],
+ "carotid_stenosis_severe_full": [
+  {
+   "part": "common_carotid",
+   "file": "carotid_stenosis_severe_full/01_common_carotid.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 16324,
+   "volume_cm3": 12.88
+  },
+  {
+   "part": "internal_carotid",
+   "file": "carotid_stenosis_severe_full/02_internal_carotid.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 11560,
+   "volume_cm3": 5.77
+  },
+  {
+   "part": "external_carotid",
+   "file": "carotid_stenosis_severe_full/03_external_carotid.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 10356,
+   "volume_cm3": 4.48
+  },
+  {
+   "part": "eca_branches",
+   "file": "carotid_stenosis_severe_full/04_eca_branches.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 3,
+   "faces": 4460,
+   "volume_cm3": 0.6
+  },
+  {
+   "part": "plaque",
+   "file": "carotid_stenosis_severe_full/05_plaque.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 2,
+   "faces": 11182,
+   "volume_cm3": 4.15
+  }
+ ],
+ "carotid_endarterectomy_full": [
+  {
+   "part": "common_carotid",
+   "file": "carotid_endarterectomy_full/01_common_carotid.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 15820,
+   "volume_cm3": 12.62
+  },
+  {
+   "part": "internal_carotid",
+   "file": "carotid_endarterectomy_full/02_internal_carotid.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 16856,
+   "volume_cm3": 11.09
+  },
+  {
+   "part": "external_carotid",
+   "file": "carotid_endarterectomy_full/03_external_carotid.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 9804,
+   "volume_cm3": 4.2
+  },
+  {
+   "part": "eca_branches",
+   "file": "carotid_endarterectomy_full/04_eca_branches.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 3,
+   "faces": 4460,
+   "volume_cm3": 0.6
+  },
+  {
+   "part": "endarterectomy_patch",
+   "file": "carotid_endarterectomy_full/05_endarterectomy_patch.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 8328,
+   "volume_cm3": 0.68
+  }
+ ],
+ "carotid_stent_full": [
+  {
+   "part": "common_carotid",
+   "file": "carotid_stent_full/01_common_carotid.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 15544,
+   "volume_cm3": 12.47
+  },
+  {
+   "part": "internal_carotid",
+   "file": "carotid_stent_full/02_internal_carotid.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 13924,
+   "volume_cm3": 7.62
+  },
+  {
+   "part": "external_carotid",
+   "file": "carotid_stent_full/03_external_carotid.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 10144,
+   "volume_cm3": 4.38
+  },
+  {
+   "part": "eca_branches",
+   "file": "carotid_stent_full/04_eca_branches.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 3,
+   "faces": 4460,
+   "volume_cm3": 0.6
+  },
+  {
+   "part": "carotid_stent",
+   "file": "carotid_stent_full/05_carotid_stent.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 3,
+   "faces": 23660,
+   "volume_cm3": 1.27
+  },
+  {
+   "part": "plaque",
+   "file": "carotid_stent_full/06_plaque.stl",
+   "supports": true,
+   "watertight": true,
+   "non_manifold_edges": 0,
+   "open_edges": 0,
+   "bodies": 1,
+   "faces": 9686,
+   "volume_cm3": 1.47
+  }
  ]
 }
