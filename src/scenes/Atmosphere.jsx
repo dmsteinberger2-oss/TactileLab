@@ -71,12 +71,18 @@ export function PostFX() {
 }
 
 // Slow turntable while nobody is touching the model. Any pointer activity on the canvas stops it;
-// it resumes after IDLE_MS without interaction.
+// it resumes after IDLE_MS without interaction. A new model (holdKey) holds the freshly fitted
+// view still for HOLD_MS before turning.
 const IDLE_MS = 20000
-export function IdleRotate({ delayMs = 2500 }) {
+const HOLD_MS = 5000
+export function IdleRotate({ holdKey }) {
   const controls = useThree((s) => s.controls)
   const gl = useThree((s) => s.gl)
-  const last = useRef(performance.now() - IDLE_MS + delayMs)
+  const last = useRef(0)
+  useEffect(() => {
+    last.current = Math.max(last.current, performance.now() - IDLE_MS + HOLD_MS)
+    if (controls) controls.autoRotate = false
+  }, [holdKey, controls])
   useEffect(() => {
     if (!controls) return
     const el = gl.domElement

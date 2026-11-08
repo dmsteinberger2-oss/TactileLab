@@ -218,6 +218,22 @@ function CameraFit({ box }) {
       const z = p.dot(dir)
       dist = Math.max(dist, z + Math.abs(p.dot(right)) / (FIT_FILL * tanH), z + Math.abs(p.dot(up)) / (FIT_FILL * tanV))
     }
+    // That bound is conservative for deep boxes (near corners project larger than far ones, so the
+    // projected box is off-centre and smaller than FIT_FILL). Refine with the real projection:
+    // re-centre the projected box and rescale the distance until its larger span is FIT_FILL.
+    const probe = camera.clone(); probe.aspect = size.width / size.height; probe.updateProjectionMatrix()
+    const target = center.clone()
+    for (let it = 0; it < 4; it++) {
+      probe.position.copy(target).addScaledVector(dir, dist); probe.lookAt(target); probe.updateMatrixWorld()
+      let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity
+      for (let i = 0; i < 8; i++) {
+        p.set(i & 1 ? box.max.x : box.min.x, i & 2 ? box.max.y : box.min.y, i & 4 ? box.max.z : box.min.z).project(probe)
+        x0 = Math.min(x0, p.x); x1 = Math.max(x1, p.x); y0 = Math.min(y0, p.y); y1 = Math.max(y1, p.y)
+      }
+      const span = Math.max((x1 - x0) / 2, (y1 - y0) / 2)
+      target.addScaledVector(right, ((x0 + x1) / 2) * tanH * dist).addScaledVector(up, ((y0 + y1) / 2) * tanV * dist)
+      dist *= span / FIT_FILL
+    }
     camera.near = Math.max(dist / 100, 0.01)
     camera.far = dist * 100
     camera.updateProjectionMatrix()
@@ -225,8 +241,8 @@ function CameraFit({ box }) {
     controls.maxDistance = Math.max(60, dist * 2.5)
     anim.current = {
       t: 0,
-      fromPos: camera.position.clone(), toPos: center.clone().addScaledVector(dir, dist),
-      fromTarget: controls.target.clone(), toTarget: center,
+      fromPos: camera.position.clone(), toPos: target.clone().addScaledVector(dir, dist),
+      fromTarget: controls.target.clone(), toTarget: target,
     }
     invalidate()
   }, [box, camera, controls, size.width, size.height, invalidate])
@@ -315,7 +331,7 @@ function Scene({ tier }) {
       )}
       <CameraFit box={fitBox} />
       <OrbitControls makeDefault enableDamping dampingFactor={0.08} minDistance={6} maxDistance={60} />
-      <IdleRotate />
+      <IdleRotate holdKey={url ?? stage.id} />
       {tier === 'high' && <PostFX />}
     </>
   )
