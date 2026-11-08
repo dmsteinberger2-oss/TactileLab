@@ -15,9 +15,10 @@ const KINDS = {
   inner: { id: 5, wrap: 0.5 },      // medulla, pelvis, disc: soft, faint texture
   bone: { id: 6, wrap: 0.12 },      // vertebra: porous cortical bone
   graft: { id: 7, wrap: 0.1 },      // morselised bone graft
+  frontHalf: { id: 8, wrap: 0.55 }, // openable kidney's front half: capsule + front of tumour
 }
 const PART_KIND = {
-  kidney_body: 'capsule', renal_cortex: 'capsule', anterior_half: 'capsule',
+  kidney_body: 'capsule', renal_cortex: 'capsule', anterior_half: 'frontHalf',
   tumor: 'tumor', vein_thrombus: 'tumor',
   renal_sinus: 'lobular', adrenal_gland: 'lobular',
   renal_artery: 'vessel', renal_vein: 'vessel', ureter: 'vessel', thecal_sac: 'vessel', nerve_roots: 'vessel', l5_nerve_root_left: 'vessel',
@@ -58,6 +59,38 @@ vec2 tlCell(vec3 p) {
   return sqrt(vec2(d1, d2));
 }
 #endif
+// Kidney capsule: mottling, fine vessels, micro-bumps, broken wet highlights.
+void tlCapsule(vec3 tlP, inout vec3 tlCol, inout float tlH, inout float tlRough, inout float tlCoat) {
+  float mott = tlFbm(tlP * 0.9);
+  // Capsular vessels: thin ridges of a domain-warped noise field, faint purple-red, barely raised.
+  vec3 wp = tlP * 0.9 + 1.4 * vec3(tlFbm(tlP * 0.5 + 3.1), tlFbm(tlP * 0.5 + 7.7), tlFbm(tlP * 0.5 + 1.3));
+  float ves = pow(1.0 - abs(tlFbm(wp) * 2.0 - 1.0), 18.0);
+  float ves2 = pow(1.0 - abs(tlFbm(wp * 2.1 + 5.0) * 2.0 - 1.0), 26.0) * 0.55;
+  float v = max(ves, ves2) * smoothstep(0.25, 0.6, tlNoise(tlP * 0.6 + 9.0) + 0.2);
+  tlCol = mix(vec3(0.94, 0.95, 0.97), vec3(1.07, 1.03, 1.03), smoothstep(0.3, 0.75, mott));
+  tlCol *= mix(vec3(1.0), vec3(0.72, 0.52, 0.66), v * 0.5);
+  tlH = tlNoise(tlP * 6.0) * 0.004 + v * 0.004 + mott * 0.025;
+  // Broken wet highlights: glossy patches separated by duller, drier film.
+  float wet = smoothstep(0.38, 0.66, tlFbm(tlP * 1.4 + 11.0));
+  tlRough = mix(0.58, 0.34, wet);
+  tlCoat = mix(0.25, 1.0, wet);
+}
+// Clear cell RCC surface.
+void tlTumour(vec3 tlP, inout vec3 tlCol, inout float tlH, inout float tlRough, inout float tlCoat) {
+  // Lobulated mass: large soft domes from warped cellular noise, haemorrhagic and pale patches.
+  vec3 tp = tlP * 0.95 + 0.6 * vec3(tlNoise(tlP * 0.8), tlNoise(tlP * 0.8 + 4.0), tlNoise(tlP * 0.8 + 8.0));
+  vec2 c = tlCell(tp);
+  float hem = smoothstep(0.55, 0.75, tlFbm(tlP * 0.8 + 4.0));
+  float hem2 = smoothstep(0.62, 0.82, tlFbm(tlP * 2.0 + 9.0));
+  float pale = smoothstep(0.55, 0.78, tlFbm(tlP * 1.1 + 21.0));
+  tlCol = mix(vec3(0.97), vec3(1.07, 1.05, 0.9), pale * 0.7);
+  tlCol = mix(tlCol, vec3(0.66, 0.3, 0.2), hem * 0.7);
+  tlCol = mix(tlCol, vec3(0.55, 0.25, 0.2), hem2 * 0.45);
+  tlCol *= mix(0.9, 1.0, smoothstep(0.0, 0.25, c.y - c.x));   // shallow clefts between lobules
+  tlH = -c.x * c.x * 0.07 + tlFbm(tlP * 3.0) * 0.012;
+  tlRough = mix(0.5, 0.33, hem);
+  tlCoat = mix(0.35, 1.0, hem);
+}
 vec3 tlPerturb(vec3 surfPos, vec3 n, float h, float faceDir) {
   vec2 dh = vec2(dFdx(h), dFdy(h));
   vec3 sx = dFdx(surfPos), sy = dFdy(surfPos);
@@ -77,33 +110,21 @@ const DETAIL = /* glsl */`
   vec3 tlCol = vec3(1.0); float tlH = 0.0; float tlRough = -1.0; float tlCoat = 1.0;
   {
 #if TL_KIND == 1
-  float mott = tlFbm(tlP * 0.9);
-  // Capsular vessels: thin ridges of a domain-warped noise field, faint purple-red, barely raised.
-  vec3 wp = tlP * 0.9 + 1.4 * vec3(tlFbm(tlP * 0.5 + 3.1), tlFbm(tlP * 0.5 + 7.7), tlFbm(tlP * 0.5 + 1.3));
-  float ves = pow(1.0 - abs(tlFbm(wp) * 2.0 - 1.0), 18.0);
-  float ves2 = pow(1.0 - abs(tlFbm(wp * 2.1 + 5.0) * 2.0 - 1.0), 26.0) * 0.55;
-  float v = max(ves, ves2) * smoothstep(0.25, 0.6, tlNoise(tlP * 0.6 + 9.0) + 0.2);
-  tlCol = mix(vec3(0.94, 0.95, 0.97), vec3(1.07, 1.03, 1.03), smoothstep(0.3, 0.75, mott));
-  tlCol *= mix(vec3(1.0), vec3(0.72, 0.52, 0.66), v * 0.5);
-  tlH = tlNoise(tlP * 6.0) * 0.004 + v * 0.004 + mott * 0.025;
-  // Broken wet highlights: glossy patches separated by duller, drier film.
-  float wet = smoothstep(0.38, 0.66, tlFbm(tlP * 1.4 + 11.0));
-  tlRough = mix(0.58, 0.34, wet);
-  tlCoat = mix(0.25, 1.0, wet);
+  tlCapsule(tlP, tlCol, tlH, tlRough, tlCoat);
 #elif TL_KIND == 2
-  // Lobulated mass: large soft domes from warped cellular noise, haemorrhagic and pale patches.
-  vec3 tp = tlP * 0.95 + 0.6 * vec3(tlNoise(tlP * 0.8), tlNoise(tlP * 0.8 + 4.0), tlNoise(tlP * 0.8 + 8.0));
-  vec2 c = tlCell(tp);
-  float hem = smoothstep(0.55, 0.75, tlFbm(tlP * 0.8 + 4.0));
-  float hem2 = smoothstep(0.62, 0.82, tlFbm(tlP * 2.0 + 9.0));
-  float pale = smoothstep(0.55, 0.78, tlFbm(tlP * 1.1 + 21.0));
-  tlCol = mix(vec3(0.97), vec3(1.07, 1.05, 0.9), pale * 0.7);
-  tlCol = mix(tlCol, vec3(0.66, 0.3, 0.2), hem * 0.7);
-  tlCol = mix(tlCol, vec3(0.55, 0.25, 0.2), hem2 * 0.45);
-  tlCol *= mix(0.9, 1.0, smoothstep(0.0, 0.25, c.y - c.x));   // shallow clefts between lobules
-  tlH = -c.x * c.x * 0.07 + tlFbm(tlP * 3.0) * 0.012;
-  tlRough = mix(0.5, 0.33, hem);
-  tlCoat = mix(0.35, 1.0, hem);
+  tlTumour(tlP, tlCol, tlH, tlRough, tlCoat);
+#elif TL_KIND == 8
+  // Front half of the openable kidney: one mesh holding capsule and the front of the tumour,
+  // told apart by their baked vertex colour (tumour and adrenal are yellow, kidney is red).
+  tlCapsule(tlP, tlCol, tlH, tlRough, tlCoat);
+  #ifdef USE_COLOR
+    float tlYellow = smoothstep(0.58, 0.66, vColor.g / max(vColor.r, 1e-3));
+    if (tlYellow > 0.0) {
+      vec3 c2 = vec3(1.0); float h2 = 0.0, r2 = -1.0, k2 = 1.0;
+      tlTumour(tlP, c2, h2, r2, k2);
+      tlCol = mix(tlCol, c2, tlYellow); tlH = mix(tlH, h2, tlYellow); tlRough = mix(tlRough, r2, tlYellow); tlCoat = mix(tlCoat, k2, tlYellow);
+    }
+  #endif
 #elif TL_KIND == 3
   vec2 c = tlCell(tlP * 3.2);
   tlCol = vec3(mix(0.92, 1.06, tlNoise(tlP * 3.2))) * mix(0.84, 1.0, smoothstep(0.0, 0.14, c.y - c.x));
