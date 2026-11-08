@@ -91,7 +91,9 @@ function PartMesh({ partId, geometry, position = [0, 0, 0], rotation, explodeDir
           side={clip ? THREE.DoubleSide : THREE.FrontSide}
         />
       </mesh>
-      {labelsOn && (selected || lifted) && part && (
+      {/* Exploded: only the selected part is labelled (every part is lifted, so labels would pile up).
+          Otherwise: the selected part and any part lifted by tapping it. */}
+      {labelsOn && part && (selected || (!exploded && lifted)) && (
         <Html position={labelPos} center distanceFactor={14} style={{ pointerEvents: 'none' }} zIndexRange={[20, 0]}>
           <div className="rounded-md bg-[#16212b] px-2 py-1 text-xs font-medium text-white whitespace-nowrap shadow">{part.name}</div>
         </Html>
