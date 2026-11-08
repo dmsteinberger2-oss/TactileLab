@@ -1,6 +1,6 @@
-import { Component, Suspense, useMemo, useEffect, useReducer } from 'react'
-import { Canvas, useThree } from '@react-three/fiber'
-import { OrbitControls, Html, Bounds, Environment, ContactShadows, useGLTF } from '@react-three/drei'
+import { Component, Suspense, useMemo, useEffect, useLayoutEffect, useReducer, useRef, useState } from 'react'
+import { Canvas, useFrame, useThree } from '@react-three/fiber'
+import { OrbitControls, Html, Environment, ContactShadows, useGLTF } from '@react-three/drei'
 import { useSpring, a } from '@react-spring/three'
 import * as THREE from 'three'
 import { useLabStore } from '@/store/labStore'
@@ -101,7 +101,7 @@ function PartMesh({ partId, geometry, position = [0, 0, 0], rotation, explodeDir
 }
 
 // ---------- GLB parts ----------
-function GLTFParts({ url, clip, coronal }) {
+function GLTFParts({ url, clip, coronal, onReady }) {
   const { scene } = useGLTF(url)
   const meshes = useMemo(() => {
     const out = []
@@ -119,6 +119,13 @@ function GLTFParts({ url, clip, coronal }) {
       return { partId, geometry: m.geometry, dir: dir.toArray(), map }
     })
   }, [scene, coronal])
+  // Runs only once the GLB has loaded (this component suspends until then). Measures the parts at
+  // rest from their geometry, so exploded/lifted offsets and labels never inflate the fit.
+  useLayoutEffect(() => {
+    const box = new THREE.Box3()
+    meshes.forEach(({ geometry }) => { geometry.computeBoundingBox(); box.union(geometry.boundingBox) })
+    onReady?.(box)
+  }, [meshes, onReady])
   return (
     <group>
       {meshes.map(({ partId, geometry, dir, map }) => (
@@ -142,11 +149,15 @@ function useKidneyGeometry() {
     g.computeVertexNormals(); return g
   }, [])
 }
-function PlaceholderParts({ stage, clip }) {
+function PlaceholderParts({ stage, clip, onReady }) {
   const kidneyGeo = useKidneyGeometry()
   const r = Math.max((stage.sizeCm ?? 0) / 2, 0.01)
   const tumorGeo = useMemo(() => new THREE.SphereGeometry(r, 48, 32), [r])
   const tube = useMemo(() => new THREE.CylinderGeometry(0.35, 0.35, 3.2, 24), [])
+  // Placeholder parts sit at fixed offsets; the kidney plus the hilar tubes bound them.
+  useLayoutEffect(() => {
+    onReady?.(new THREE.Box3(new THREE.Vector3(-W - 2.8, -L, -T), new THREE.Vector3(W + r, L, T + 0.5)))
+  }, [onReady, r])
   return (
     <group>
       <PartMesh partId="kidney_body" geometry={kidneyGeo} clip={clip} />
@@ -155,6 +166,76 @@ function PlaceholderParts({ stage, clip }) {
       {stage.parts.includes('tumor') && <PartMesh partId="tumor" geometry={tumorGeo} position={stage.position ?? [0, 0, 0]} explodeDir={[0.4, 1, 0.6]} />}
     </group>
   )
+}
+
+// ---------- camera fit ----------
+// Frames the model's resting bounds so it fills FIT_FILL of the view in its limiting dimension
+// (height on desktop, usually width on phones). Refits when a newly loaded model reports its
+// bounds and when the canvas is resized; keeps the current viewing direction. Replaces drei
+// <Bounds>, which fit while the GLB was still suspended: its box was empty, so it fell back to
+// a cube sized by the camera distance and the camera moved further out on every switch.
+const FIT_FILL = 0.8
+const FIT_SECONDS = 0.6
+function CameraFit({ box }) {
+  const camera = useThree((s) => s.camera)
+  const controls = useThree((s) => s.controls)
+  const size = useThree((s) => s.size)
+  const invalidate = useThree((s) => s.invalidate)
+  const anim = useRef(null)
+
+  useEffect(() => {
+    if (!box || box.isEmpty() || !controls || !size.width || !size.height) return
+    const center = box.getCenter(new THREE.Vector3())
+    const dir = camera.position.clone().sub(controls.target)
+    if (dir.lengthSq() < 1e-8) dir.set(0, 0, 1)
+    dir.normalize()
+    // Camera basis for looking at `center` from direction `dir`.
+    const basis = new THREE.Matrix4().lookAt(dir, new THREE.Vector3(), camera.up)
+    const right = new THREE.Vector3().setFromMatrixColumn(basis, 0)
+    const up = new THREE.Vector3().setFromMatrixColumn(basis, 1)
+    const tanV = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2))
+    const tanH = tanV * (size.width / size.height)
+    // Smallest distance at which every box corner lands inside FIT_FILL of the frame.
+    let dist = 0
+    const p = new THREE.Vector3()
+    for (let i = 0; i < 8; i++) {
+      p.set(i & 1 ? box.max.x : box.min.x, i & 2 ? box.max.y : box.min.y, i & 4 ? box.max.z : box.min.z).sub(center)
+      const z = p.dot(dir)
+      dist = Math.max(dist, z + Math.abs(p.dot(right)) / (FIT_FILL * tanH), z + Math.abs(p.dot(up)) / (FIT_FILL * tanV))
+    }
+    camera.near = Math.max(dist / 100, 0.01)
+    camera.far = dist * 100
+    camera.updateProjectionMatrix()
+    controls.minDistance = Math.min(6, dist * 0.3)
+    controls.maxDistance = Math.max(60, dist * 2.5)
+    anim.current = {
+      t: 0,
+      fromPos: camera.position.clone(), toPos: center.clone().addScaledVector(dir, dist),
+      fromTarget: controls.target.clone(), toTarget: center,
+    }
+    invalidate()
+  }, [box, camera, controls, size.width, size.height, invalidate])
+
+  // A drag cancels an in-flight fit so the user is never fought for the camera.
+  useEffect(() => {
+    if (!controls) return
+    const stop = () => { anim.current = null }
+    controls.addEventListener('start', stop)
+    return () => controls.removeEventListener('start', stop)
+  }, [controls])
+
+  useFrame((_, delta) => {
+    const a = anim.current
+    if (!a) return
+    a.t = Math.min(1, a.t + Math.min(delta, 0.05) / FIT_SECONDS)
+    const k = 1 - (1 - a.t) ** 3
+    camera.position.lerpVectors(a.fromPos, a.toPos, k)
+    controls.target.lerpVectors(a.fromTarget, a.toTarget, k)
+    controls.update()
+    if (a.t >= 1) anim.current = null
+    invalidate()
+  })
+  return null
 }
 
 // ---------- scene ----------
@@ -181,6 +262,7 @@ function Scene() {
   const lab = getLab(labId)
   const stage = getStage(labId, stageId) ?? lab.stages[0]
   const { gl, scene } = useThree()
+  const [fitBox, setFitBox] = useState(null)
   useEffect(() => { gl.localClippingEnabled = true; registerSceneRoot(scene) }, [gl, scene])
 
   const wantCoronal = cutaway === 'coronal'
@@ -205,19 +287,20 @@ function Scene() {
         </Suspense>
       </SilentBoundary>
       {!checking && (
-        <Bounds key={url ?? 'placeholder'} fit clip observe margin={1.18}>
-          <group onPointerMissed={() => selectPart(null)}>
-            {url ? (
-              <Suspense fallback={null}>
-                <GLTFParts url={url} clip={clip} coronal={coronal} />
-              </Suspense>
-            ) : (
-              <PlaceholderParts stage={stage} clip={clip} />
-            )}
-            {compareNormal && stage.id !== 'normal' && hasFull && <GhostNormal labId={labId} coronal={coronal} />}
-          </group>
-        </Bounds>
+        <group onPointerMissed={() => selectPart(null)}>
+          {url ? (
+            <Suspense fallback={null}>
+              <GLTFParts key={url} url={url} clip={clip} coronal={coronal} onReady={setFitBox} />
+            </Suspense>
+          ) : (
+            <PlaceholderParts stage={stage} clip={clip} onReady={setFitBox} />
+          )}
+          {compareNormal && stage.id !== 'normal' && hasFull && (
+            <Suspense fallback={null}><GhostNormal labId={labId} coronal={coronal} /></Suspense>
+          )}
+        </group>
       )}
+      <CameraFit box={fitBox} />
       <ContactShadows position={[0, -8.8, 0]} opacity={0.32} scale={34} blur={2.6} far={14} />
       <OrbitControls makeDefault enableDamping dampingFactor={0.08} minDistance={6} maxDistance={60} />
     </>
