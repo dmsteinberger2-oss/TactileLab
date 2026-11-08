@@ -389,12 +389,6 @@ if __name__ == '__main__':
                 pm, moved = separate_contacts(pm)
                 if moved: print(f'   {key}/{name}: separated {moved} self-touching vertices by {CONTACT_EPS_MM * 1000:.0f} um')
                 if pm is None or len(pm.faces) == 0: print(f'   ! {key}/{name}: EMPTY mesh'); failures.append(f'{key}/{name}: empty'); continue
-                if pm is None or len(pm.faces) == 0: print(f'   ! {key}/{name}: EMPTY mesh'); failures.append(f'{key}/{name}: empty'); continue
-                if pm is None or len(pm.faces) == 0: print(f'   ! {key}/{name}: EMPTY mesh'); failures.append(f'{key}/{name}: empty'); continue
-                if pm is None or len(pm.faces) == 0: print(f'   ! {key}/{name}: EMPTY mesh'); failures.append(f'{key}/{name}: empty'); continue
-                if pm is None or len(pm.faces) == 0: print(f'   ! {key}/{name}: EMPTY mesh'); failures.append(f'{key}/{name}: empty'); continue
-                if pm is None or len(pm.faces) == 0: print(f'   ! {key}/{name}: EMPTY mesh'); failures.append(f'{key}/{name}: empty'); continue
-                if pm is None or len(pm.faces) == 0: print(f'   ! {key}/{name}: EMPTY mesh'); failures.append(f'{key}/{name}: empty'); continue
                 om = pm.copy()
                 if kind != 'as_is': om = K.orient(pm, kind, axis)
                 else: om.apply_translation([-om.bounds[:, 0].mean(), -om.bounds[:, 1].mean(), -om.bounds[0, 2]])
