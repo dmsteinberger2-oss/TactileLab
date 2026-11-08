@@ -27,7 +27,7 @@ export function Backdrop() {
     const c = document.createElement('canvas'); c.width = 512; c.height = 512
     const g = c.getContext('2d')
     const grd = g.createRadialGradient(256, 225, 10, 256, 256, 390)
-    grd.addColorStop(0, '#34434d'); grd.addColorStop(0.45, '#1f2a32'); grd.addColorStop(1, '#0b1015')
+    grd.addColorStop(0, '#454844'); grd.addColorStop(0.45, '#303533'); grd.addColorStop(1, '#171c1d')
     g.fillStyle = grd; g.fillRect(0, 0, 512, 512)
     // A little grain stops the gradient banding on 8-bit displays.
     const img = g.getImageData(0, 0, 512, 512)
