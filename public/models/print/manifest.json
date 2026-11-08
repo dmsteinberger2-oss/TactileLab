@@ -89,7 +89,7 @@
    "file": "kidney_t1a_full/02_kidney_body.stl",
    "supports": true,
    "watertight": true,
-   "faces": 50916,
+   "faces": 50868,
    "volume_cm3": 103.38
   },
   {
@@ -97,8 +97,8 @@
    "file": "kidney_t1a_full/03_tumor.stl",
    "supports": true,
    "watertight": true,
-   "faces": 11268,
-   "volume_cm3": 12.54
+   "faces": 11358,
+   "volume_cm3": 12.34
   }
  ],
  "t1a_coronal": [
@@ -107,7 +107,7 @@
    "file": "kidney_t1a_coronal/01_renal_cortex.stl",
    "supports": true,
    "watertight": true,
-   "faces": 28174,
+   "faces": 28168,
    "volume_cm3": 36.82
   },
   {
@@ -163,8 +163,8 @@
    "file": "kidney_t1a_coronal/08_tumor.stl",
    "supports": false,
    "watertight": true,
-   "faces": 18886,
-   "volume_cm3": 6.37
+   "faces": 18628,
+   "volume_cm3": 6.28
   }
  ],
  "t1b_full": [
@@ -174,23 +174,23 @@
    "supports": true,
    "watertight": true,
    "faces": 12000,
-   "volume_cm3": 2.31
+   "volume_cm3": 2.3
   },
   {
    "part": "kidney_body",
    "file": "kidney_t1b_full/02_kidney_body.stl",
    "supports": true,
    "watertight": true,
-   "faces": 48412,
-   "volume_cm3": 94.32
+   "faces": 48432,
+   "volume_cm3": 94.33
   },
   {
    "part": "tumor",
    "file": "kidney_t1b_full/03_tumor.stl",
    "supports": true,
    "watertight": true,
-   "faces": 16074,
-   "volume_cm3": 74.71
+   "faces": 16044,
+   "volume_cm3": 73.91
   }
  ],
  "t1b_coronal": [
@@ -199,7 +199,7 @@
    "file": "kidney_t1b_coronal/01_renal_cortex.stl",
    "supports": true,
    "watertight": true,
-   "faces": 24974,
+   "faces": 25064,
    "volume_cm3": 32.87
   },
   {
@@ -247,7 +247,7 @@
    "file": "kidney_t1b_coronal/07_adrenal_gland.stl",
    "supports": false,
    "watertight": true,
-   "faces": 8932,
+   "faces": 8952,
    "volume_cm3": 1.1
   },
   {
@@ -255,8 +255,8 @@
    "file": "kidney_t1b_coronal/08_tumor.stl",
    "supports": false,
    "watertight": true,
-   "faces": 12608,
-   "volume_cm3": 37.88
+   "faces": 12666,
+   "volume_cm3": 37.28
   }
  ],
  "t2a_full": [
@@ -265,7 +265,7 @@
    "file": "kidney_t2a_full/01_adrenal_gland.stl",
    "supports": true,
    "watertight": true,
-   "faces": 5088,
+   "faces": 5100,
    "volume_cm3": 0.75
   },
   {
@@ -273,16 +273,16 @@
    "file": "kidney_t2a_full/02_kidney_body.stl",
    "supports": true,
    "watertight": true,
-   "faces": 47258,
-   "volume_cm3": 89.22
+   "faces": 47338,
+   "volume_cm3": 89.21
   },
   {
    "part": "tumor",
    "file": "kidney_t2a_full/03_tumor.stl",
    "supports": true,
    "watertight": true,
-   "faces": 19864,
-   "volume_cm3": 263.51
+   "faces": 19508,
+   "volume_cm3": 260.58
   }
  ],
  "t2a_coronal": [
@@ -291,7 +291,7 @@
    "file": "kidney_t2a_coronal/01_renal_cortex.stl",
    "supports": true,
    "watertight": true,
-   "faces": 21786,
+   "faces": 21784,
    "volume_cm3": 30.11
   },
   {
@@ -339,7 +339,7 @@
    "file": "kidney_t2a_coronal/07_adrenal_gland.stl",
    "supports": false,
    "watertight": true,
-   "faces": 2846,
+   "faces": 2888,
    "volume_cm3": 0.38
   },
   {
@@ -347,8 +347,42 @@
    "file": "kidney_t2a_coronal/08_tumor.stl",
    "supports": false,
    "watertight": true,
-   "faces": 17524,
-   "volume_cm3": 132.56
+   "faces": 17434,
+   "volume_cm3": 126.92
+  }
+ ],
+ "t3a_full": [
+  {
+   "part": "vein_thrombus",
+   "file": "kidney_t3a_full/01_vein_thrombus.stl",
+   "supports": false,
+   "watertight": true,
+   "faces": 5000,
+   "volume_cm3": 0.47
+  },
+  {
+   "part": "adrenal_gland",
+   "file": "kidney_t3a_full/02_adrenal_gland.stl",
+   "supports": true,
+   "watertight": true,
+   "faces": 3372,
+   "volume_cm3": 0.39
+  },
+  {
+   "part": "kidney_body",
+   "file": "kidney_t3a_full/03_kidney_body.stl",
+   "supports": true,
+   "watertight": true,
+   "faces": 50854,
+   "volume_cm3": 98.47
+  },
+  {
+   "part": "tumor",
+   "file": "kidney_t3a_full/04_tumor.stl",
+   "supports": true,
+   "watertight": true,
+   "faces": 15826,
+   "volume_cm3": 101.55
   }
  ],
  "t3a_coronal": [
@@ -357,7 +391,7 @@
    "file": "kidney_t3a_coronal/01_renal_cortex.stl",
    "supports": true,
    "watertight": true,
-   "faces": 25492,
+   "faces": 25454,
    "volume_cm3": 34.79
   },
   {
@@ -373,7 +407,7 @@
    "file": "kidney_t3a_coronal/03_renal_sinus.stl",
    "supports": false,
    "watertight": true,
-   "faces": 9242,
+   "faces": 9234,
    "volume_cm3": 5.85
   },
   {
@@ -405,7 +439,7 @@
    "file": "kidney_t3a_coronal/07_adrenal_gland.stl",
    "supports": false,
    "watertight": true,
-   "faces": 1858,
+   "faces": 1884,
    "volume_cm3": 0.2
   },
   {
@@ -413,42 +447,8 @@
    "file": "kidney_t3a_coronal/08_tumor.stl",
    "supports": false,
    "watertight": true,
-   "faces": 12814,
-   "volume_cm3": 50.17
-  }
- ],
- "t3a_full": [
-  {
-   "part": "vein_thrombus",
-   "file": "kidney_t3a_full/01_vein_thrombus.stl",
-   "supports": false,
-   "watertight": true,
-   "faces": 5000,
-   "volume_cm3": 0.47
-  },
-  {
-   "part": "adrenal_gland",
-   "file": "kidney_t3a_full/02_adrenal_gland.stl",
-   "supports": true,
-   "watertight": true,
-   "faces": 3326,
-   "volume_cm3": 0.39
-  },
-  {
-   "part": "kidney_body",
-   "file": "kidney_t3a_full/03_kidney_body.stl",
-   "supports": true,
-   "watertight": true,
-   "faces": 50838,
-   "volume_cm3": 98.48
-  },
-  {
-   "part": "tumor",
-   "file": "kidney_t3a_full/04_tumor.stl",
-   "supports": true,
-   "watertight": true,
-   "faces": 15876,
-   "volume_cm3": 101.04
+   "faces": 13016,
+   "volume_cm3": 50.8
   }
  ]
 }
