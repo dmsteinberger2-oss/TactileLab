@@ -4,6 +4,9 @@ import { labs } from '@/data/labs'
 const defaultColors = (labId) =>
   Object.fromEntries((labs[labId]?.parts ?? []).map((p) => [p.id, p.defaultColor]))
 
+// A lab may name the stage it opens on; otherwise the first one.
+const firstStage = (labId) => labs[labId]?.defaultStage ?? labs[labId]?.stages?.[0]?.id ?? null
+
 const PART_MODES = ['removable', 'fixed']
 const PART_VISIBILITY = ['show', 'hide', 'xray']
 export const PRINT_SCALES = [1, 1.5, 2]
@@ -38,7 +41,7 @@ export const useLabStore = create((set, get) => ({
   open: true,           // section view: front half opened
 
   // Same lab: no-op, so a route effect calling setLab(labId) on every mount keeps the educator's settings.
-  setLab: (labId) => get().labId === labId ? undefined : set({ labId, stageId: labs[labId]?.stages?.[0]?.id ?? null, cutaway: labs[labId]?.cutaways?.[0]?.id ?? 'full', partColors: defaultColors(labId), selectedPartId: null, exploded: false, liftedParts: {}, partModes: {}, partVisibility: {} }),
+  setLab: (labId) => get().labId === labId ? undefined : set({ labId, stageId: firstStage(labId), cutaway: labs[labId]?.cutaways?.[0]?.id ?? 'full', partColors: defaultColors(labId), selectedPartId: null, exploded: false, liftedParts: {}, partModes: {}, partVisibility: {} }),
   setStage: (stageId) => set({ stageId, selectedPartId: null, liftedParts: {} }),
   setCutaway: (cutaway) => set({ cutaway }),
   setPartColor: (partId, hex) => set((s) => ({ partColors: { ...s.partColors, [partId]: hex } })),
@@ -74,7 +77,7 @@ export const useLabStore = create((set, get) => ({
     const patch = { labId, partColors: defaultColors(labId), partModes: {}, partVisibility: {} }
     const stageId = p.get('stage')
     if (stageId && labs[labId].stages?.some((s) => s.id === stageId)) patch.stageId = stageId
-    else if (!labs[labId].stages?.some((s) => s.id === get().stageId)) patch.stageId = labs[labId].stages?.[0]?.id ?? null
+    else if (!labs[labId].stages?.some((s) => s.id === get().stageId)) patch.stageId = firstStage(labId)
     // Old /learn QR codes also carry goal and audience; they are ignored.
     const views = labs[labId].cutaways?.map((c) => c.id) ?? ['full']
     patch.cutaway = views.includes(p.get('cutaway')) ? p.get('cutaway') : views[0]   // share URLs omit the default view

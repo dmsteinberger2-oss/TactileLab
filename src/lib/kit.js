@@ -135,6 +135,17 @@ function planKit(cfg, entries) {
 }
 
 // ---- report ----
+// A common hobby printer bed (Ender 3 / Prusa MK-class). Parts larger than this on any axis get a warning.
+export const BED_MM = 220
+const sizes = new WeakMap()
+// Print-pose extent of one part, mm at 1:1 (STLs are millimetres, oriented for printing).
+function sizeOf(e) {
+  if (!sizes.has(e)) {
+    try { const { lo, hi } = boundsOf(readStl(e.data)); sizes.set(e, [0, 1, 2].map((i) => hi[i] - lo[i])) }
+    catch { sizes.set(e, [0, 0, 0]) }
+  }
+  return sizes.get(e)
+}
 function reportFor(cfg, plan) {
   const scale = cfg.printScale ?? 1, k = scale ** 3
   const name = (id) => partName(cfg.labId, id)
@@ -142,10 +153,12 @@ function reportFor(cfg, plan) {
   const rows = plan.parts.map((e) => {
     const withFused = e.part === plan.base && plan.fused.length > 0
     const label = withFused ? `${name(e.part)} with ${listText(plan.fused.map((f) => name(f.part)))} fused` : name(e.part)
-    return { ...volumeReport(e.part, label, (e.cm3 + (withFused ? fusedCm3 : 0)) * k), ...(withFused ? { fused: plan.fused.map((f) => f.part) } : {}) }
+    const sizeMm = sizeOf(e).map((d) => Math.round(d * scale))
+    return { ...volumeReport(e.part, label, (e.cm3 + (withFused ? fusedCm3 : 0)) * k), sizeMm, supports: !!e.supports, ...(withFused ? { fused: plan.fused.map((f) => f.part) } : {}) }
   })
   return {
-    ...summarise(rows), scale, base: plan.base,
+    ...summarise(rows), scale, base: plan.base, bedMm: BED_MM,
+    oversize: rows.filter((r) => r.sizeMm.some((d) => d > BED_MM)).map((r) => r.id),
     fused: plan.fused.map((e) => e.part), excluded: plan.excluded.map((e) => e.part), notFused: plan.notFused.map((e) => e.part),
   }
 }

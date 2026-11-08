@@ -27,7 +27,7 @@ const kidneyParts = [
     tooltip: 'Clear cell renal cell carcinoma: a well-circumscribed, golden-yellow cortical mass that bulges from the kidney contour. The cut surface is variegated with haemorrhage.' },
   { id: 'vein_thrombus', name: 'Renal vein tumour thrombus', removable: true, defaultColor: '#cf9233',
     tooltip: 'Solid tumour growing along the renal vein, visible at its cut end. Any extension into the renal vein or its segmental branches makes the tumour T3a.' },
-  { id: 'anterior_half', name: 'Front half', removable: true, defaultColor: '#b0614f',
+  { id: 'anterior_half', name: 'Front half', removable: true, noColour: true, defaultColor: '#b0614f',
     tooltip: 'The front half of the kidney. Click to open or close it.' },
 ]
 
@@ -81,6 +81,7 @@ export const labs = {
     parts: kidneyParts,
     // the part the rest of the model sits on, per cutaway
     basePart: { full: 'kidney_body', coronal: 'renal_cortex' },
+    defaultStage: 't1b',   // open on the stage that is printed for the demo
     stages: kidneyStages,
     cutaways: [
       { id: 'full', label: 'Whole kidney' },

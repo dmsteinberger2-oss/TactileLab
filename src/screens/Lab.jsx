@@ -38,8 +38,23 @@ function PrintSummary({ report }) {
         </tr>)}
       </tbody>
     </table>
+    <PrintNotes report={report}/>
     <p className="mt-3 text-xs text-ink-soft">Estimate for {a.material}, {a.layerMm} mm layers, {a.infillPct}% infill. Your slicer will differ.</p>
   </div>
+}
+
+// Supports and bed-size notes under the estimate. The kit card has the full instructions; this only
+// flags what changes the print (supports, or a part too big for a common bed at this scale).
+function PrintNotes({ report }) {
+  const big = report.parts.filter((p) => report.oversize?.includes(p.id))
+  const supported = report.parts.filter((p) => p.supports).map((p) => p.name)
+  const fused = report.fused?.length > 0
+  if (!big.length && !supported.length && !fused) return null
+  return <ul className="mt-3 space-y-1.5 text-xs leading-relaxed">
+    {big.map((p) => <li key={`big-${p.id}`} className="rounded-md border border-ink/25 bg-bench px-2.5 py-1.5 text-ink"><span className="font-semibold">Larger than a {report.bedMm} mm bed:</span> {p.name} is {p.sizeMm.join(' × ')} mm at this scale. Use a smaller scale or a larger printer.</li>)}
+    {supported.length > 0 && <li className="text-ink-soft"><span className="font-semibold text-ink">Supports:</span> {supported.join(', ')}.</li>}
+    {fused && <li className="text-ink-soft"><span className="font-semibold text-ink">Fused parts:</span> if they reach below the base, the fused STL rests on them and needs supports. The kit card says when.</li>}
+  </ul>
 }
 
 function DownloadKit({ stageId, cutaway }) {
@@ -92,7 +107,7 @@ export default function Lab() {
   const view = lab.cutaways?.find((c) => c.id === cutaway) ?? lab.cutaways?.[0]
   const shareUrl = viewUrl()
   const localOnly = shareIsLocalOnly()
-  const colourParts = lab.parts.filter((p) => p.removable)
+  const colourParts = lab.parts.filter((p) => p.removable && !p.noColour)   // the front half is shown in the colours of what it holds
   const coloursChanged = colourParts.some((p) => partColors?.[p.id] && partColors[p.id].toLowerCase() !== p.defaultColor.toLowerCase())
 
   return <div className={theme.page}><Header badge="Model builder"/>
