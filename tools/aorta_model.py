@@ -46,7 +46,7 @@ COLOURS = {'aorta': '#c8443a', 'left_arch': '#cf5544', 'brachiocephalic_trunk': 
            'right_common_carotid': '#e07358', 'left_common_carotid': '#e07358', 'left_subclavian': '#d86450',
            'right_vertebral': '#e98b6c', 'left_vertebral': '#e98b6c', 'kommerell_diverticulum': '#b8362e',
            'pulmonary_trunk': '#4a6fa5', 'ligamentum_arteriosum': '#d9b7a0', 'patent_ductus': '#8e5aa8',
-           'coarctation': '#c8443a', 'trachea': '#e2dccd', 'oesophagus': '#c98d7f'}
+           'coarctation': '#c8443a', 'aneurysm_sac': '#a83a32', 'false_lumen': '#7d3b5c', 'trachea': '#e2dccd', 'oesophagus': '#c98d7f'}
 # parts that are context, not vessels: never smooth-unioned into the arterial tree
 CONTEXT = ('trachea', 'oesophagus')
 
@@ -114,6 +114,22 @@ def stage_vessels(st):
                           [(10, 22, 10, 7.5), (18, 20, 4, 8), (25, 8, -12, 9), (24, -10, -22, 11), (22, -40, -26, 11), (20, -98, -26, 10.5)]]
             V['left_common_carotid'] = [[(10, 24, 12, 4.6)] + LCC[1:]]
         V['brachiocephalic_trunk'] = [[(-2, 10, 22, 6.5)] + BCT[1:]]
+    elif st == 'aneurysm':      # saccular aneurysm of the distal arch / proximal descending aorta
+        V['aneurysm_sac'] = [[(25, 2, -15, 8), (34, 0, -18, 14), (41, -2, -20, 16), (44, -3, -21, 15)]]
+    elif st.startswith('dissection_'):
+        # false lumen: a second channel spiralling along the outer wall; the bisector between it and the aorta is the flap
+        dirs = [(-0.8, 0, 0.6), (-0.8, 0, 0.6), (-0.8, 0, 0.6), (-0.3, 0.2, 0.93), (0.5, 0.3, 0.8), (0.87, 0.1, 0.5),
+                (0.95, 0, 0.1), (0.85, 0, -0.5), (0.8, 0, -0.6), (0.8, 0, -0.6)]
+        fl = []
+        for (x, y, z, r), d in zip(AORTA, dirs):
+            d = np.asarray(d, float); d /= np.linalg.norm(d)
+            fl.append((x + d[0] * r * 0.5, y + d[1] * r * 0.5, z + d[2] * r * 0.5, r * 0.72))
+        fl[-1] = (fl[-1][0], -90, fl[-1][2], fl[-1][3] * 0.8)
+        if st == 'dissection_a':     # Stanford A: tear in the ascending aorta, false lumen runs into the descending aorta
+            fl = [(fl[1][0], -46, fl[1][2], 5)] + fl[1:]
+        else:                        # Stanford B: tear just beyond the left subclavian origin
+            fl = [(fl[6][0] - 2, 14, fl[6][2] + 4, 4.5)] + fl[6:]
+        V['false_lumen'] = [fl]
     V['trachea'] = [TRACHEA, BRONCH_R, BRONCH_L]
     V['oesophagus'] = [OESOPH]
     return V
@@ -225,7 +241,7 @@ def render(meshes, path, R, size=560):
 # ---------------------------------------------------------------- main
 DISPLAY = trimesh.geometry.align_vectors(np.array([0.5, 0.0, 0.866]), [0, 0, 1])[:3, :3]   # LAO 30 degrees
 STAGES_ALL = ['normal', 'bovine', 'direct_lva', 'arsa', 'right_mirror', 'right_alsa', 'double', 'coarctation', 'pda',
-              'iaa_a', 'iaa_b', 'iaa_c']
+              'iaa_a', 'iaa_b', 'iaa_c', 'aneurysm', 'dissection_a', 'dissection_b']
 
 if __name__ == '__main__':
     OUT = sys.argv[1]
