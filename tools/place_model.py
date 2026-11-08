@@ -19,6 +19,7 @@ import kidney_sdf as K   # SDF primitives, colours, meshing, orientation helpers
 import beauty as B       # painted section, adrenal, textured GLB
 import kidney_conditions as KC   # T3b, T4, Bosniak cysts, angiomyolipoma
 import kidney_collecting as KL   # hydronephrosis grades, staghorn calculus
+import kidney_vessels as KV     # accessory renal artery
 
 SRC, OUT = sys.argv[1], sys.argv[2]
 STAGES = sys.argv[3].split(',') if len(sys.argv) > 3 else ['normal', 't1a', 't1b', 't2a', 't3a']
@@ -281,10 +282,12 @@ def build(stage, form, parts, kidney_m, kmesh, z0, centre, adr0=None, adr_n=None
         if adr is not None:
             show['adrenal_gland'] = prn['adrenal_gland'] = to_t(adr); specs['adrenal_gland'] = ('as_is', None, True)
         show['renal_artery'] = parts['renal_artery']; show['renal_vein'] = to_t(vein); show['ureter'] = parts['ureter']
+        if 'accessory_renal_artery' in parts: show['accessory_renal_artery'] = parts['accessory_renal_artery']
         # print: vessels branch inside the sinus, so they print fused to the kidney; the tumour lifts out.
         # The ureter only meets the pelvis along an edge (fusing it made a second, non-manifold body),
         # so it prints as its own part, lying flat.
         fused = body + to_m(parts['renal_artery']) + vein
+        if 'accessory_renal_artery' in parts: fused = fused + to_m(parts['accessory_renal_artery'])
         if T: fused = (fused - cavity) + pegs
         prn['kidney_body'] = to_t(fused)
         specs['kidney_body'] = ('as_is', None, True)
@@ -303,6 +306,7 @@ def build(stage, form, parts, kidney_m, kmesh, z0, centre, adr0=None, adr_n=None
         full = {n: to_m(parts[n]) for n in INTERNAL + ['renal_artery', 'renal_vein', 'ureter']}
         if adr is not None: full['adrenal_gland'] = adr
         if 'calculus' in parts: full['calculus'] = to_m(parts['calculus'])   # staghorn: stone inlay in the lumen
+        if 'accessory_renal_artery' in parts: full['accessory_renal_artery'] = to_m(parts['accessory_renal_artery'])
         anterior, lid = {}, Manifold()
         for name in list(full):
             m = full[name]
@@ -338,6 +342,9 @@ def build(stage, form, parts, kidney_m, kmesh, z0, centre, adr0=None, adr_n=None
             lid += cavity ^ front          # the lid prints as one solid: fill the tumour's clearance gap
         # front half: one display part made of the anterior pieces (each keeps its own colour and painted cut face),
         # and one print part, the union, lying on its cut face (z = z0, facing -Z)
+        if 'accessory_renal_artery' in polys:     # the painted section draws it as artery
+            import shapely.ops as so
+            polys['renal_artery'] = so.unary_union([polys['renal_artery'], polys.pop('accessory_renal_artery')])
         show['__anterior__'] = anterior
         prn['anterior_half'] = to_t(lid); specs['anterior_half'] = ('flat_down', None, False)
     return show, prn, specs, polys
@@ -373,6 +380,8 @@ if __name__ == '__main__':
         if stage in KL.STAGES:     # collecting-system change: modified parts, same outer kidney
             parts = KL.apply(base_parts, stage, to_m, to_t)
             kidney_m = to_m(parts['renal_cortex']) + to_m(parts['renal_medulla']) + to_m(parts['renal_sinus']) + to_m(parts['renal_pelvis'])
+        elif stage in KV.STAGES:   # vessel variant: extra part, same kidney
+            parts = KV.apply(base_parts, stage, to_m, to_t, base_kidney)
         for form in FORMS:
             show, meshes, specs, polys = build(stage, form, parts, kidney_m, kmesh, z0, centre, adr0, adr_n)
             K.Z0 = z0 if form == 'coronal' else 1e6

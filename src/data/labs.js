@@ -37,6 +37,8 @@ const kidneyParts = [
     tooltip: 'Angiomyolipoma: a benign tumour of mature fat, smooth muscle and thick-walled, abnormal blood vessels. The fat is what identifies it on CT.' },
   { id: 'calculus', name: 'Staghorn stone', removable: true, defaultColor: '#d6b268',
     tooltip: 'A branched stone filling the renal pelvis and extending into the calyces, cast in their shape. Usually struvite (magnesium ammonium phosphate). Lift it out to see the collecting system it fills.' },
+  { id: 'accessory_renal_artery', name: 'Accessory renal artery', removable: true, defaultColor: '#c0392b',
+    tooltip: 'Schematic lower polar artery: a second renal artery that enters the lower pole directly, outside the hilum, passing in front of the ureter.' },
   { id: 'anterior_half', name: 'Front half', removable: true, noColour: true, defaultColor: '#b0614f',
     tooltip: 'The front half of the kidney. Click to open or close it.' },
 ]
@@ -102,6 +104,9 @@ const kidneyStages = [
   { id: 'staghorn', group: 'Collecting system', label: 'Staghorn calculus', sub: 'branched stone', lesion: true, sizeCm: 0, parts: ['calculus'],
     readout: 'Branched stone filling the renal pelvis and extending into the calyces, in their shape. Usually struvite (magnesium ammonium phosphate), formed with infection by urease-producing bacteria.',
     teaching: 'Untreated, a struvite staghorn stone will in time destroy the kidney, with recurrent infection and sepsis, so complete removal is the aim. For most patients the AUA recommends percutaneous stone removal (PCNL), with shock-wave lithotripsy or repeat percutaneous procedures as needed. The stone shows only in the coronal section.' },
+  { id: 'accessory_artery', group: 'Vessels', label: 'Accessory renal artery', sub: 'lower polar artery', lesion: true, sizeCm: 0, parts: ['accessory_renal_artery'],
+    readout: 'A second, smaller renal artery runs straight to the lower pole instead of entering at the hilum, crossing in front of the ureter. About 25% of people have more than one renal artery; about 30% of the extra arteries go to the lower pole.',
+    teaching: 'Each renal artery is an end artery and the only supply of its segment, so an extra artery matters when planning live-donor transplantation and renal artery embolisation. A lower pole vessel crossing in front of the pelviureteric junction can compress it and is a recognised cause of pelviureteric junction obstruction (about 10–28% of adult primary cases).' },
 ]
 
 export const ajccTable = [
@@ -155,6 +160,8 @@ export const labs = {
       'Bosniak v2019 proportion of malignancy by class: systematic review and meta-analysis. AJR (doi:10.2214/AJR.24.32342).',
       'Renal angiomyolipoma. StatPearls (NCBI Bookshelf NBK585104); Canadian Urological Association best practice report on AML.',
       'SFU grading system of hydronephrosis. Radiopaedia (radiopaedia.org/articles/sfu-grading-system-of-hydronephrosis).',
+      'Multiple renal arteries. Radiopaedia (radiopaedia.org/articles/accessory-renal-artery): ~25% prevalence; inferior pole ~30% of supernumerary arteries; end arteries.',
+      'Crossing vessels with suspension versus transposition in laparoscopic pyeloplasty (PMC8101153): crossing vessels enter the lower pole ventral to the UPJ; 10–28.1% of adult primary UPJO.',
       'AUA report on the management of staghorn calculi (auanet.org/documents/education/Arc-Staghorn-Calculi.pdf); Akram M et al. Urological guidelines for kidney stones. J Clin Med 2024;13:1114.',
       'Knoedler M et al. Urology 2015;85:1257–61; Bernhard JC et al. World J Urol 2016;34:337–45 (3D-printed kidney tumour models in education).',
     ],
